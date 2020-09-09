@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class TidepoolAdminResource extends AdminResource {
 
-    private final String ID_SEPARATOR = ",";
+    private static final String ID_SEPARATOR = ",";
 
     private final KeycloakSession session;
 
@@ -37,7 +37,9 @@ public class TidepoolAdminResource extends AdminResource {
 
             for (String id : ids.split(ID_SEPARATOR)) {
                 UserModel user = provider.getUserById(id, realm);
-                representations.add(toRepresentation(user, realm));
+                if (user != null) {
+                    representations.add(toRepresentation(user, realm));
+                }
             }
         }
 
