@@ -1,5 +1,6 @@
 package org.tidepool.keycloak.extensions.resource;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.UnauthorizedException;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.jose.jws.JWSInput;
@@ -16,6 +17,7 @@ import org.keycloak.services.resources.admin.AdminAuth;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.permissions.AdminPermissions;
 
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -40,24 +42,27 @@ public abstract class AdminResource {
     protected void setup() {
         AppAuthManager authManager = new AppAuthManager();
         String tokenString = authManager.extractAuthorizationHeaderToken(headers);
-        if (tokenString == null) throw new UnauthorizedException("Bearer");
+        if (tokenString == null) throw new NotAuthorizedException("Bearer");
         AccessToken token;
         try {
             JWSInput input = new JWSInput(tokenString);
             token = input.readJsonContent(AccessToken.class);
         } catch (JWSInputException e) {
-            throw new UnauthorizedException("Bearer token format error");
+            throw new NotAuthorizedException("Bearer token format error");
         }
         String realmName = token.getIssuer().substring(token.getIssuer().lastIndexOf('/') + 1);
         RealmManager realmManager = new RealmManager(session);
         RealmModel realm = realmManager.getRealmByName(realmName);
-        if (realm == null) {
-            throw new UnauthorizedException("Unknown realm in token");
+        RealmModel realmInContext = session.getContext().getRealm();
+        if (realm == null || !realm.equals(realmManager.getKeycloakAdminstrationRealm())) {
+            throw new NotAuthorizedException("Unknown realm");
         }
+
+        // Temporarily set the realm in the context to the admin realm to make sure we have a valid admin token
         session.getContext().setRealm(realm);
         AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm, uriInfo, clientConnection, headers);
         if (authResult == null) {
-            throw new UnauthorizedException("Bearer");
+            throw new NotAuthorizedException("Bearer");
         }
 
         ClientModel client = realm.getClientByClientId(token.getIssuedFor());
@@ -67,5 +72,8 @@ public abstract class AdminResource {
 
         AdminAuth adminAuth = new AdminAuth(realm, authResult.getToken(), authResult.getUser(), client);
         this.auth = AdminPermissions.evaluator(session, realm, adminAuth);
+
+        // Restore the original realm in the context
+        session.getContext().setRealm(realmInContext);
     }
 }
