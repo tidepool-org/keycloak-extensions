@@ -5,7 +5,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>admin</artifactId>
-    <version>${extensions-version}</version>
     <packaging>jar</packaging>
     <name>Keycloak Extensions - Admin API</name>
     <description>Administrative endpoints</description>

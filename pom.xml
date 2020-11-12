@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <scm>
+        <url>https://github.com/tidepool-org/keycloak-extensions</url>
+        <connection>scm:git:https://github.com/tidepool-org/keycloak-extensions.git</connection>
+        <developerConnection>scm:git:git@github.com:tidepool-org/keycloak-extensions.git</developerConnection>
+    </scm>
+
     <groupId>org.tidepool.keycloak</groupId>
     <artifactId>keycloak-extensions</artifactId>
     <version>${extensions-version}</version>
@@ -11,7 +17,7 @@
     <name>Keycloak Extensions</name>
 
     <properties>
-        <extensions-version>0.0.3-SNAPSHOT</extensions-version>
+        <extensions-version>0.0.5-SNAPHOT</extensions-version>
     </properties>
 
     <modules>
@@ -19,4 +25,31 @@
         <module>jmx-metrics</module>
         <module>jmx-metrics-ear</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <version>1.1.1</version>
+                <inherited>false</inherited>
+
+                <configuration>
+                    <repositoryId>tidepool-org/keycloak-extensions</repositoryId>
+                    <releaseName>${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.basedir}</directory>
+                            <includes>
+                                <include>admin/target/*-${extensions-version}.jar</include>
+                                <include>jmx-metrics-ear/target/*-${extensions-version}.ear</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
