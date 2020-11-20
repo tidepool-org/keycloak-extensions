@@ -21,21 +21,14 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.UriInfo;
 
 public abstract class AdminResource {
-
-    @Context
-    protected ClientConnection clientConnection;
 
     @Context
     private HttpHeaders headers;
 
     @Context
     private KeycloakSession session;
-
-    @Context
-    protected UriInfo uriInfo;
 
     protected AdminPermissionEvaluator auth;
 
@@ -60,7 +53,7 @@ public abstract class AdminResource {
 
         // Temporarily set the realm in the context to the admin realm to make sure we have a valid admin token
         session.getContext().setRealm(realm);
-        AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm, uriInfo, clientConnection, headers);
+        AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm);
         if (authResult == null) {
             throw new NotAuthorizedException("Bearer");
         }
