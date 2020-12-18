@@ -17,7 +17,7 @@
     <name>Keycloak Extensions</name>
 
     <properties>
-        <extensions-version>0.0.6-SNAPSHOT</extensions-version>
+        <extensions-version>0.0.7-SNAPSHOT</extensions-version>
     </properties>
 
     <modules>

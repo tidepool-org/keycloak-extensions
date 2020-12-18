@@ -4,7 +4,7 @@ This project contains multiple custom extensions that we use in our Keycloak dep
 
 ### Packaging artifacts
 
-Artifacts are packaged using maven. If an extensions depends on a library that's not provided by keycloak it should be deployed as an ear. 
+Artifacts are packaged using maven. If an extension depends on a library that's not provided by keycloak it should be deployed as an ear. 
 To build all artifacts use the following command:
 ```
 ./mvnw clean compile package

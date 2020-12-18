@@ -33,8 +33,7 @@ public abstract class AdminResource {
     protected AdminPermissionEvaluator auth;
 
     protected void setup() {
-        AppAuthManager authManager = new AppAuthManager();
-        String tokenString = authManager.extractAuthorizationHeaderToken(headers);
+        String tokenString = AppAuthManager.extractAuthorizationHeaderToken(headers);
         if (tokenString == null) throw new NotAuthorizedException("Bearer");
         AccessToken token;
         try {
@@ -53,7 +52,10 @@ public abstract class AdminResource {
 
         // Temporarily set the realm in the context to the admin realm to make sure we have a valid admin token
         session.getContext().setRealm(realm);
-        AuthenticationManager.AuthResult authResult = authManager.authenticateBearerToken(session, realm);
+
+        var authenticator = new AppAuthManager.BearerTokenAuthenticator(session);
+        authenticator.setRealm(realm);
+        AuthenticationManager.AuthResult authResult = authenticator.authenticate();
         if (authResult == null) {
             throw new NotAuthorizedException("Bearer");
         }
