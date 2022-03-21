@@ -34,6 +34,11 @@
             <script src="${script}" type="text/javascript"></script>
         </#list>
     </#if>
+    <#if properties.zendeskKey?has_content>
+      <!-- Start of tidepoolsupport Zendesk Widget script -->
+      <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=${properties.zendeskKey}" type="text/javascript"></script>
+      <!-- End of tidepoolsupport Zendesk Widget script -->
+    </#if>
 </head>
 
 <body class="${properties.kcBodyClass!}">
