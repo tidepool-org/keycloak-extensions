@@ -1,0 +1,8 @@
+.dockerignore
+Dockerfile
+
+*.iml
+.idea/
+
+.git/
+.gitignore

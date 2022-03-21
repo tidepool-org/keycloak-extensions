@@ -1,0 +1,37 @@
+version: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    image: postgres:9.6
+    container_name: tp-keycloak-pg
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: jboss/keycloak:16.1.0
+    container_name: tp-keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      TIDEPOOL_APP_URL: "https://app.tidepool.org"
+    ports:
+      - 8089:8080
+    volumes:
+      - ./tidepool-theme:/opt/jboss/keycloak/themes/tidepool
+      - ./disable-theme-cache.cli:/opt/jboss/startup-scripts/disable-theme-cache.cli
+    depends_on:
+      - postgres

@@ -1,0 +1,271 @@
+:root {
+  --baseColor: #f7f7f8;
+  --textColor: #6d6d6d;
+}
+
+body {
+  background: var(--baseColor) !important;
+  color: var(--textColor);
+  font-family: Basis,Helvetica Neue,Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+a {
+  color: #979797;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.tp-btn {
+  display: inline-block;
+  margin: 0;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  white-space: nowrap;
+  background-image: none;
+  border: 0 solid #979797;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 26px;
+  padding: 7px 26px;
+}
+
+.tp-btn-primary {
+  background-color: #627cff;
+  color: #fff;
+}
+
+.login-pf-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Sign Up Link */
+.login-pf-page #kc-registration {
+  text-align: right;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  padding-right: 20px;
+}
+
+@media(max-width: 1280px) {
+  .login-pf-page #kc-registration {
+    padding-left: calc((100% - 275px)/2);
+    padding-right: calc((100% - 275px)/2);
+  }
+}
+
+
+.login-pf-page #kc-registration i {
+  padding-left: 8px;
+  padding-right: 8px;
+  font-size: 20px;
+}
+
+.login-pf-page #kc-registration a:hover {
+  color: #636363;
+  text-decoration: none;
+}
+
+/* Login Card */
+.login-pf-page .card-pf {
+  border: 0;
+  background: var(--baseColor);
+  box-shadow: none;
+  padding: 0;
+  max-width: inherit;
+  width: 100%;
+  margin-bottom: auto;
+}
+
+@media (max-width: 767px) {
+  .login-pf-page .card-pf {
+    max-width: none;
+    margin: 0 auto;
+  }
+}
+
+.login-pf-page .login-pf-header, .login-pf-page #kc-page-title {
+  margin: 0;
+}
+
+.login-pf-page .card-pf .logo {
+  margin-top: 40px;
+  height: 27px;
+}
+
+@media(min-width: 512px) {
+  .login-pf-page .card-pf .logo {
+    height: 45px;
+  }
+}
+
+.login-pf-page #kc-content-wrapper, .login-pf-page #kc-form-wrapper {
+  margin: 0;
+}
+
+.login-pf-page #kc-form {
+  padding: 40px 10px;
+  margin: 0 auto;
+  position: relative;
+  max-width: 320px;
+}
+
+@media (min-width: 580px) {
+  .login-pf-page #kc-form {
+    width: 500px;
+    max-width: inherit;
+    padding-left: 90px;
+    padding-right: 90px;
+  }
+}
+
+@media(max-width: 512px) {
+  .login-pf-page #kc-form {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+.login-pf-page .c-form-control {
+  width: 100%;
+  font-size: 16px;
+  height: 40px;
+  line-height: 20px;
+  vertical-align: middle;
+  padding: 9px 5px;
+  border: 1px solid #979797;
+  border-radius: 0;
+  background: #fff;
+  color: #000;
+}
+
+.login-pf-page .form-group {
+  max-width: 320px;
+}
+
+.login-pf-page .c-form-control::placeholder {
+  font-size: 14px;
+}
+
+.login-pf-page .c-form-control:hover, .login-pf-page .c-form-control:focus, .login-pf-page .c-form-control:focus-visible {
+  border-color: #627cff;
+  outline: 0;
+}
+
+.login-pf-page label {
+  font-size: 14px;
+  color: #979797;
+}
+
+.login-pf-page .login-pf-settings {
+  display: block;
+}
+
+/* Remember me toggle */
+.login-pf-page #kc-form-options .checkbox {
+  margin-bottom: 0;
+}
+
+/* Forgot password */
+.login-pf-page .c-form-options-wrapper {
+  font-size: 12px;
+}
+
+.login-pf-page .c-form-options-wrapper a {
+  font-weight: normal;
+}
+
+.login-pf-page a:focus, .login-pf-page a:hover {
+  color: #12d3d8;
+  text-decoration: underline;
+}
+
+.login-pf-page #kc-form-buttons {
+  text-align: right;
+}
+
+/* Footer */
+.tp-footer {
+  margin-top: auto;
+  margin-bottom: 40px;
+}
+
+.footer-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.footer-link.social-media {
+  display: flex;
+}
+
+@media (max-width: 1279px) {
+  .footer-link.large-format-only {
+    display: none;
+  }
+}
+
+.footer-link {
+  display: inline-block;
+  font-size: 14px;
+}
+
+.footer-link.secondary a {
+  margin: 0 1.5em;
+}
+
+.jdrf-logo-container {
+  width: 121px;
+  height: 31px;
+  position: relative;
+  display: inline-block;
+}
+
+.jdrf-logo-container .jdrf-logo-hover {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 99;
+}
+
+.jdrf-logo-container:hover .jdrf-logo-hover, #jdrf:hover .jdrf-logo-hover {
+  display: inline;
+}
+
+.footer-link a svg {
+  fill: #979797;
+}
+
+.footer-link a svg:hover {
+  fill: #12d3d8;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.footer-facebook {
+  width: 32px;
+  height: 32px;
+  margin-left: 20px;
+}
+
+.footer-twitter {
+  width: 44.8px;
+  height: 32px;
+}
