@@ -32,16 +32,38 @@ a {
   padding: 7px 26px;
 }
 
+.tp-btn:hover {
+  background-color: #281946;
+}
+
 .tp-btn-primary {
   background-color: #627cff;
   color: #fff;
+}
+
+.tp-form-error {
+  color: #de514b;
+  font-size: 16px;
+}
+
+.tp-alert {
+  max-width: 500px;
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .login-pf-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
 }
+
 
 .hidden {
   display: none;
@@ -135,7 +157,7 @@ a {
   }
 }
 
-.login-pf-page .c-form-control {
+.login-pf-page .tp-form-control {
   width: 100%;
   font-size: 16px;
   height: 40px;
@@ -152,11 +174,11 @@ a {
   max-width: 320px;
 }
 
-.login-pf-page .c-form-control::placeholder {
+.login-pf-page .tp-form-control::placeholder {
   font-size: 14px;
 }
 
-.login-pf-page .c-form-control:hover, .login-pf-page .c-form-control:focus, .login-pf-page .c-form-control:focus-visible {
+.login-pf-page .tp-form-control:hover, .login-pf-page .tp-form-control:focus, .login-pf-page .tp-form-control:focus-visible {
   border-color: #627cff;
   outline: 0;
 }
@@ -176,11 +198,11 @@ a {
 }
 
 /* Forgot password */
-.login-pf-page .c-form-options-wrapper {
+.login-pf-page .tp-form-options-wrapper {
   font-size: 12px;
 }
 
-.login-pf-page .c-form-options-wrapper a {
+.login-pf-page .tp-form-options-wrapper a {
   font-weight: normal;
 }
 
