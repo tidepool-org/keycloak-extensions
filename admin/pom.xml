@@ -13,7 +13,7 @@
         <groupId>org.tidepool.keycloak</groupId>
         <artifactId>keycloak-extensions</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>${extensions-version}</version>
+        <version>LATEST</version>
     </parent>
 
     <properties>

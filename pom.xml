@@ -12,12 +12,12 @@
 
     <groupId>org.tidepool.keycloak</groupId>
     <artifactId>keycloak-extensions</artifactId>
-    <version>${extensions-version}</version>
+    <version>LATEST</version>
     <packaging>pom</packaging>
     <name>Keycloak Extensions</name>
 
     <properties>
-        <extensions-version>0.0.9-SNAPSHOT</extensions-version>
+        <extensions-version>LATEST</extensions-version>
     </properties>
 
     <modules>
