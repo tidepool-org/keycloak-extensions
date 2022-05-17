@@ -34,5 +34,6 @@ services:
     volumes:
       - ./tidepool-theme:/opt/jboss/keycloak/themes/tidepool
       - ./disable-theme-cache.cli:/opt/jboss/startup-scripts/disable-theme-cache.cli
+      - ./admin/target/admin-LATEST.jar:/opt/jboss/keycloak/standalone/deployments/admin.jar
     depends_on:
       - postgres

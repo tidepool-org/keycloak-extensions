@@ -117,7 +117,7 @@ a {
   padding: 7px 26px;
 }
 
-.tp-btn:hover {
+.tp-btn:hover:enabled {
   background-color: #281946;
 }
 
@@ -219,24 +219,32 @@ a {
   margin: 0;
 }
 
-.login-pf-page #kc-form, .login-pf-page #kc-register-form {
-  padding: 40px 10px;
+.login-pf-page #kc-form, .login-pf-page #kc-register-form, .login-pf-page #tp-role-prompt {
   margin: 0 auto;
   position: relative;
+  padding: 40px 10px;
+}
+
+.login-pf-page #kc-form, .login-pf-page #kc-register-form {
   max-width: 320px;
 }
 
 @media (min-width: 580px) {
   .login-pf-page #kc-form, .login-pf-page #kc-register-form {
-    width: 500px;
-    max-width: inherit;
     padding-left: 90px;
     padding-right: 90px;
   }
 }
 
+@media (min-width: 580px) {
+  .login-pf-page #kc-form, .login-pf-page #kc-register-form, .login-pf-page #tp-role-prompt {
+    width: 500px;
+    max-width: inherit;
+  }
+}
+
 @media(max-width: 512px) {
-  .login-pf-page #kc-form, .login-pf-page #kc-register-form {
+  .login-pf-page #kc-form, .login-pf-page #kc-register-form, .login-pf-page #tp-role-prompt {
     margin-right: auto;
     margin-left: auto;
   }
@@ -395,4 +403,75 @@ svg {
 .footer-twitter {
   width: 44.8px;
   height: 32px;
+}
+
+/* Role Prompt */
+
+#tp-role-prompt label {
+  width: 100%;
+}
+
+#tp-role-prompt .role-prompt-continue {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+#tp-role-prompt #continue:disabled {
+  opacity: 0.5;
+}
+
+#tp-role-prompt .role-prompt-title {
+  font-size: 20px;
+  text-align: center;
+  color: #281946;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.card-input-element {
+  display: none;
+}
+
+.card-input {
+  margin: 10px 0;
+  border: 1px solid #979797;
+  font-weight: normal;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.card-input-check {
+  width: 30px;
+  height: 20px;
+  display: none;
+  margin-top: -5px;
+}
+
+.card-input-element:checked + .card-input, .card-input:hover {
+  background-color: #fff;
+  border-color: #6078ff;
+  cursor: pointer;
+}
+
+.card-input-element:checked + .card-input .card-input-check {
+  display: block;
+}
+
+.card-input-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.card-input-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6078ff;
+}
+
+.card-input-description {
+  font-size: 18px;
+  color: #8c8c8c;
+  margin-bottom: 10px;
 }
