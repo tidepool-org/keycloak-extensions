@@ -8,10 +8,10 @@
             </div>
           </div>
         </#if>
-    <#elseif section = "header">
-        <a href="${properties.tidepoolUrl!}">
-          <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
-        </a>
+<#--    <#elseif section = "header">-->
+<#--        <a href="${properties.tidepoolUrl!}">-->
+<#--          <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>-->
+<#--        </a>-->
     <#elseif section = "form">
     <div id="kc-form">
       <div id="kc-form-wrapper">

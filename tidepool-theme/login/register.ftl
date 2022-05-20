@@ -1,9 +1,9 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('firstName','lastName','email','username','password','password-confirm'); section>
     <#if section = "header">
-        <a href="${properties.tidepoolUrl!}">
-            <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
-        </a>
+<#--        <a href="${properties.tidepoolUrl!}">-->
+<#--            <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>-->
+<#--        </a>-->
         <div class="${properties.kcRegisterTitleClass!}">
             ${msg("registerTitle")}
         </div>
