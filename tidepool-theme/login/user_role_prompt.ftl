@@ -1,13 +1,13 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=true; section>
         <#if section = "header">
-        <a href="${properties.tidepoolUrl!}">
-            <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
-        </a>
+<#--        <a href="${properties.tidepoolUrl!}">-->
+<#--            <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>-->
+<#--        </a>-->
     <#elseif section = "form">
         <form id="tp-role-prompt" action="${url.loginAction}" method="post">
             <div class="role-prompt-container">
-                <div class="role-prompt-title">Which kind of account do you need?</div>
+                <h2 class="role-prompt-title">Which kind of account do you need?</h2>
                 <label onclick="document.getElementById('continue').disabled = false">
                     <input type="radio" name="role" class="card-input-element" value="patient"/>
                     <div class="card-input">

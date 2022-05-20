@@ -102,6 +102,20 @@ a {
   font-weight: inherit;
 }
 
+h1, .login-pf-page .login-pf-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+  color: #281946;
+}
+
+h2, .login-pf-page .login-pf-header h1 {
+  font-size: 20px;
+  text-align: center;
+  color: #281946;
+  line-height: 1.4;
+}
+
 .tp-btn {
   display: inline-block;
   margin: 0;
@@ -133,7 +147,6 @@ a {
 
 .tp-alert {
   max-width: 500px;
-  margin-top: 40px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 10px;
@@ -206,7 +219,12 @@ a {
 
 .login-pf-page .card-pf .logo {
   margin-top: 40px;
+  margin-bottom: 40px;
   height: 27px;
+}
+
+.logo-link {
+  text-align: center;
 }
 
 @media(min-width: 512px) {
@@ -421,11 +439,7 @@ svg {
 }
 
 #tp-role-prompt .role-prompt-title {
-  font-size: 20px;
-  text-align: center;
-  color: #281946;
   margin-bottom: 25px;
-  line-height: 1.4;
 }
 
 .card-input-element {

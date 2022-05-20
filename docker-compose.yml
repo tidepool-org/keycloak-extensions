@@ -28,6 +28,7 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
       TIDEPOOL_APP_URL: "https://app.tidepool.org"
+      TIDEPOOL_ASSETS_URL: "https://s3-us-west-2.amazonaws.com/tidepool-qa1-asset"
       TIDEPOOL_ZENDESK_KEY: "d1aad8b3-67d8-4f44-9d87-9e8a0ed8149d"
     ports:
       - 8089:8080

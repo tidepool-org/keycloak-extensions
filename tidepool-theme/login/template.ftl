@@ -67,6 +67,9 @@
             </#if>
         <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
             <#nested "pre-header">
+            <a class="logo-link" href="${properties.tidepoolUrl!}">
+              <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
+            </a>
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
                     <div class="${properties.kcLabelWrapperClass!} subtitle">
