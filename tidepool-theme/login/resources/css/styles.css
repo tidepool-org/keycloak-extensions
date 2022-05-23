@@ -233,14 +233,32 @@ h2, .login-pf-page .login-pf-header h1 {
   }
 }
 
+.login-pf-page #kc-content {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .login-pf-page #kc-content-wrapper, .login-pf-page #kc-form-wrapper {
-  margin: 0;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .login-pf-page #kc-form, .login-pf-page #kc-register-form, .login-pf-page #tp-role-prompt {
   margin: 0 auto;
   position: relative;
   padding: 40px 10px;
+}
+
+.login-pf-page form {
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-pf-page form > input[type=submit] {
+  float: right;
+  padding-left: 10px;
 }
 
 .login-pf-page #kc-form, .login-pf-page #kc-register-form {
@@ -283,6 +301,8 @@ h2, .login-pf-page .login-pf-header h1 {
 
 .login-pf-page .form-group {
   max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .login-pf-page .tp-form-control::placeholder {
