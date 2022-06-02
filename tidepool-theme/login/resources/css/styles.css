@@ -131,8 +131,22 @@ h2, .login-pf-page .login-pf-header h1 {
   padding: 7px 26px;
 }
 
-.tp-btn:hover:enabled {
+.tp-btn:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: .65;
+}
+
+.tp-btn-primary:hover:enabled {
   background-color: #281946;
+}
+
+.tp-btn-default {
+  background-color: #f1f1f1;
+}
+
+.tp-btn-default:hover:enabled {
+  background-color: #d8d8d8;
 }
 
 .tp-btn-primary {
@@ -238,7 +252,13 @@ h2, .login-pf-page .login-pf-header h1 {
   padding-right: 20px;
 }
 
-.login-pf-page #kc-content-wrapper, .login-pf-page #kc-form-wrapper {
+.login-pf-page #kc-content-wrapper {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-pf-page #kc-form-wrapper {
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
@@ -258,7 +278,7 @@ h2, .login-pf-page .login-pf-header h1 {
 
 .login-pf-page form > input[type=submit] {
   float: right;
-  padding-left: 10px;
+  margin-left: 10px;
 }
 
 .login-pf-page #kc-form, .login-pf-page #kc-register-form {
@@ -508,4 +528,38 @@ svg {
   font-size: 18px;
   color: #8c8c8c;
   margin-bottom: 10px;
+}
+
+/* Terms */
+.terms-radio {
+  padding-bottom: 30px;
+}
+
+.terms-link {
+  color: #0b9eb3;
+  text-decoration: none;
+}
+
+.terms-radio label, .terms-checkbox label, .terms-sorry {
+  color: #636363;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: normal;
+}
+
+.center-form-buttons {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.center-form-buttons input {
+  margin-top: 10px;
+}
+
+.center-form-buttons input:not(:first-child) {
+  margin-left: 10px;
+}
+
+.clinician-terms-wrapper {
+  text-align: center;
 }

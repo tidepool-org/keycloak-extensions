@@ -1,1 +1,2 @@
 org.tidepool.keycloak.extensions.roles.UserRolePromptRequiredAction
+org.tidepool.keycloak.extensions.terms.TidepoolTermsRequiredAction
