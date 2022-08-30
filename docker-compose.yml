@@ -14,6 +14,8 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 6543:5432
 
   keycloak:
     image: jboss/keycloak:16.1.0

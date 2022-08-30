@@ -18,7 +18,8 @@ public class TidepoolTermsRequiredAction implements RequiredActionProvider, Requ
 
     public static final String PROVIDER_ID = "tidepool_terms_required_action";
 
-    public static final String TERMS_ATTRIBUTE = "tidepool_terms_and_conditions";
+    // Changing the attribute will break compatibility with the user migration plugin
+    public static final String TERMS_ATTRIBUTE = "terms_and_conditions";
 
     public static final Map<String, String> FORMS = Map.of(
             "patient","patient_terms.ftl",
