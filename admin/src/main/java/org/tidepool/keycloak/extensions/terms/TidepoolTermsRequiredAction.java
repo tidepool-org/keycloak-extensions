@@ -100,8 +100,8 @@ public class TidepoolTermsRequiredAction implements RequiredActionProvider, Requ
             return;
         }
 
-        Date now = new Date();
-        context.getUser().setAttribute(TERMS_ATTRIBUTE, List.of(String.valueOf(now.getTime())));
+        Long secondsSinceEpoch = java.time.Instant.now().getEpochSecond();
+        context.getUser().setAttribute(TERMS_ATTRIBUTE, List.of(String.valueOf(secondsSinceEpoch)));
         context.success();
     }
 
