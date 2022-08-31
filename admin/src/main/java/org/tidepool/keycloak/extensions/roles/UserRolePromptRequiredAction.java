@@ -17,7 +17,7 @@ public class UserRolePromptRequiredAction implements RequiredActionProvider, Req
 
     public static final String PROVIDER_ID = "user_role_prompt_required_action";
 
-    public static final Set<String> ROLES = new HashSet<>(Arrays.asList("patient", "clinician"));
+    public static final Set<String> ROLES = new HashSet<>(Arrays.asList("patient", "clinic", "clinician"));
 
     public static final String ROLES_FORM_FTL = "user_role_prompt.ftl";
 
