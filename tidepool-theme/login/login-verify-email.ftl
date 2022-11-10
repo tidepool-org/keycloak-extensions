@@ -6,7 +6,7 @@
       <div class="instruction">
         <img src="${url.resourcesPath}/img/mail_icon.svg" alt="You've got mail" class="mail-icon">
         <div>
-            ${msg("emailVerifyInstruction1")}
+            ${msg("emailVerifyInstruction1",user.email)}
             ${msg("emailVerifyInstruction2")}
           <br/>
           <a href="${url.loginAction}">${msg("doClickHere")}</a> ${msg("emailVerifyInstruction3")}
