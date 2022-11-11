@@ -1,13 +1,9 @@
 package org.tidepool.keycloak.extensions.resource;
 
-import org.jboss.logging.Logger;
-import org.jboss.resteasy.spi.UnauthorizedException;
-import org.keycloak.common.ClientConnection;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.KeycloakUriInfo;
 import org.keycloak.models.RealmModel;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.services.managers.AppAuthManager;

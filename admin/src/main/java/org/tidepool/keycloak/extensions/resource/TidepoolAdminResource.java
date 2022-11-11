@@ -1,10 +1,8 @@
 package org.tidepool.keycloak.extensions.resource;
 
-import org.keycloak.credential.CredentialModel;
 import org.keycloak.models.*;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import javax.ws.rs.GET;
@@ -37,11 +35,9 @@ public class TidepoolAdminResource extends AdminResource {
         List<UserRepresentation> representations = new ArrayList<>();
         if (ids != null) {
             RealmModel realm = session.getContext().getRealm();
-            UserProvider provider = session.userStorageManager();
-
             for (String id : ids.split(ID_SEPARATOR)) {
-                UserModel user = provider.getUserById(id, realm);
-                if (user != null) {
+                UserModel user = session.users().getUserById(realm, id);
+                if (user != null && user.getFederationLink() != null) {
                     representations.add(toRepresentation(user, realm));
                 }
             }
@@ -53,19 +49,20 @@ public class TidepoolAdminResource extends AdminResource {
     private UserRepresentation toRepresentation(UserModel user, RealmModel realm) {
         UserRepresentation representation = ModelToRepresentation.toRepresentation(session, realm, user);
         representation.setRealmRoles(getRoles(user));
-        representation.setCredentials(getCredentials(user, realm));
+        representation.setCredentials(getCredentials(user));
         return representation;
     }
 
     private List<String> getRoles(UserModel user) {
-        return user.getRoleMappings().stream().map(RoleModel::getName).collect(Collectors.toList());
+        return user.getRoleMappingsStream().map(RoleModel::getName).collect(Collectors.toList());
     }
 
-    private List<CredentialRepresentation> getCredentials(UserModel user, RealmModel realm) {
+    private List<CredentialRepresentation> getCredentials(UserModel user) {
         auth.users().requireManage(user);
 
-        List<CredentialModel> models = session.userCredentialManager().getStoredCredentials(realm, user);
+        // Remove secret data from credentials
+        List<CredentialRepresentation> models = user.credentialManager().getStoredCredentialsStream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toList());
         models.forEach(c -> c.setSecretData(null));
-        return models.stream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toList());
+        return models;
     }
 }

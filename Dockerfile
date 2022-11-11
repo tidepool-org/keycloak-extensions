@@ -10,5 +10,5 @@ RUN unset MAVEN_CONFIG && \
 
 FROM alpine:3.15 as release
 
-COPY --from=build /build/admin/target/*.jar /build/jmx-metrics/target/*.jar /build/jmx-metrics-ear/target/*.ear /release/extensions/
+COPY --from=build /build/admin/target/*.jar /release/extensions/
 COPY ./tidepool-theme /release/tidepool-theme

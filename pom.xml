@@ -22,8 +22,6 @@
 
     <modules>
         <module>admin</module>
-        <module>jmx-metrics</module>
-        <module>jmx-metrics-ear</module>
     </modules>
 
     <build>
@@ -44,7 +42,6 @@
                             <directory>${project.basedir}</directory>
                             <includes>
                                 <include>admin/target/*-${extensions-version}.jar</include>
-                                <include>jmx-metrics-ear/target/*-${extensions-version}.ear</include>
                             </includes>
                         </fileSet>
                     </fileSets>
