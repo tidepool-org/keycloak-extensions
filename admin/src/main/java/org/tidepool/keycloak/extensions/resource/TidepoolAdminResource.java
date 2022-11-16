@@ -37,7 +37,7 @@ public class TidepoolAdminResource extends AdminResource {
             RealmModel realm = session.getContext().getRealm();
             for (String id : ids.split(ID_SEPARATOR)) {
                 UserModel user = session.users().getUserById(realm, id);
-                if (user != null && user.getFederationLink() != null) {
+                if (user != null) {
                     representations.add(toRepresentation(user, realm));
                 }
             }
