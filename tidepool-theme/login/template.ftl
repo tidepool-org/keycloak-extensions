@@ -65,11 +65,11 @@
                     </div>
                 </div>
             </#if>
-        <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
             <#nested "pre-header">
             <a class="logo-link" href="${properties.tidepoolUrl!}">
-              <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
+                <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
             </a>
+        <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
                     <div class="${properties.kcLabelWrapperClass!} subtitle">
@@ -90,28 +90,12 @@
                     </div>
                     <div class="col-md-10">
                         <#nested "show-username">
-                        <div id="kc-username" class="${properties.kcFormGroupClass!}">
-                            <label id="kc-attempted-username">${auth.attemptedUsername}</label>
-                            <a id="reset-login" href="${url.loginRestartFlowUrl}" aria-label="${msg("restartLoginTooltip")}">
-                                <div class="kc-login-tooltip">
-                                    <i class="${properties.kcResetFlowIcon!}"></i>
-                                    <span class="kc-tooltip-text">${msg("restartLoginTooltip")}</span>
-                                </div>
-                            </a>
-                        </div>
+                        <#include "./partials/attempted-username.ftl">
                     </div>
                 </div>
             <#else>
                 <#nested "show-username">
-                <div id="kc-username" class="${properties.kcFormGroupClass!}">
-                    <label id="kc-attempted-username">${auth.attemptedUsername}</label>
-                    <a id="reset-login" href="${url.loginRestartFlowUrl}" aria-label="${msg("restartLoginTooltip")}">
-                        <div class="kc-login-tooltip">
-                            <i class="${properties.kcResetFlowIcon!}"></i>
-                            <span class="kc-tooltip-text">${msg("restartLoginTooltip")}</span>
-                        </div>
-                    </a>
-                </div>
+                <#include "./partials/attempted-username.ftl">
             </#if>
         </#if>
       </header>

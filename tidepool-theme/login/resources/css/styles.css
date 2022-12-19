@@ -163,6 +163,7 @@ h2, .login-pf-page .login-pf-header h1 {
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 10px;
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -176,27 +177,19 @@ h2, .login-pf-page .login-pf-header h1 {
   margin-right: auto;
 }
 
-
 .hidden {
+  display: none;
+}
+
+#kc-select-try-another-way-form {
   display: none;
 }
 
 /* Sign Up Link */
 .login-pf-page #kc-registration {
-  text-align: right;
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 40px;
-  padding-right: 20px;
 }
-
-@media(max-width: 1280px) {
-  .login-pf-page #kc-registration {
-    padding-left: calc((100% - 275px)/2);
-    padding-right: calc((100% - 275px)/2);
-  }
-}
-
 
 .login-pf-page #kc-registration i {
   padding-left: 8px;
@@ -204,8 +197,12 @@ h2, .login-pf-page .login-pf-header h1 {
   font-size: 20px;
 }
 
+.login-pf-page #kc-registration a {
+  color: #627cff;
+}
+
 .login-pf-page #kc-registration a:hover {
-  color: #636363;
+  color: #281946;
   text-decoration: none;
 }
 
@@ -256,6 +253,7 @@ h2, .login-pf-page .login-pf-header h1 {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 0;
 }
 
 .login-pf-page #kc-form-wrapper {
@@ -267,7 +265,6 @@ h2, .login-pf-page .login-pf-header h1 {
 .login-pf-page #kc-form, .login-pf-page #kc-register-form, .login-pf-page #tp-role-prompt {
   margin: 0 auto;
   position: relative;
-  padding: 40px 10px;
 }
 
 .login-pf-page form {
@@ -276,7 +273,7 @@ h2, .login-pf-page .login-pf-header h1 {
   margin-right: auto;
 }
 
-.login-pf-page form > input[type=submit] {
+.login-pf-page form > input[type=submit], .login-pf-page form > button[type=submit] {
   float: right;
   margin-left: 10px;
 }
@@ -316,13 +313,15 @@ h2, .login-pf-page .login-pf-header h1 {
   border: 1px solid #979797;
   border-radius: 0;
   background: #fff;
+}
+
+.login-pf-page .tp-form-control:not([disabled]) {
   color: #000;
 }
 
 .login-pf-page .form-group {
   max-width: 320px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 15px auto 0;
 }
 
 .login-pf-page .tp-form-control::placeholder {
@@ -348,6 +347,31 @@ h2, .login-pf-page .login-pf-header h1 {
   margin-bottom: 0;
 }
 
+/* Attempted username */
+.attempted-username {
+  display: flex;
+  align-items: center;
+  border: 1px solid #979797;
+  background-color: #fff;
+}
+
+.attempted-username .tp-form-control {
+  border: 0;
+}
+
+.attempted-username .embedded-link {
+  color: #627cff;
+  white-space: nowrap;
+  margin-right: 10px;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.attempted-username .embedded-link:hover {
+  color: #281946;
+  text-decoration: none;
+}
+
 /* Forgot password */
 .login-pf-page .tp-form-options-wrapper {
   font-size: 12px;
@@ -363,7 +387,12 @@ h2, .login-pf-page .login-pf-header h1 {
 }
 
 .login-pf-page #kc-form-buttons {
-  text-align: right;
+  display: flex;
+  align-items: center;
+}
+
+.login-pf-page #kc-form-buttons input[type="submit"], .login-pf-page #kc-form-buttons button[type="submit"] {
+  margin-left: auto;
 }
 
 /* Register */

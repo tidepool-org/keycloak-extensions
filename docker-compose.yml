@@ -1,6 +1,8 @@
 version: "3"
 
 volumes:
+  providers:
+    driver: local
   postgres_data:
     driver: local
 
@@ -17,26 +19,35 @@ services:
     ports:
       - 6543:5432
 
+  providers:
+    image: busybox
+    command: ["/bin/sh", "-c",  "cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/toddkazakov/keycloak-home-idp-discovery/releases/download/0.2.0/keycloak-home-idp-discovery.jar"]
+    volumes:
+      - ./admin/target/admin-LATEST.jar:/local/admin.jar
+      - providers:/providers
+
   keycloak:
-    image: jboss/keycloak:16.1.0
+    image: quay.io/keycloak/keycloak:20.0.1
     container_name: tp-keycloak
     environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: password
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      KC_DB_SCHEMA: public
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
       TIDEPOOL_APP_URL: "https://app.tidepool.org"
       TIDEPOOL_ASSETS_URL: "https://s3-us-west-2.amazonaws.com/tidepool-qa1-asset"
       TIDEPOOL_ZENDESK_KEY: "d1aad8b3-67d8-4f44-9d87-9e8a0ed8149d"
     ports:
       - 8089:8080
     volumes:
-      - ./tidepool-theme:/opt/jboss/keycloak/themes/tidepool
-      - ./disable-theme-cache.cli:/opt/jboss/startup-scripts/disable-theme-cache.cli
-      - ./admin/target/admin-LATEST.jar:/opt/jboss/keycloak/standalone/deployments/admin.jar
+      - ./tidepool-theme:/opt/keycloak/themes/tidepool
+      - providers:/opt/keycloak/providers
     depends_on:
+      - providers
       - postgres
+    command: start-dev

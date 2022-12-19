@@ -4,3 +4,6 @@
 
 # Artifacts
 target/
+
+# Original theme
+themes/base
