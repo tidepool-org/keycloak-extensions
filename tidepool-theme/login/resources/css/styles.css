@@ -322,6 +322,7 @@ h2, .login-pf-page .login-pf-header h1 {
 .login-pf-page .form-group {
   max-width: 320px;
   margin: 15px auto 0;
+  display: flow-root;
 }
 
 .login-pf-page .tp-form-control::placeholder {
@@ -336,10 +337,6 @@ h2, .login-pf-page .login-pf-header h1 {
 .login-pf-page label {
   font-size: 14px;
   color: #979797;
-}
-
-.login-pf-page .login-pf-settings {
-  display: block;
 }
 
 /* Remember me toggle */
