@@ -84,6 +84,8 @@
                 </ul>
             </div>
         </#if>
+    <#elseif section = "footer" >
+        <#include "./partials/footer.ftl">
     </#if>
 
 </@layout.registrationLayout>
