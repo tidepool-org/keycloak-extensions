@@ -315,7 +315,7 @@ h2, .login-pf-page .login-pf-header h1 {
   background: #fff;
 }
 
-.login-pf-page .tp-form-control:not([disabled]) {
+.login-pf-page .tp-form-control:not([disabled]):not([readonly]) {
   color: #000;
 }
 
