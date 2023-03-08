@@ -45,7 +45,7 @@
 
                 <div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!}">
                     <div id="kc-form-options">
-                        <#if realm.rememberMe && !usernameHidden??>
+                        <#if realm.rememberMe>
                             <div class="checkbox">
                                 <label>
                                     <#if login.rememberMe??>
