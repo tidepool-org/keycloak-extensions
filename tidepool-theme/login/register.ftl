@@ -1,5 +1,5 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('firstName','lastName','email','username','password','password-confirm'); section>
+<@layout.registrationLayout displayMessage=!messagesPerField.existsError('firstName','lastName','email','username','password','password-confirm') displayInfo=true; section>
     <#if section = "header">
         <div class="${properties.kcRegisterTitleClass!}">
             ${msg("registerTitle")}
@@ -100,5 +100,9 @@
                 </div>
             </div>
         </form>
+    <#elseif section = "info" >
+        <div id="kc-registration">
+            <span>${msg("alreadyHaveAnAccount")} <a tabindex="6" href="${url.loginRestartFlowUrl}">${msg("doLogIn")}</a></span>
+        </div>
     </#if>
 </@layout.registrationLayout>
