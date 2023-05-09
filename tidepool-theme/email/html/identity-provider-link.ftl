@@ -6,7 +6,5 @@
       ${kcSanitize(msg("identityProviderLinkBodyHtml", identityProviderAlias, realmName, identityProviderContext.username, link, linkExpiration, linkExpirationFormatter(linkExpiration)))?no_esc}
     <#elseif section = "actionText">
       Confirm Account Linking
-    <#elseif section = "actionLink">
-        ${kcSanitize(link)?no_esc}
-    </#if>
+    <#elseif section = "actionLink">${kcSanitize(link)?no_esc}</#if>
 </@layout.emailLayout>

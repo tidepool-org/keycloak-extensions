@@ -18,9 +18,6 @@
                 <p id="instruction2" class="instruction">
                     <a class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} tp-btn-fw"  href="${url.loginAction}">${msg("emailLinkIdpResendVerificationCode")}</a>
                 </p>
-                <p id="instruction2" class="instruction">
-                    <a class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} tp-btn-fw"  href="${url.loginAction}">${msg("emailLinkIdpResendVerificationCode")}</a>
-                </p>
                 <p id="instruction3" class="instruction">
                     ${msg("emailLinkIdp4")} <a href="${url.loginAction}">${msg("doClickHere")}</a> ${msg("emailLinkIdp5")}
                 </p>
