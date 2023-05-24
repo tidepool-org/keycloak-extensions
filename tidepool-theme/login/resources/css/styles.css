@@ -102,6 +102,11 @@ a {
   font-weight: inherit;
 }
 
+.login-pf-page a:focus, .login-pf-page a:hover {
+  color: #12d3d8;
+  text-decoration: underline;
+}
+
 h1, .login-pf-page .login-pf-header h1 {
   font-size: 20px;
   font-weight: 600;
@@ -137,8 +142,10 @@ h2, .login-pf-page .login-pf-header h1 {
   opacity: .65;
 }
 
-.tp-btn-primary:hover:enabled {
+a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
   background-color: #281946;
+  color: #fff;
+  text-decoration: none;
 }
 
 .tp-btn-default {
@@ -152,6 +159,10 @@ h2, .login-pf-page .login-pf-header h1 {
 .tp-btn-primary {
   background-color: #627cff;
   color: #fff;
+}
+
+.tp-btn-fw {
+  width: 100%;
 }
 
 .tp-form-error {
@@ -188,7 +199,8 @@ h2, .login-pf-page .login-pf-header h1 {
 /* Sign Up Link */
 .login-pf-page #kc-registration {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
+  text-align: center;
 }
 
 .login-pf-page #kc-registration i {
@@ -199,11 +211,16 @@ h2, .login-pf-page .login-pf-header h1 {
 
 .login-pf-page #kc-registration a {
   color: #627cff;
+  margin-left: 0;
 }
 
 .login-pf-page #kc-registration a:hover {
   color: #281946;
   text-decoration: none;
+}
+
+#kc-info-wrapper {
+  background-color: inherit;
 }
 
 /* Login Card */
@@ -369,6 +386,7 @@ h2, .login-pf-page .login-pf-header h1 {
   text-decoration: none;
 }
 
+
 /* Forgot password */
 .login-pf-page .tp-form-options-wrapper {
   font-size: 12px;
@@ -376,11 +394,6 @@ h2, .login-pf-page .login-pf-header h1 {
 
 .login-pf-page .tp-form-options-wrapper a {
   font-weight: normal;
-}
-
-.login-pf-page a:focus, .login-pf-page a:hover {
-  color: #12d3d8;
-  text-decoration: underline;
 }
 
 .login-pf-page #kc-form-buttons {
@@ -594,8 +607,9 @@ svg {
   height: 350px;
 }
 
+/* Link accounts */
 p.instruction, .instruction {
-  margin-top: 20px;
+  margin-top: 0;
   margin-left: auto;
   margin-right: auto;
   max-width: 600px;
@@ -603,4 +617,12 @@ p.instruction, .instruction {
   text-align: center;
   color: #281946;
   vertical-align: center;
+}
+
+.form-group > .instruction {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+  text-align: left;
+  color: inherit;
 }

@@ -21,7 +21,7 @@ services:
 
   providers:
     image: busybox
-    command: ["/bin/sh", "-c",  "cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/toddkazakov/keycloak-home-idp-discovery/releases/download/0.2.0/keycloak-home-idp-discovery.jar"]
+    command: ["/bin/sh", "-c",  "cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/toddkazakov/keycloak-home-idp-discovery/releases/download/0.3.0/keycloak-home-idp-discovery.jar"]
     volumes:
       - ./admin/target/admin-LATEST.jar:/local/admin.jar
       - providers:/providers

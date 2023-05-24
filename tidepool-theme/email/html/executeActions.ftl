@@ -10,7 +10,5 @@
       ${kcSanitize(msg("executeActionsBodyHtml",link, linkExpiration, realmName, requiredActionsText, linkExpirationFormatter(linkExpiration)))?no_esc}
     <#elseif section = "actionText">
       Update Your Account
-    <#elseif section = "actionLink">
-        ${kcSanitize(link)?no_esc}
-    </#if>
+    <#elseif section = "actionLink">${kcSanitize(link)?no_esc}</#if>
 </@layout.emailLayout>
