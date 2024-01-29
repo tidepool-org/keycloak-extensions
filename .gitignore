@@ -7,3 +7,6 @@ target/
 
 # Original theme
 themes/base
+
+# OSX files
+.DS_Store

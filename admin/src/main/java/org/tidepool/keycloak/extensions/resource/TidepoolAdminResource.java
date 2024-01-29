@@ -6,9 +6,13 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -44,6 +48,23 @@ public class TidepoolAdminResource extends AdminResource {
         }
 
         return Response.status(Response.Status.OK).entity(representations).build();
+    }
+
+    @POST
+    @Path("unlink-federated-user/{userId}")
+    public Response unlinkFederatedUser(@PathParam("userId") final String userId) {
+        auth.users().canManage();
+
+        UserModel user = session.users().getUserById(session.getContext().getRealm(), userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        if (user.getFederationLink() == null) {
+            throw new BadRequestException("User is not a federated user");
+        }
+        user.setFederationLink(null);
+
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     private UserRepresentation toRepresentation(UserModel user, RealmModel realm) {
