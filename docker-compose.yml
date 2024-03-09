@@ -27,7 +27,7 @@ services:
       - providers:/providers
 
   keycloak:
-    image: quay.io/keycloak/keycloak:20.0.1
+    image: quay.io/keycloak/keycloak:21.1.1
     container_name: tp-keycloak
     environment:
       KC_DB: postgres
