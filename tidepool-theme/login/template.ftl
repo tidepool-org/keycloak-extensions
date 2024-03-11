@@ -67,7 +67,11 @@
             </#if>
             <#nested "pre-header">
             <a class="logo-link" href="${properties.tidepoolUrl!}">
-                <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-880x96.png" alt="Tidepool"/>
+                <#if role?? && role.hasClinicalRole()>
+                    <img class="logo" src="${url.resourcesPath}/img/tidepool-plus-logo-985x96.png" alt="Tidepool+"/>
+                <#else>
+                    <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-890x96.png" alt="Tidepool"/>
+                </#if>
             </a>
         <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
             <#if displayRequiredFields>

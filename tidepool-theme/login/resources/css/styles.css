@@ -168,6 +168,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 .tp-form-error {
   color: #de514b;
   font-size: 16px;
+  margin-top: 5px;
 }
 
 .tp-alert {
@@ -201,6 +202,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
   font-size: 16px;
   font-weight: 500;
   text-align: center;
+  margin-bottom: 5px;
 }
 
 .login-pf-page #kc-registration i {
@@ -285,7 +287,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 }
 
 .login-pf-page form {
-  max-width: 320px;
+  max-width: 360px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -296,13 +298,14 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 }
 
 .login-pf-page #kc-form, .login-pf-page #kc-register-form {
-  max-width: 320px;
+  max-width: 360px;
 }
 
 @media (min-width: 580px) {
   .login-pf-page #kc-form, .login-pf-page #kc-register-form {
-    padding-left: 90px;
-    padding-right: 90px;
+    max-width: 360px;
+    padding-left: 70px;
+    padding-right: 70px;
   }
 }
 
@@ -337,7 +340,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 }
 
 .login-pf-page .form-group {
-  max-width: 320px;
+  max-width: 360px;
   margin: 15px auto 0;
   display: flow-root;
 }
@@ -565,7 +568,7 @@ svg {
 
 .card-input-description {
   font-size: 18px;
-  color: #8c8c8c;
+  color: #6d6d6d;
   margin-bottom: 10px;
 }
 
@@ -600,7 +603,15 @@ svg {
 }
 
 .clinician-terms-wrapper {
-  text-align: center;
+  margin-top: 10px;
+}
+
+.clinician-terms-wrapper input {
+  vertical-align: top;
+}
+
+.clinician-terms-wrapper label {
+  max-width: 95%;
 }
 
 .mail-icon {
