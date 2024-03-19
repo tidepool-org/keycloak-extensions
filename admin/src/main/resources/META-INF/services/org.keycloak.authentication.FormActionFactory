@@ -1,0 +1,2 @@
+org.tidepool.keycloak.extensions.authenticator.RegistrationRoleFormActionFactory
+org.tidepool.keycloak.extensions.authenticator.RegistrationTermsFormActionFactory

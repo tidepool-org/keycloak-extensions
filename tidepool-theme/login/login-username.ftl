@@ -22,9 +22,9 @@
                                 />
 
                                 <#if messagesPerField.existsError('username')>
-                                    <span id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                    <div id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                         ${kcSanitize(messagesPerField.get('username'))?no_esc}
-                                    </span>
+                                    </div>
                                 </#if>
                             </div>
                         </#if>
