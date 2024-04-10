@@ -137,7 +137,7 @@ public class TidepoolAdminResource extends AdminResource {
             setParameter(2, childUserId).
             executeUpdate();
 
-        // copy over attributes (profile)
+        // copy over attributes (profile) - this may need modification to omit child properties in parent and parent properties in child.
         em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT name, value, ?1, ?2 FROM user_attribute WHERE user_id = ?3").
             setParameter(1, newParentUserId).
             setParameter(2, KeycloakModelUtils.generateId()).
@@ -151,6 +151,11 @@ public class TidepoolAdminResource extends AdminResource {
             executeUpdate();
 
         tx.commit();
+
+        // keycloak 23+ API has removed cache eviction methods, so instead set child user's email and username "again" through the model. If we got this far,
+        // the previous transaction has succeeded so this is "safe" and will cause a user updated event which will clear the cache entry for the given user.
+        user.setEmail(newUsername);
+        user.setUsername(newUsername);
 
         return Response.status(Response.Status.NO_CONTENT).build();
     }
