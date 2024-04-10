@@ -1,8 +1,11 @@
 package org.tidepool.keycloak.extensions.resource;
 
+import java.util.Arrays;
+
 import org.keycloak.models.*;
 import org.keycloak.validate.Validators;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
+import org.keycloak.connections.jpa.DefaultJpaConnectionProviderFactory;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -76,9 +79,11 @@ public class TidepoolAdminResource extends AdminResource {
 
     // This will clone the user, known as the child, with an id of userId to
     // have a new parent that has the child's previous username and email,
-    // while the child will have the new email & username newUsername
+    // while the child will have the new email and username from the newUsername
+    // field of the POST body
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("clone-user/{userId}")
     public Response cloneUser(@PathParam("userId") final String userId, final CloneUserBody body) {
         auth.users().canManage();
@@ -94,13 +99,14 @@ public class TidepoolAdminResource extends AdminResource {
         if (connProvider == null) {
             throw new InternalServerErrorException("Unable to get persistence connection provider.");
         }
-        EntityManager em = connProvider.getEntityManager();
+
+        // EntityManager is not thread safe so create new application managed EntityManager
+        EntityManager em = connProvider.getEntityManager().getEntityManagerFactory().createEntityManager();
         EntityTransaction tx = em.getTransaction();
         String newParentUserId = KeycloakModelUtils.generateId();
         String parentUsername = user.getUsername();
         String childUserId = userId;
 
-        // TODO: confirm this is safe or need to create a new EntityManager per call
         tx.begin();
 
         // Update the child to have the new username and email of newUsername
@@ -137,11 +143,22 @@ public class TidepoolAdminResource extends AdminResource {
             setParameter(2, childUserId).
             executeUpdate();
 
-        // copy over attributes (profile) - this may need modification to omit child properties in parent and parent properties in child.
-        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT name, value, ?1, ?2 FROM user_attribute WHERE user_id = ?3").
+        // copy over attributes (profile), ignoring certain attributes as that is part of the child. The child's custodian's fullName will be the parent's fullName.
+        List<String> ignoredAttributes = Arrays.asList(new String[]{ "profile_birthday", "profile_diagnosis_date", "profile_diagnosis_type", "profile_fullname", "profile_custodian_full_name", "profile_target_devices" });
+        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT name, value, ?1, ?2 FROM user_attribute WHERE user_id = ?3 AND name NOT IN (?4)").
             setParameter(1, newParentUserId).
             setParameter(2, KeycloakModelUtils.generateId()).
             setParameter(3, childUserId).
+            setParameter(4, ignoredAttributes).
+            executeUpdate();
+
+        // Set the fullName from the child's custodian's fullName
+        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT ?1, value, ?2, ?3 FROM user_attribute WHERE user_id = ?4 AND name = ?5").
+            setParameter(1, "profile_fullname").
+            setParameter(2, newParentUserId).
+            setParameter(3, KeycloakModelUtils.generateId()).
+            setParameter(4, childUserId).
+            setParameter(5, "profile_custodian_full_name").
             executeUpdate();
 
         // copy over group memberships
@@ -157,7 +174,11 @@ public class TidepoolAdminResource extends AdminResource {
         user.setEmail(newUsername);
         user.setUsername(newUsername);
 
-        return Response.status(Response.Status.NO_CONTENT).build();
+        UserModel parentUser = session.users().getUserById(realm, newParentUserId);
+        if (parentUser == null) {
+            throw new InternalServerErrorException("unable to retrieve cloned user");
+        }
+        return Response.status(Response.Status.CREATED).entity(toRepresentation(parentUser, realm)).build();
     }
 
     private UserRepresentation toRepresentation(UserModel user, RealmModel realm) {
