@@ -169,7 +169,7 @@ public class TidepoolAdminResource extends AdminResource {
 
         tx.commit();
 
-        // keycloak 23+ API has removed cache eviction methods, so instead set child user's email and username "again" through the model. If we got this far,
+        // The Keycloak 24+ modules have removed cache eviction methods, so instead set child user's email and username "again" through the model. If we got this far,
         // the previous transaction has succeeded so this is "safe" and will cause a user updated event which will clear the cache entry for the given user.
         user.setEmail(newUsername);
         user.setUsername(newUsername);
