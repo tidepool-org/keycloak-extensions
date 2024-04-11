@@ -94,6 +94,9 @@ public class TidepoolAdminResource extends AdminResource {
         if (!TidepoolAdminResource.UNCLAIMED_CUSTODIAL.matcher(newUsername).find()) {
             throw new BadRequestException("newUsername must conform to the unclaimed custodial email format");
         }
+        if (body.custodianRoleName == null || body.custodianRoleName.isBlank()) {
+            throw new BadRequestException("custodianRoleName must not be empty");
+        }
 
         RealmModel realm = session.getContext().getRealm();
         UserModel user = session.users().getUserById(realm, userId);
@@ -144,6 +147,16 @@ public class TidepoolAdminResource extends AdminResource {
         em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT role_id, ?1 FROM user_role_mapping WHERE user_id = ?2").
             setParameter(1, newParentUserId).
             setParameter(2, childUserId).
+            executeUpdate();
+
+        // Add custodian role (this can be any valid existing role in the
+        // realm, carepartner, new we created, etc) - perhaps throw an error if
+        // it doesn't exist?
+        String custodianRoleName = body.custodianRoleName.trim();
+        em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT id, ?1 FROM keycloak_role WHERE name = ?2 AND realm_id = ?3").
+            setParameter(1, newParentUserId).
+            setParameter(2, custodianRoleName).
+            setParameter(3, realm.getId()).
             executeUpdate();
 
         // copy over required actions
