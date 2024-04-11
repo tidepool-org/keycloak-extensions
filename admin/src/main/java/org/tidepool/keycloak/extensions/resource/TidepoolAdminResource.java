@@ -1,6 +1,7 @@
 package org.tidepool.keycloak.extensions.resource;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import org.keycloak.models.*;
 import org.keycloak.validate.Validators;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class TidepoolAdminResource extends AdminResource {
 
     private static final String ID_SEPARATOR = ",";
+    private static final Pattern UNCLAIMED_CUSTODIAL = Pattern.compile("unclaimed-custodial-automation\\+\\d+@tidepool\\.org", Pattern.CASE_INSENSITIVE);
 
     private final KeycloakSession session;
 
@@ -87,20 +89,27 @@ public class TidepoolAdminResource extends AdminResource {
     @Path("clone-user/{userId}")
     public Response cloneUser(@PathParam("userId") final String userId, final CloneUserBody body) {
         auth.users().canManage();
-        // Todo Validators for email - the API has changed from keycloak 21 => 24
+
+        String newUsername = body.newUsername;
+        if (!TidepoolAdminResource.UNCLAIMED_CUSTODIAL.matcher(newUsername).find()) {
+            throw new BadRequestException("newUsername must conform to the unclaimed custodial email format");
+        }
 
         RealmModel realm = session.getContext().getRealm();
         UserModel user = session.users().getUserById(realm, userId);
         if (user == null) {
             throw new NotFoundException("User not found.");
         }
-        String newUsername = body.newUsername;
+        boolean alreadyMigrated = user.getUsername() != null && TidepoolAdminResource.UNCLAIMED_CUSTODIAL.matcher(user.getUsername()).find();
+        if (alreadyMigrated) {
+            throw new BadRequestException(String.format("user %s already migrated", userId));
+        }
         JpaConnectionProvider connProvider = session.getProvider(JpaConnectionProvider.class);
         if (connProvider == null) {
             throw new InternalServerErrorException("Unable to get persistence connection provider.");
         }
 
-        // EntityManager is not thread safe so create new application managed EntityManager
+        // EntityManager is not thread safe so create a new application managed EntityManager
         EntityManager em = connProvider.getEntityManager().getEntityManagerFactory().createEntityManager();
         EntityTransaction tx = em.getTransaction();
         String newParentUserId = KeycloakModelUtils.generateId();
