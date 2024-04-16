@@ -165,16 +165,7 @@ public class TidepoolAdminResource extends AdminResource {
             setParameter(2, childUserId).
             executeUpdate();
 
-        // copy over attributes (profile), ignoring certain attributes as that is part of the child. The child's custodian's fullName will be the parent's fullName.
-        List<String> ignoredAttributes = Arrays.asList(new String[]{ "profile_birthday", "profile_diagnosis_date", "profile_diagnosis_type", "profile_fullname", "profile_custodian_full_name", "profile_target_devices" });
-        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT name, value, ?1, ?2 FROM user_attribute WHERE user_id = ?3 AND name NOT IN (?4)").
-            setParameter(1, newParentUserId).
-            setParameter(2, KeycloakModelUtils.generateId()).
-            setParameter(3, childUserId).
-            setParameter(4, ignoredAttributes).
-            executeUpdate();
-
-        // Set the fullName from the child's custodian's fullName
+        // Only set the fullName attribute from the child's custodian's fullName
         em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT ?1, value, ?2, ?3 FROM user_attribute WHERE user_id = ?4 AND name = ?5").
             setParameter(1, "profile_fullname").
             setParameter(2, newParentUserId).
