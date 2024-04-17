@@ -107,18 +107,24 @@ public class TidepoolAdminResource extends AdminResource {
         if (alreadyMigrated) {
             throw new BadRequestException(String.format("user %s already migrated", userId));
         }
-        JpaConnectionProvider connProvider = session.getProvider(JpaConnectionProvider.class);
-        if (connProvider == null) {
-            throw new InternalServerErrorException("Unable to get persistence connection provider.");
-        }
 
-        // EntityManager is not thread safe so create a new application managed EntityManager
-        EntityManager em = connProvider.getEntityManager().getEntityManagerFactory().createEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        String custodianRoleName = body.custodianRoleName.trim();
         String newParentUserId = KeycloakModelUtils.generateId();
         String parentUsername = user.getUsername();
         String childUserId = userId;
 
+        boolean roleFound = session.roles().getRealmRolesStream(realm).anyMatch(role -> custodianRoleName.equals(role.getName()));
+        if (!roleFound) {
+            throw new BadRequestException(String.format("Realm role \"%s\" not found.", custodianRoleName));
+        }
+
+        JpaConnectionProvider connProvider = session.getProvider(JpaConnectionProvider.class);
+        if (connProvider == null) {
+            throw new InternalServerErrorException("Unable to get persistence connection provider.");
+        }
+        // EntityManager is not thread safe so create a new application managed EntityManager
+        EntityManager em = connProvider.getEntityManager().getEntityManagerFactory().createEntityManager();
+        EntityTransaction tx = em.getTransaction();
         tx.begin();
 
         // Update the child to have the new username and email of newUsername
@@ -150,9 +156,7 @@ public class TidepoolAdminResource extends AdminResource {
             executeUpdate();
 
         // Add custodian role (this can be any valid existing role in the
-        // realm, carepartner, new we created, etc) - perhaps throw an error if
-        // it doesn't exist?
-        String custodianRoleName = body.custodianRoleName.trim();
+        // realm, carepartner, new we created, etc)
         em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT id, ?1 FROM keycloak_role WHERE name = ?2 AND realm_id = ?3").
             setParameter(1, newParentUserId).
             setParameter(2, custodianRoleName).
