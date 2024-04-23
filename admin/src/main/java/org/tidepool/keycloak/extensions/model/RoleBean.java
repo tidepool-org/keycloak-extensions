@@ -23,8 +23,8 @@ public class RoleBean {
     public static final List<String> ROLES_LIST = Arrays.asList(ROLE_CLINICIAN, ROLE_PATIENT);
     public static final Set<String> ROLES_SET = new HashSet<>(ROLES_LIST);
 
-    public static final List<String> ROLES_CLINICAL_LIST = Arrays.asList(ROLE_CLINICIAN, ROLE_CLINIC_DEPRECATED);
-    public static final Set<String> ROLES_CLINICAL_SET = new HashSet<>(ROLES_CLINICAL_LIST);
+    public static final List<String> ROLES_CLINICIAN_LIST = Arrays.asList(ROLE_CLINICIAN, ROLE_CLINIC_DEPRECATED);
+    public static final Set<String> ROLES_CLINICIAN_SET = new HashSet<>(ROLES_CLINICIAN_LIST);
 
     public static final String PARAMETER_ROLE = "role";
 
@@ -43,30 +43,30 @@ public class RoleBean {
         this.authenticationSession = authenticationSession;
     }
 
-    public boolean hasClinicalRole() {
-        if (hasClinicalRoleFromAuthenticationSession(authenticationSession)) {
+    public boolean hasClinicianRole() {
+        if (hasClinicianRoleFromAuthenticationSession(authenticationSession)) {
             return true;
         }
-        if (context != null && hasClinicalRoleFromRealmUser(context.getRealm(), context.getUser())) {
+        if (context != null && hasClinicianRoleFromRealmUser(context.getRealm(), context.getUser())) {
             return true;
         }
         return false;
     }
 
-    public static boolean hasClinicalRoleFromAuthenticationSession(AuthenticationSessionModel authenticationSession) {
+    public static boolean hasClinicianRoleFromAuthenticationSession(AuthenticationSessionModel authenticationSession) {
         if (authenticationSession != null) {
-            if (ROLES_CLINICAL_SET.contains(authenticationSession.getAuthNote(AUTH_NOTE_ROLE))) {
+            if (ROLES_CLINICIAN_SET.contains(authenticationSession.getAuthNote(AUTH_NOTE_ROLE))) {
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean hasClinicalRoleFromRealmUser(RealmModel realm, UserModel user) {
+    public static boolean hasClinicianRoleFromRealmUser(RealmModel realm, UserModel user) {
         if (realm != null && user != null) {
-            for (String clinicalRole : ROLES_CLINICAL_SET) {
-                RoleModel clinicalRoleModel = realm.getRole(clinicalRole);
-                if (user.hasRole(clinicalRoleModel)) {
+            for (String clinicianRole : ROLES_CLINICIAN_SET) {
+                RoleModel clinicianRoleModel = realm.getRole(clinicianRole);
+                if (user.hasRole(clinicianRoleModel)) {
                     return true;
                 }
             }

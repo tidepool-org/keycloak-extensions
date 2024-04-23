@@ -15,7 +15,7 @@ public class TidepoolLoginFormsProvider extends FreeMarkerLoginFormsProvider {
     private static final String FORM_ATTRIBUTE_ROLE = "role";
 
     private static final String REGISTER_FORM = "register.ftl";
-    private static final String REGISTER_FORM_CLINICAL = "register-clinical.ftl";
+    private static final String REGISTER_FORM_CLINICIAN = "register-clinician.ftl";
     private static final String REGISTER_FORM_PERSONAL = "register-personal.ftl";
 
     public TidepoolLoginFormsProvider(KeycloakSession session) {
@@ -30,8 +30,8 @@ public class TidepoolLoginFormsProvider extends FreeMarkerLoginFormsProvider {
         attributes.put(FORM_ATTRIBUTE_ROLE, roleBean);
 
         if (templateName == REGISTER_FORM) {
-            if (roleBean.hasClinicalRole()) {
-                templateName = REGISTER_FORM_CLINICAL;
+            if (roleBean.hasClinicianRole()) {
+                templateName = REGISTER_FORM_CLINICIAN;
             } else {
                 templateName = REGISTER_FORM_PERSONAL;
             }

@@ -2,7 +2,7 @@
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('firstName','lastName','email','username','password','password-confirm', 'terms') displayInfo=true; section>
     <#if section = "header">
         <div class="${properties.kcRegisterTitleClass!}">
-            ${msg("registerTitleClinical")}
+            ${msg("registerTitleClinician")}
         </div>
     <#elseif section = "form">
         <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}" method="post">

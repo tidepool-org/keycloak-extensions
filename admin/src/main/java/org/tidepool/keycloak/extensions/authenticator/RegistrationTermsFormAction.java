@@ -37,10 +37,10 @@ final class RegistrationTermsFormAction implements FormAction {
     @Override
     public void validate(ValidationContext context) {
 
-        // TEMPORARY: Currently only for Clinical registration which includes TOS/PP
-        // agreement on clinical registration form. Remove once TOS/PP agreement
+        // TEMPORARY: Currently only for Clinician registration which includes TOS/PP
+        // agreement on clinician registration form. Remove once TOS/PP agreement
         // included on personal registration form.
-        if (!RoleBean.hasClinicalRoleFromAuthenticationSession(context.getAuthenticationSession())) {
+        if (!RoleBean.hasClinicianRoleFromAuthenticationSession(context.getAuthenticationSession())) {
             context.success();
             return;
         }
@@ -66,10 +66,10 @@ final class RegistrationTermsFormAction implements FormAction {
     @Override
     public void success(FormContext context) {
 
-        // TEMPORARY: Currently only for Clinical registration which includes TOS/PP
-        // agreement on clinical registration form. Remove once TOS/PP agreement
+        // TEMPORARY: Currently only for Clinician registration which includes TOS/PP
+        // agreement on clinician registration form. Remove once TOS/PP agreement
         // included on personal registration form.
-        if (!RoleBean.hasClinicalRoleFromRealmUser(context.getRealm(), context.getUser())) {
+        if (!RoleBean.hasClinicianRoleFromRealmUser(context.getRealm(), context.getUser())) {
             return;
         }
 

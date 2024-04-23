@@ -105,7 +105,7 @@
             <span>${msg("alreadyHaveAnAccount")} <a tabindex="6" href="${url.loginRestartFlowUrl}">${msg("doLogIn")}</a></span>
         </div>
         <div id="kc-registration">
-            <span>${msg("needClinicalAccount")} ${msg("createAccountPrefix")} <a tabindex="7" href="${role.registrationUriForClinicianRole}">${msg("createAccountClinical")}</a> ${msg("createAccountSuffix")}</span>
+            <span>${msg("needClinicianAccount")} ${msg("createAccountPrefix")} <a tabindex="7" href="${role.registrationUriForClinicianRole}">${msg("createAccountClinician")}</a> ${msg("createAccountSuffix")}</span>
         </div>
     </#if>
 </@layout.registrationLayout>

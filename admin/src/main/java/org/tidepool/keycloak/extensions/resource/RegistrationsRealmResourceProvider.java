@@ -57,7 +57,7 @@ public class RegistrationsRealmResourceProvider implements RealmResourceProvider
 
     /**
      * Restart authentication with registration. Allows specification of role
-     * (clinical or personal) to initiate registration.
+     * (clinician or personal) to initiate registration.
      * 
      * Mimics LoginActionsService.restartSession, but restarts with registration
      * flow.

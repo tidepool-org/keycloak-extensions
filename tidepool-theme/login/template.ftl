@@ -67,7 +67,7 @@
             </#if>
             <#nested "pre-header">
             <a class="logo-link" href="${properties.tidepoolUrl!}">
-                <#if role?? && role.hasClinicalRole()>
+                <#if role?? && role.hasClinicianRole()>
                     <img class="logo" src="${url.resourcesPath}/img/tidepool-plus-logo-985x96.png" alt="Tidepool+"/>
                 <#else>
                     <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-890x96.png" alt="Tidepool"/>
