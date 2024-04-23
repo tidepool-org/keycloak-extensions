@@ -7,3 +7,7 @@ target/
 
 # Original theme
 themes/base
+
+# Environment
+.env
+.envrc

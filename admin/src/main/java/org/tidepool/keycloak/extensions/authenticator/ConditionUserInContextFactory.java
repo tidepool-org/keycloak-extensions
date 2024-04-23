@@ -22,8 +22,6 @@ public final class ConditionUserInContextFactory implements AuthenticatorFactory
 
     public static final String CONF_NEGATE = "negate";
 
-    private Config.Scope config;
-
     @Override
     public String getDisplayType() {
         return "Condition - User in Context";
@@ -72,7 +70,6 @@ public final class ConditionUserInContextFactory implements AuthenticatorFactory
 
     @Override
     public void init(Config.Scope config) {
-        this.config = config;
     }
 
     @Override

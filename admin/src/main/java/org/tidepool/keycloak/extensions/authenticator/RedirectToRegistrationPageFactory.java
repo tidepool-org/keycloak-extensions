@@ -21,8 +21,6 @@ public final class RedirectToRegistrationPageFactory implements AuthenticatorFac
 
     private static final String PROVIDER_ID = "redirect-to-registration-page";
 
-    private Config.Scope config;
-
     @Override
     public String getDisplayType() {
         return "Redirect to Registration Page";
@@ -65,7 +63,6 @@ public final class RedirectToRegistrationPageFactory implements AuthenticatorFac
 
     @Override
     public void init(Config.Scope config) {
-        this.config = config;
     }
 
     @Override

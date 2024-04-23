@@ -1,1 +1,2 @@
+org.tidepool.keycloak.extensions.resource.RegistrationsRealmResourceProviderFactory
 org.tidepool.keycloak.extensions.resource.TidepoolAdminResourceProviderFactory

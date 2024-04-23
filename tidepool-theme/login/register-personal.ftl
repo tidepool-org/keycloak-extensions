@@ -2,7 +2,7 @@
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('firstName','lastName','email','username','password','password-confirm') displayInfo=true; section>
     <#if section = "header">
         <div class="${properties.kcRegisterTitleClass!}">
-            ${msg("registerTitle")}
+            ${msg("registerTitlePersonal")}
         </div>
     <#elseif section = "form">
         <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}" method="post">
@@ -20,9 +20,9 @@
                     />
 
                     <#if messagesPerField.existsError('email')>
-                        <span id="input-error-email" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                        <div id="input-error-email" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                             ${kcSanitize(messagesPerField.get('email'))?no_esc}
-                        </span>
+                        </div>
                     </#if>
                 </div>
             </div>
@@ -39,9 +39,9 @@
                         />
 
                         <#if messagesPerField.existsError('username')>
-                            <span id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            <div id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                 ${kcSanitize(messagesPerField.get('username'))?no_esc}
-                            </span>
+                            </div>
                         </#if>
                     </div>
                 </div>
@@ -59,9 +59,9 @@
                         />
 
                         <#if messagesPerField.existsError('password')>
-                            <span id="input-error-password" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            <div id="input-error-password" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                 ${kcSanitize(messagesPerField.get('password'))?no_esc}
-                            </span>
+                            </div>
                         </#if>
                     </div>
                 </div>
@@ -78,9 +78,9 @@
                         />
 
                         <#if messagesPerField.existsError('password-confirm')>
-                            <span id="input-error-password-confirm" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            <div id="input-error-password-confirm" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                 ${kcSanitize(messagesPerField.get('password-confirm'))?no_esc}
-                            </span>
+                            </div>
                         </#if>
                     </div>
                 </div>
@@ -103,6 +103,9 @@
     <#elseif section = "info" >
         <div id="kc-registration">
             <span>${msg("alreadyHaveAnAccount")} <a tabindex="6" href="${url.loginRestartFlowUrl}">${msg("doLogIn")}</a></span>
+        </div>
+        <div id="kc-registration">
+            <span>${msg("needClinicianAccount")} ${msg("createAccountPrefix")} <a tabindex="7" href="${role.registrationUriForClinicianRole}">${msg("createAccountClinician")}</a> ${msg("createAccountSuffix")}</span>
         </div>
     </#if>
 </@layout.registrationLayout>

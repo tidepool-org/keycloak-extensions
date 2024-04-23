@@ -7,6 +7,4 @@ build-artifacts:
 
 # Builds the docker image
 build: build-artifacts
-	docker build -t tidepool/keycloak-extensions:$(image_tag) .
-
-
+	docker build --platform linux/amd64 --tag tidepool/keycloak-extensions:$(image_tag) .

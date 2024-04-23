@@ -21,8 +21,6 @@ public final class ResetUserInContextFactory implements AuthenticatorFactory, Se
 
     private static final String PROVIDER_ID = "reset-user-in-context";
 
-    private Config.Scope config;
-
     @Override
     public String getDisplayType() {
         return "Reset User in Context";
@@ -65,7 +63,6 @@ public final class ResetUserInContextFactory implements AuthenticatorFactory, Se
 
     @Override
     public void init(Config.Scope config) {
-        this.config = config;
     }
 
     @Override

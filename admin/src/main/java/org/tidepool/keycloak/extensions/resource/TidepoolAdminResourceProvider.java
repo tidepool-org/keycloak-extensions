@@ -1,6 +1,5 @@
 package org.tidepool.keycloak.extensions.resource;
 
-import org.jboss.logging.Logger;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.keycloak.models.*;
 import org.keycloak.services.resource.RealmResourceProvider;
