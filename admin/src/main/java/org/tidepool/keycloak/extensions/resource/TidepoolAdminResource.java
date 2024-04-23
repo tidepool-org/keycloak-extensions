@@ -171,11 +171,11 @@ public class TidepoolAdminResource extends AdminResource {
 
         // Only set the fullName attribute from the child's custodian's fullName
         em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT ?1, value, ?2, ?3 FROM user_attribute WHERE user_id = ?4 AND name = ?5").
-            setParameter(1, "profile_full_name").
+            setParameter(1, "full_name").
             setParameter(2, newParentUserId).
             setParameter(3, KeycloakModelUtils.generateId()).
             setParameter(4, childUserId).
-            setParameter(5, "profile_custodian_full_name").
+            setParameter(5, "custodian_full_name").
             executeUpdate();
 
         // copy over group memberships
