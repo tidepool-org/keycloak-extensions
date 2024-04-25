@@ -1,7 +1,5 @@
 package org.tidepool.keycloak.extensions.resource;
 
-import java.util.Arrays;
-import java.util.regex.Pattern;
 
 import org.keycloak.models.*;
 import org.keycloak.validate.Validators;
@@ -16,7 +14,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.BadRequestException;
@@ -26,14 +23,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
+import java.time.Instant;
 
 public class TidepoolAdminResource extends AdminResource {
 
     private static final String ID_SEPARATOR = ",";
-    private static final Pattern UNCLAIMED_CUSTODIAL = Pattern.compile("unclaimed-custodial-automation\\+\\d+@tidepool\\.org", Pattern.CASE_INSENSITIVE);
+    private static final Pattern UNCLAIMED_CUSTODIAL = Pattern.compile("^unclaimed-custodial-automation\\+\\d+@tidepool\\.org$", Pattern.CASE_INSENSITIVE);
+    // CUSTODIAN_ROLE is the role to give custodians accounts extracted from
+    // profiles that contain a fake child.
+    // TODO: decide on actual role
+    private static final String CUSTODIAN_ROLE = "custodian";
 
     private final KeycloakSession session;
 
@@ -79,25 +84,17 @@ public class TidepoolAdminResource extends AdminResource {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
-    // This will clone the user, known as the child, with an id of userId to
+    // This route will clone the user, known as the child, with an id of userId to
     // have a new parent that has the child's previous username and email,
     // while the child will have the new email and username from the newUsername
     // field of the POST body
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON})
-    @Path("clone-user/{userId}")
-    public Response cloneUser(@PathParam("userId") final String userId, final CloneUserBody body) {
+    @Path("extract-custodian-user/{userId}")
+    public Response cloneUser(@PathParam("userId") final String userId) {
         auth.users().canManage();
 
-        String newUsername = body.newUsername;
-        if (!TidepoolAdminResource.UNCLAIMED_CUSTODIAL.matcher(newUsername).find()) {
-            throw new BadRequestException("newUsername must conform to the unclaimed custodial email format");
-        }
-        if (body.custodianRoleName == null || body.custodianRoleName.isBlank()) {
-            throw new BadRequestException("custodianRoleName must not be empty");
-        }
-
+        String newUsername = TidepoolAdminResource.newCustodialEmail();
         RealmModel realm = session.getContext().getRealm();
         UserModel user = session.users().getUserById(realm, userId);
         if (user == null) {
@@ -108,14 +105,13 @@ public class TidepoolAdminResource extends AdminResource {
             throw new BadRequestException(String.format("user %s already migrated", userId));
         }
 
-        String custodianRoleName = body.custodianRoleName.trim();
         String newParentUserId = KeycloakModelUtils.generateId();
         String parentUsername = user.getUsername();
         String childUserId = userId;
 
-        boolean roleFound = session.roles().getRealmRolesStream(realm).anyMatch(role -> custodianRoleName.equals(role.getName()));
+        boolean roleFound = session.roles().getRealmRolesStream(realm).anyMatch(role -> TidepoolAdminResource.CUSTODIAN_ROLE.equals(role.getName()));
         if (!roleFound) {
-            throw new BadRequestException(String.format("Realm role \"%s\" not found.", custodianRoleName));
+            throw new BadRequestException(String.format("Realm role \"%s\" not found.", TidepoolAdminResource.CUSTODIAN_ROLE));
         }
 
         JpaConnectionProvider connProvider = session.getProvider(JpaConnectionProvider.class);
@@ -155,11 +151,10 @@ public class TidepoolAdminResource extends AdminResource {
             setParameter(2, childUserId).
             executeUpdate();
 
-        // Add custodian role (this can be any valid existing role in the
-        // realm, carepartner, new we created, etc)
+        // Add custodian role
         em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT id, ?1 FROM keycloak_role WHERE name = ?2 AND realm_id = ?3").
             setParameter(1, newParentUserId).
-            setParameter(2, custodianRoleName).
+            setParameter(2, TidepoolAdminResource.CUSTODIAN_ROLE).
             setParameter(3, realm.getId()).
             executeUpdate();
 
@@ -195,7 +190,8 @@ public class TidepoolAdminResource extends AdminResource {
         if (parentUser == null) {
             throw new InternalServerErrorException("unable to retrieve cloned user");
         }
-        return Response.status(Response.Status.CREATED).entity(toRepresentation(parentUser, realm)).build();
+        ExtractCustodianResponseBody responseBody = new ExtractCustodianResponseBody(toRepresentation(parentUser, realm), newUsername);
+        return Response.status(Response.Status.CREATED).entity(responseBody).build();
     }
 
     private UserRepresentation toRepresentation(UserModel user, RealmModel realm) {
@@ -216,5 +212,13 @@ public class TidepoolAdminResource extends AdminResource {
         List<CredentialRepresentation> models = user.credentialManager().getStoredCredentialsStream().map(ModelToRepresentation::toRepresentation).collect(Collectors.toList());
         models.forEach(c -> c.setSecretData(null));
         return models;
+    }
+
+    private static String newCustodialEmail() {
+        // Get a pseudo random number that is a combination of the epoch and
+        // a pseudo random number for less chance of collisions.
+        long now = Instant.now().toEpochMilli() / 1000L * 1000000L;
+        long time = now + (long)(new Random().nextDouble() * 1000000.0);
+        return String.format("unclaimed-custodial-automation+%d@tidepool.org", time);
     }
 }
