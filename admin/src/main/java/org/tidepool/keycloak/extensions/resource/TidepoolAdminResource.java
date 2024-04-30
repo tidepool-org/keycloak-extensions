@@ -37,8 +37,7 @@ public class TidepoolAdminResource extends AdminResource {
     private static final Pattern UNCLAIMED_CUSTODIAL = Pattern.compile("^unclaimed-custodial-automation\\+\\d+@tidepool\\.org$", Pattern.CASE_INSENSITIVE);
     // CUSTODIAN_ROLE is the role to give custodians accounts extracted from
     // profiles that contain a fake child.
-    // TODO: decide on actual role
-    private static final String CUSTODIAN_ROLE = "custodian";
+    private static final String CUSTODIAN_ROLE = "care_partner";
 
     private final KeycloakSession session;
 
