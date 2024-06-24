@@ -39,6 +39,9 @@ public class TidepoolAdminResource extends AdminResource {
     // profiles that contain a fake child.
     private static final String CUSTODIAN_ROLE = "care_partner";
 
+    // CUSTODIAL_ROLE will be added to the fake child account.
+    private static final String CUSTODIAL_ROLE = "custodial_account";
+
     private final KeycloakSession session;
 
     public TidepoolAdminResource(KeycloakSession session) {
@@ -108,9 +111,13 @@ public class TidepoolAdminResource extends AdminResource {
         String parentUsername = user.getUsername();
         String childUserId = userId;
 
-        boolean roleFound = session.roles().getRealmRolesStream(realm).anyMatch(role -> TidepoolAdminResource.CUSTODIAN_ROLE.equals(role.getName()));
-        if (!roleFound) {
-            throw new BadRequestException(String.format("Realm role \"%s\" not found.", TidepoolAdminResource.CUSTODIAN_ROLE));
+        if (session.roles().getRealmRole(realm, TidepoolAdminResource.CUSTODIAN_ROLE) == null) {
+            throw new BadRequestException(String.format("CustodiaN realm role \"%s\" not found.", TidepoolAdminResource.CUSTODIAN_ROLE));
+        }
+
+        RoleModel custodialRole = session.roles().getRealmRole(realm, TidepoolAdminResource.CUSTODIAL_ROLE);
+        if (custodialRole == null) {
+            throw new BadRequestException(String.format("CustodiaL realm role \"%s\" not found.", TidepoolAdminResource.CUSTODIAL_ROLE));
         }
 
         JpaConnectionProvider connProvider = session.getProvider(JpaConnectionProvider.class);
@@ -184,6 +191,7 @@ public class TidepoolAdminResource extends AdminResource {
         // the previous transaction has succeeded so this is "safe" and will cause a user updated event which will clear the cache entry for the given user.
         user.setEmail(newUsername);
         user.setUsername(newUsername);
+        user.grantRole(custodialRole);
 
         UserModel parentUser = session.users().getUserById(realm, newParentUserId);
         if (parentUser == null) {
