@@ -11,3 +11,6 @@ themes/base
 # Environment
 .env
 .envrc
+
+# OSX files
+.DS_Store
