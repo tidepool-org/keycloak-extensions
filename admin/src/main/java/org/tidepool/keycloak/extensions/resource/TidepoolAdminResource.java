@@ -191,8 +191,6 @@ public class TidepoolAdminResource extends AdminResource {
             setParameter(4, KeycloakModelUtils.generateId()). // random primary key
             executeUpdate();
 
-        
-
         // copy over group memberships
         em.createNativeQuery("INSERT INTO user_group_membership(group_id, user_id) SELECT group_id, ?1 FROM user_group_membership WHERE user_id = ?2").
             setParameter(1, newParentUserId).
