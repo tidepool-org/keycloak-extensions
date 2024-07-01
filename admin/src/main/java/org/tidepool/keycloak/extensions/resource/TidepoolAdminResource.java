@@ -42,6 +42,8 @@ public class TidepoolAdminResource extends AdminResource {
     // CUSTODIAL_ROLE will be added to the fake child account.
     private static final String CUSTODIAL_ROLE = "custodial_account";
 
+    // Attribute name of profile value in a child profile that references created parent / extracted keycloak user's primary key id (since no foreign keys in the EAV-like user_attribute table)
+    private static final String ATTRIBUTE_PARENT_USER_ID= "parent_user_id";
     private final KeycloakSession session;
 
     public TidepoolAdminResource(KeycloakSession session) {
@@ -146,7 +148,7 @@ public class TidepoolAdminResource extends AdminResource {
 
         // Copy over the credentials of the child to the parent so the parent can login with the same credentials.
         em.createNativeQuery("INSERT INTO credential(id, salt, type, user_id, created_date, user_label, secret_data, credential_data, priority) SELECT ?1, salt, type, ?2, created_date, user_label, secret_data, credential_data, priority FROM credential WHERE user_id = ?3").
-            setParameter(1, KeycloakModelUtils.generateId()).
+            setParameter(1, KeycloakModelUtils.generateId()). // random primary key
             setParameter(2, newParentUserId).
             setParameter(3, childUserId).
             executeUpdate();
@@ -174,10 +176,22 @@ public class TidepoolAdminResource extends AdminResource {
         em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT ?1, value, ?2, ?3 FROM user_attribute WHERE user_id = ?4 AND name = ?5").
             setParameter(1, "full_name").
             setParameter(2, newParentUserId).
-            setParameter(3, KeycloakModelUtils.generateId()).
+            setParameter(3, KeycloakModelUtils.generateId()). // random primary key
             setParameter(4, childUserId).
             setParameter(5, "custodian_full_name").
             executeUpdate();
+
+        // Add the parent primary key id as a profile attribute for the child
+        // (as there are no actual parent child foreign key references in
+        // keycloak)
+        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) VALUES (?1, ?2, ?3, ?4").
+            setParameter(1, TidepoolAdminResource.ATTRIBUTE_PARENT_USER_ID).
+            setParameter(2, newParentUserId).
+            setParameter(3, childUserId).
+            setParameter(4, KeycloakModelUtils.generateId()). // random primary key
+            executeUpdate();
+
+        
 
         // copy over group memberships
         em.createNativeQuery("INSERT INTO user_group_membership(group_id, user_id) SELECT group_id, ?1 FROM user_group_membership WHERE user_id = ?2").
