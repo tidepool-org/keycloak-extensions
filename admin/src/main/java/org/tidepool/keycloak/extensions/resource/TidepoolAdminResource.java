@@ -184,7 +184,7 @@ public class TidepoolAdminResource extends AdminResource {
         // Add the parent primary key id as a profile attribute for the child
         // (as there are no actual parent child foreign key references in
         // keycloak)
-        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) VALUES (?1, ?2, ?3, ?4").
+        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) VALUES (?1, ?2, ?3, ?4)").
             setParameter(1, TidepoolAdminResource.ATTRIBUTE_PARENT_USER_ID).
             setParameter(2, newParentUserId).
             setParameter(3, childUserId).
