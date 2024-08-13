@@ -32,7 +32,6 @@ import java.util.regex.Pattern;
 import java.time.Instant;
 
 public class TidepoolAdminResource extends AdminResource {
-
     private static final String ID_SEPARATOR = ",";
     private static final Pattern UNCLAIMED_CUSTODIAL = Pattern.compile("^unclaimed-custodial-automation\\+\\d+@tidepool\\.org$", Pattern.CASE_INSENSITIVE);
     // CUSTODIAN_ROLE is the role to give custodians accounts extracted from
@@ -45,6 +44,9 @@ public class TidepoolAdminResource extends AdminResource {
     // Attribute name of profile value in a child profile that references created parent / extracted keycloak user's primary key id (since no foreign keys in the EAV-like user_attribute table)
     private static final String ATTRIBUTE_PARENT_USER_ID= "parent_user_id";
     private final KeycloakSession session;
+
+    // This rand is only called during custodian extraction which is rare so not concerned about any performance issues of using just one.
+    private static final Random rand = new Random();
 
     public TidepoolAdminResource(KeycloakSession session) {
         this.session = session;
@@ -104,7 +106,7 @@ public class TidepoolAdminResource extends AdminResource {
         if (user == null) {
             throw new NotFoundException("User not found.");
         }
-        boolean alreadyMigrated = user.getUsername() != null && TidepoolAdminResource.UNCLAIMED_CUSTODIAL.matcher(user.getUsername()).find();
+        boolean alreadyMigrated = (user.getUsername() != null && TidepoolAdminResource.UNCLAIMED_CUSTODIAL.matcher(user.getUsername()).find()) || (user.getFirstAttribute(TidepoolAdminResource.ATTRIBUTE_PARENT_USER_ID) != null);
         if (alreadyMigrated) {
             throw new BadRequestException(String.format("user %s already migrated", userId));
         }
@@ -237,7 +239,7 @@ public class TidepoolAdminResource extends AdminResource {
         // Get a pseudo random number that is a combination of the epoch and
         // a pseudo random number for less chance of collisions.
         long now = Instant.now().toEpochMilli() / 1000L * 1000000L;
-        long time = now + (long)(new Random().nextDouble() * 1000000.0);
+        long time = now + (long)(TidepoolAdminResource.rand.nextDouble() * 1000000.0);
         return String.format("unclaimed-custodial-automation+%d@tidepool.org", time);
     }
 }
