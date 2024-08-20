@@ -9,6 +9,7 @@ import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.models.utils.KeycloakModelUtils;
+import org.hibernate.exception.ConstraintViolationException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,74 +135,81 @@ public class TidepoolAdminResource extends AdminResource {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
-        // Update the child to have the new username and email of newUsername
-        em.createNativeQuery("UPDATE user_entity SET email = ?1, email_constraint = ?1, username = ?1 WHERE id = ?2").
-            setParameter(1, newUsername).
-            setParameter(2, childUserId).
-            executeUpdate();
+        try {
+            // Update the child to have the new username and email of newUsername
+            em.createNativeQuery("UPDATE user_entity SET email = ?1, email_constraint = ?1, username = ?1 WHERE id = ?2").
+                setParameter(1, newUsername).
+                setParameter(2, childUserId).
+                executeUpdate();
 
-        // Create a new parent user with the same properties as the child
-        // except the parent will now assume the child's previous email /
-        // username.
-        em.createNativeQuery("INSERT INTO user_entity(id, email, email_constraint, email_verified, enabled, federation_link, first_name, last_name, realm_id, username, created_timestamp, service_account_client_link, not_before) SELECT ?1, ?2, ?2, email_verified, enabled, federation_link, first_name, last_name, realm_id, ?2, created_timestamp, service_account_client_link, not_before FROM user_entity WHERE id = ?3").
-            setParameter(1, newParentUserId).
-            setParameter(2, parentUsername).
-            setParameter(3, childUserId).
-            executeUpdate();
+            // Create a new parent user with the same properties as the child
+            // except the parent will now assume the child's previous email /
+            // username.
+            em.createNativeQuery("INSERT INTO user_entity(id, email, email_constraint, email_verified, enabled, federation_link, first_name, last_name, realm_id, username, created_timestamp, service_account_client_link, not_before) SELECT ?1, ?2, ?2, email_verified, enabled, federation_link, first_name, last_name, realm_id, ?2, created_timestamp, service_account_client_link, not_before FROM user_entity WHERE id = ?3").
+                setParameter(1, newParentUserId).
+                setParameter(2, parentUsername).
+                setParameter(3, childUserId).
+                executeUpdate();
 
-        // Copy over the credentials of the child to the parent so the parent can login with the same credentials.
-        em.createNativeQuery("INSERT INTO credential(id, salt, type, user_id, created_date, user_label, secret_data, credential_data, priority) SELECT ?1, salt, type, ?2, created_date, user_label, secret_data, credential_data, priority FROM credential WHERE user_id = ?3").
-            setParameter(1, KeycloakModelUtils.generateId()). // random primary key
-            setParameter(2, newParentUserId).
-            setParameter(3, childUserId).
-            executeUpdate();
+            // Copy over the credentials of the child to the parent so the parent can login with the same credentials.
+            em.createNativeQuery("INSERT INTO credential(id, salt, type, user_id, created_date, user_label, secret_data, credential_data, priority) SELECT ?1, salt, type, ?2, created_date, user_label, secret_data, credential_data, priority FROM credential WHERE user_id = ?3").
+                setParameter(1, KeycloakModelUtils.generateId()). // random primary key
+                setParameter(2, newParentUserId).
+                setParameter(3, childUserId).
+                executeUpdate();
 
-        // copy over role mappings
-        em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT role_id, ?1 FROM user_role_mapping WHERE user_id = ?2").
-            setParameter(1, newParentUserId).
-            setParameter(2, childUserId).
-            executeUpdate();
+            // copy over role mappings
+            em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT role_id, ?1 FROM user_role_mapping WHERE user_id = ?2").
+                setParameter(1, newParentUserId).
+                setParameter(2, childUserId).
+                executeUpdate();
 
-        // Add custodian role
-        em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT id, ?1 FROM keycloak_role WHERE name = ?2 AND realm_id = ?3").
-            setParameter(1, newParentUserId).
-            setParameter(2, TidepoolAdminResource.CUSTODIAN_ROLE).
-            setParameter(3, realm.getId()).
-            executeUpdate();
+            // Add custodian role
+            em.createNativeQuery("INSERT INTO user_role_mapping(role_id, user_id) SELECT id, ?1 FROM keycloak_role WHERE name = ?2 AND realm_id = ?3").
+                setParameter(1, newParentUserId).
+                setParameter(2, TidepoolAdminResource.CUSTODIAN_ROLE).
+                setParameter(3, realm.getId()).
+                executeUpdate();
 
-        // copy over required actions
-        em.createNativeQuery("INSERT INTO user_required_action(user_id, required_action) SELECT ?1, required_action FROM user_required_action WHERE user_id = ?2").
-            setParameter(1, newParentUserId).
-            setParameter(2, childUserId).
-            executeUpdate();
+            // copy over required actions
+            em.createNativeQuery("INSERT INTO user_required_action(user_id, required_action) SELECT ?1, required_action FROM user_required_action WHERE user_id = ?2").
+                setParameter(1, newParentUserId).
+                setParameter(2, childUserId).
+                executeUpdate();
 
-        // Only set the fullName attribute from the child's custodian's fullName
-        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT ?1, value, ?2, ?3 FROM user_attribute WHERE user_id = ?4 AND name = ?5").
-            setParameter(1, "full_name").
-            setParameter(2, newParentUserId).
-            setParameter(3, KeycloakModelUtils.generateId()). // random primary key
-            setParameter(4, childUserId).
-            setParameter(5, "custodian_full_name").
-            executeUpdate();
+            // Only set the fullName attribute from the child's custodian's fullName
+            em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) SELECT ?1, value, ?2, ?3 FROM user_attribute WHERE user_id = ?4 AND name = ?5").
+                setParameter(1, "full_name").
+                setParameter(2, newParentUserId).
+                setParameter(3, KeycloakModelUtils.generateId()). // random primary key
+                setParameter(4, childUserId).
+                setParameter(5, "custodian_full_name").
+                executeUpdate();
 
-        // Add the parent primary key id as a profile attribute for the child
-        // (as there are no actual parent child foreign key references in
-        // keycloak)
-        em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) VALUES (?1, ?2, ?3, ?4)").
-            setParameter(1, TidepoolAdminResource.ATTRIBUTE_PARENT_USER_ID).
-            setParameter(2, newParentUserId).
-            setParameter(3, childUserId).
-            setParameter(4, KeycloakModelUtils.generateId()). // random primary key
-            executeUpdate();
+            // Add the parent primary key id as a profile attribute for the child
+            // (as there are no actual parent child foreign key references in
+            // keycloak)
+            em.createNativeQuery("INSERT INTO user_attribute(name, value, user_id, id) VALUES (?1, ?2, ?3, ?4)").
+                setParameter(1, TidepoolAdminResource.ATTRIBUTE_PARENT_USER_ID).
+                setParameter(2, newParentUserId).
+                setParameter(3, childUserId).
+                setParameter(4, KeycloakModelUtils.generateId()). // random primary key
+                executeUpdate();
 
-        // copy over group memberships
-        em.createNativeQuery("INSERT INTO user_group_membership(group_id, user_id) SELECT group_id, ?1 FROM user_group_membership WHERE user_id = ?2").
-            setParameter(1, newParentUserId).
-            setParameter(2, childUserId).
-            executeUpdate();
+            // copy over group memberships
+            em.createNativeQuery("INSERT INTO user_group_membership(group_id, user_id) SELECT group_id, ?1 FROM user_group_membership WHERE user_id = ?2").
+                setParameter(1, newParentUserId).
+                setParameter(2, childUserId).
+                executeUpdate();
 
-        tx.commit();
-
+            tx.commit();
+        }
+        catch (PersistenceException ex) {
+            if (ex.getCause() instanceof ConstraintViolationException) {
+                throw new InternalServerErrorException("constraint violation: " + ex.getMessage());
+            }
+            throw ex;
+        }
         // The Keycloak 24+ modules have removed cache eviction methods, so instead set child user's email and username "again" through the model. If we got this far,
         // the previous transaction has succeeded so this is "safe" and will cause a user updated event which will clear the cache entry for the given user.
         user.setEmail(newUsername);
