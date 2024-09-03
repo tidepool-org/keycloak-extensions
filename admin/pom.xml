@@ -24,10 +24,17 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-parent -->
-        <keycloak.version>21.1.1</keycloak.version>
+        <keycloak.version>25.0.4</keycloak.version>
         <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>local-repo</id>
+            <url>file://${project.basedir}/lib</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -51,16 +58,96 @@
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.sventorben.keycloak</groupId>
+            <artifactId>keycloak-home-idp-discovery</artifactId>
+            <version>25.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/keycloak-home-idp-discovery.jar</systemPath>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+<!--            <plugin>-->
+<!--                <artifactId>maven-dependency-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>unpack</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <artifactItems>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>de.sventorben.keycloak</groupId>-->
+<!--                                    <artifactId>keycloak-home-idp-discovery</artifactId>-->
+<!--                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>-->
+<!--                                    <excludes>**/HomeIdpAuthenticationFlowContext.class,**/LoginHint.class,**/Redirector.class</excludes>-->
+<!--                                </artifactItem>-->
+<!--                            </artifactItems>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>keycloak-extensions.jar</finalName>
+                            <transformers>
+                                <!-- need this to merge the services files properly -->
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- add Main-Class to manifest file -->
+<!--                                <transformer-->
+<!--                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
+<!--                                    <mainClass>Main</mainClass>-->
+<!--                                </transformer>-->
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+<!--                                <filter>-->
+<!--                                    <artifact>de.sventorben.keycloak:keycloak-home-idp-discovery:25.0.0</artifact>-->
+<!--                                    <includes>-->
+<!--                                        <include>**/*.class</include>-->
+<!--                                        <include>**/*.xml</include>-->
+<!--                                    </includes>-->
+<!--                                    <excludes>-->
+<!--                                        <exlude>-->
+<!--                                            de/sventorben/keycloak/authentication/hidpd/HomeIdpAuthenticationFlowContext.class-->
+<!--                                        </exlude>-->
+<!--                                        <exlude>-->
+<!--                                            de/sventorben/keycloak/authentication/hidpd/LoginHint.class-->
+<!--                                        </exlude>-->
+<!--                                        <exlude>-->
+<!--                                            de/sventorben/keycloak/authentication/hidpd/Redirector.class-->
+<!--                                        </exlude>-->
+<!--                                    </excludes>-->
+<!--                                </filter>-->
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

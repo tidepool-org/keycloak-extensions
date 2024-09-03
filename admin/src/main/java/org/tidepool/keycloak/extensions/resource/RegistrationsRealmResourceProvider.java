@@ -2,12 +2,12 @@ package org.tidepool.keycloak.extensions.resource;
 
 import java.net.URI;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.keycloak.authentication.AuthenticationProcessor;
 import org.keycloak.common.ClientConnection;
@@ -58,10 +58,10 @@ public class RegistrationsRealmResourceProvider implements RealmResourceProvider
     /**
      * Restart authentication with registration. Allows specification of role
      * (clinician or personal) to initiate registration.
-     * 
+     *
      * Mimics LoginActionsService.restartSession, but restarts with registration
      * flow.
-     * 
+     *
      * @param authSessionId
      * @param clientId
      * @param tabId
@@ -85,7 +85,7 @@ public class RegistrationsRealmResourceProvider implements RealmResourceProvider
         event.event(EventType.RESTART_AUTHENTICATION);
 
         SessionCodeChecks checks = new SessionCodeChecks(realm, context.getUri(), request,
-                clientConnection, session, event, authSessionId, null, null, clientId, tabId, null);
+                clientConnection, session, event, authSessionId, null, null, clientId, tabId, null, LoginActionsService.REGISTRATION_PATH);
 
         AuthenticationSessionModel authenticationSession = checks.initialVerifyAuthSession();
         if (authenticationSession == null) {
@@ -115,6 +115,6 @@ public class RegistrationsRealmResourceProvider implements RealmResourceProvider
 
     private URI getLastExecutionUrl(String flowPath, String executionId, String clientId, String tabId) {
         return new AuthenticationFlowURLHelper(session, session.getContext().getRealm(), session.getContext().getUri())
-                .getLastExecutionUrl(flowPath, executionId, clientId, tabId);
+                .getLastExecutionUrl(flowPath, executionId, clientId, tabId, null);
     }
 }

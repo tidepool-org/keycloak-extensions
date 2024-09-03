@@ -3,7 +3,7 @@ package org.tidepool.keycloak.extensions.authenticator;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormContext;

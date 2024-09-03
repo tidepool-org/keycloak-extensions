@@ -12,7 +12,7 @@
                            id="username"
                            class="${properties.kcInputClass!}"
                            type="text" autocomplete="off"
-                           value="${brokerContext.username}"
+                           value="${brokerContext.email}"
                     />
                 </div>
                 <p id="instruction2" class="instruction">
