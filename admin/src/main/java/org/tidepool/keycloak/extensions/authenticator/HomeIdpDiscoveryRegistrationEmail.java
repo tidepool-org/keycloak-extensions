@@ -1,19 +1,16 @@
 package org.tidepool.keycloak.extensions.authenticator;
 
 import de.sventorben.keycloak.authentication.hidpd.AbstractHomeIdpDiscoveryAuthenticatorFactory;
-import de.sventorben.keycloak.authentication.hidpd.discovery.email.EmailHomeIdpDiscoveryAuthenticatorFactoryDiscovererConfig;
 import de.sventorben.keycloak.authentication.hidpd.discovery.spi.HomeIdpDiscoverer;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import org.keycloak.Config;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.AuthenticationSelectionOption;
 import org.keycloak.authentication.AuthenticatorUtil;
 import org.keycloak.authentication.FlowStatus;
 import org.keycloak.authentication.FormAction;
-import org.keycloak.authentication.FormActionFactory;
 import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
 import org.keycloak.authentication.forms.RegistrationPage;
@@ -33,7 +30,6 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.models.utils.FormMessage;
-import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.services.managers.BruteForceProtector;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
@@ -41,8 +37,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeIdpDiscoveryRegistrationEmail implements FormAction, FormActionFactory {
-    public static final String PROVIDER_ID = "registration-email-idp-action";
+public class HomeIdpDiscoveryRegistrationEmail implements FormAction {
 
     public static final String ERROR_EMAIL_BOUND_TO_IDP = "emailBoundToIdp";
 
@@ -50,16 +45,6 @@ public class HomeIdpDiscoveryRegistrationEmail implements FormAction, FormAction
 
     HomeIdpDiscoveryRegistrationEmail(AbstractHomeIdpDiscoveryAuthenticatorFactory.DiscovererConfig discovererConfig) {
         this.discovererConfig = discovererConfig;
-    }
-
-    @Override
-    public String getHelpText() {
-        return "Validates that email domain is not bound to an IDP.";
-    }
-
-    @Override
-    public List<ProviderConfigProperty> getConfigProperties() {
-        return (new EmailHomeIdpDiscoveryAuthenticatorFactoryDiscovererConfig()).getProperties();
     }
 
     @Override
@@ -111,57 +96,8 @@ public class HomeIdpDiscoveryRegistrationEmail implements FormAction, FormAction
     }
 
     @Override
-    public boolean isUserSetupAllowed() {
-        return false;
-    }
-
-    @Override
     public void close() {
 
-    }
-
-    @Override
-    public String getDisplayType() {
-        return "Home IdP Discovery (Email Validation)";
-    }
-
-    @Override
-    public String getReferenceCategory() {
-        return "Authorization";
-    }
-
-    @Override
-    public boolean isConfigurable() {
-        return false;
-    }
-
-    private static AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
-        AuthenticationExecutionModel.Requirement.REQUIRED,
-        AuthenticationExecutionModel.Requirement.DISABLED
-    };
-    @Override
-    public AuthenticationExecutionModel.Requirement[] getRequirementChoices() {
-        return REQUIREMENT_CHOICES;
-    }
-
-    @Override
-    public FormAction create(KeycloakSession session) {
-        return new HomeIdpDiscoveryRegistrationEmail(new EmailHomeIdpDiscoveryAuthenticatorFactoryDiscovererConfig());
-    }
-
-    @Override
-    public void init(Config.Scope config) {
-
-    }
-
-    @Override
-    public void postInit(KeycloakSessionFactory factory) {
-
-    }
-
-    @Override
-    public String getId() {
-        return PROVIDER_ID;
     }
 
     public static class AuthenticationFlowContextAdapter implements AuthenticationFlowContext {

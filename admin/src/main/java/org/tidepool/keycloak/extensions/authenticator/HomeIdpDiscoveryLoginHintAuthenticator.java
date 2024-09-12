@@ -6,6 +6,7 @@ import de.sventorben.keycloak.authentication.hidpd.discovery.spi.HomeIdpDiscover
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.models.IdentityProviderModel;
@@ -20,7 +21,7 @@ import java.util.List;
 import static org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator.ATTEMPTED_USERNAME;
 import static org.keycloak.protocol.oidc.OIDCLoginProtocol.LOGIN_HINT_PARAM;
 
-final class HomeIdpDiscoveryLoginHintAuthenticator implements Authenticator {
+final class HomeIdpDiscoveryLoginHintAuthenticator extends AbstractUsernameFormAuthenticator implements Authenticator  {
 
     private static final Logger LOG = Logger.getLogger(HomeIdpDiscoveryLoginHintAuthenticator.class);
 

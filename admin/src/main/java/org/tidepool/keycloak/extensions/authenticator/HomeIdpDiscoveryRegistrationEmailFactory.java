@@ -1,11 +1,10 @@
 package org.tidepool.keycloak.extensions.authenticator;
 
 import de.sventorben.keycloak.authentication.hidpd.AbstractHomeIdpDiscoveryAuthenticatorFactory;
-import de.sventorben.keycloak.authentication.hidpd.OperationalInfo;
 import de.sventorben.keycloak.authentication.hidpd.discovery.email.EmailHomeIdpDiscoveryAuthenticatorFactoryDiscovererConfig;
 import org.keycloak.Config;
-import org.keycloak.authentication.Authenticator;
-import org.keycloak.authentication.AuthenticatorFactory;
+import org.keycloak.authentication.FormAction;
+import org.keycloak.authentication.FormActionFactory;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
@@ -15,20 +14,24 @@ import org.keycloak.provider.ServerInfoAwareProviderFactory;
 import java.util.List;
 import java.util.Map;
 
-import static org.keycloak.models.AuthenticationExecutionModel.Requirement.ALTERNATIVE;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.DISABLED;
 import static org.keycloak.models.AuthenticationExecutionModel.Requirement.REQUIRED;
 
-public final class HomeIdpDiscoveryLoginHintAuthenticatorFactory implements AuthenticatorFactory, ServerInfoAwareProviderFactory {
+public final class HomeIdpDiscoveryRegistrationEmailFactory implements FormActionFactory, ServerInfoAwareProviderFactory {
 
-    private static final String PROVIDER_ID = "home-idp-discovery-login-hint";
+    private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{REQUIRED, DISABLED};
 
-    private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = new AuthenticationExecutionModel.Requirement[]{REQUIRED, ALTERNATIVE, DISABLED};
+    public static final String PROVIDER_ID = "registration-email-idp-action";
 
     private final AbstractHomeIdpDiscoveryAuthenticatorFactory.DiscovererConfig discovererConfig;
 
-    public HomeIdpDiscoveryLoginHintAuthenticatorFactory() {
+    public HomeIdpDiscoveryRegistrationEmailFactory() {
         this.discovererConfig = new EmailHomeIdpDiscoveryAuthenticatorFactoryDiscovererConfig();
+    }
+
+    @Override
+    public String getHelpText() {
+        return "Validates that email domain is not bound to an IDP.";
     }
 
     @Override
@@ -52,29 +55,33 @@ public final class HomeIdpDiscoveryLoginHintAuthenticatorFactory implements Auth
     }
 
     @Override
-    public Authenticator create(KeycloakSession session) {
-        return new HomeIdpDiscoveryLoginHintAuthenticator(discovererConfig);
+    public void init(Config.Scope config) { }
+
+    @Override
+    public void postInit(KeycloakSessionFactory factory) {
     }
 
     @Override
-    public void init(Config.Scope config) {}
-
-    @Override
-    public final void postInit(KeycloakSessionFactory factory) {
+    public void close() {
     }
 
     @Override
-    public final void close() {
+    public String getId() {
+        return PROVIDER_ID;
     }
 
     @Override
-    public final Map<String, String> getOperationalInfo() {
-        return OperationalInfo.get();
+    public Map<String, String> getOperationalInfo() {
+        String version = getClass().getPackage().getImplementationVersion();
+        if (version == null) {
+            version = "dev-snapshot";
+        }
+        return Map.of("Version", version);
     }
 
     @Override
     public String getDisplayType() {
-        return "Home IdP Discovery (Login Hint Redirector)";
+        return "Home IdP Discovery (Email Validation)";
     }
 
     @Override
@@ -83,12 +90,7 @@ public final class HomeIdpDiscoveryLoginHintAuthenticatorFactory implements Auth
     }
 
     @Override
-    public String getHelpText() {
-        return "Redirects users to their home identity provider based on the provided login hint";
-    }
-
-    @Override
-    public String getId() {
-        return PROVIDER_ID;
+    public FormAction create(KeycloakSession session) {
+        return new HomeIdpDiscoveryRegistrationEmail(this.discovererConfig);
     }
 }

@@ -11,6 +11,7 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.provider.ServerInfoAwareProviderFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public final class HomeIdpDiscoveryMatchingEmailAuthenticatorFactory implements 
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        List<ProviderConfigProperty> properties = (new EmailHomeIdpDiscoveryAuthenticatorFactoryDiscovererConfig()).getProperties();
+        List<ProviderConfigProperty> properties = new ArrayList<>(this.discovererConfig.getProperties());
 
         ProviderConfigProperty negateOutput = new ProviderConfigProperty();
         negateOutput.setType(ProviderConfigProperty.BOOLEAN_TYPE);

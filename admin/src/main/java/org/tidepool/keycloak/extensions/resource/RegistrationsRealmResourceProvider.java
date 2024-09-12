@@ -104,7 +104,9 @@ public class RegistrationsRealmResourceProvider implements RealmResourceProvider
 
         AuthenticationProcessor.resetFlow(authenticationSession, LoginActionsService.REGISTRATION_PATH);
 
-        URI redirectUri = getLastExecutionUrl(flowPath, null, authenticationSession.getClient().getClientId(), tabId);
+        String clientData = AuthenticationProcessor.getClientData(session, authenticationSession);
+
+        URI redirectUri = getLastExecutionUrl(flowPath, null, authenticationSession.getClient().getClientId(), tabId, clientData);
 
         if (role != null) {
             redirectUri = UriBuilder.fromUri(redirectUri).queryParam(RoleBean.PARAMETER_ROLE, role).build();
@@ -113,8 +115,8 @@ public class RegistrationsRealmResourceProvider implements RealmResourceProvider
         return Response.status(Response.Status.FOUND).location(redirectUri).build();
     }
 
-    private URI getLastExecutionUrl(String flowPath, String executionId, String clientId, String tabId) {
+    private URI getLastExecutionUrl(String flowPath, String executionId, String clientId, String tabId, String clientData) {
         return new AuthenticationFlowURLHelper(session, session.getContext().getRealm(), session.getContext().getUri())
-                .getLastExecutionUrl(flowPath, executionId, clientId, tabId, null);
+                .getLastExecutionUrl(flowPath, executionId, clientId, tabId, clientData);
     }
 }

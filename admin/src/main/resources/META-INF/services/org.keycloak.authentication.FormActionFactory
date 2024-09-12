@@ -1,3 +1,4 @@
 org.tidepool.keycloak.extensions.authenticator.RegistrationRoleFormActionFactory
 org.tidepool.keycloak.extensions.authenticator.RegistrationTermsFormActionFactory
-org.tidepool.keycloak.extensions.authenticator.HomeIdpDiscoveryRegistrationEmail
+org.tidepool.keycloak.extensions.authenticator.HomeIdpDiscoveryRegistrationEmailFactory
+org.tidepool.keycloak.extensions.authenticator.HomeIdpDiscoveryRegistrationEmailFactory
