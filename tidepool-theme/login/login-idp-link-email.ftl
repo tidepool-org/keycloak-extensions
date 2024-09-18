@@ -5,14 +5,14 @@
     <#elseif section = "form">
             <div class="${properties.kcFormGroupClass!}">
                 <p id="instruction1" class="instruction">
-                    ${msg("emailLinkIdp1", idpDisplayName, brokerContext.username, realm.displayName)}
+                    ${msg("emailLinkIdp1", idpDisplayName, brokerContext.email, realm.displayName)}
                 </p>
                 <div class="attempted-username instruction">
                     <input disabled
                            id="username"
                            class="${properties.kcInputClass!}"
                            type="text" autocomplete="off"
-                           value="${brokerContext.username}"
+                           value="${brokerContext.email}"
                     />
                 </div>
                 <p id="instruction2" class="instruction">
