@@ -1,27 +1,19 @@
 <#macro termsAcceptance>
     <#if termsAcceptanceRequired??>
-        <div class="form-group">
-            <div class="${properties.kcInputWrapperClass!}">
-                ${msg("termsTitle")}
-                <div id="kc-registration-terms-text">
-                    ${kcSanitize(msg("termsText"))?no_esc}
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="${properties.kcLabelWrapperClass!}">
-                <input type="checkbox" id="termsAccepted" name="termsAccepted" class="${properties.kcCheckboxInputClass!}"
-                       aria-invalid="<#if messagesPerField.existsError('termsAccepted')>true</#if>"
-                />
-                <label for="termsAccepted" class="${properties.kcLabelClass!}">${msg("acceptTerms")}</label>
-            </div>
-            <#if messagesPerField.existsError('termsAccepted')>
-                <div class="${properties.kcLabelWrapperClass!}">
-                            <span id="input-error-terms-accepted" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                                ${kcSanitize(messagesPerField.get('termsAccepted'))?no_esc}
+        <div class="${properties.kcFormGroupClass!}">
+            <div id="kc-terms-text">
+                <div class="terms-checkbox">
+                    <div id="terms-wrapper" class="clinician-terms-wrapper">
+                        <input type="checkbox" id="terms" name="terms"/>
+                        <label for="terms">I accept the terms of the <a class="terms-link" href="https://tidepool.org/terms-of-use">Tidepool Applications Terms of Use</a> and <a class="terms-link" href="https://tidepool.org/privacy-policy">Privacy Policy</a></label>
+                    </div>
+                    <#if messagesPerField.existsError('terms')>
+                        <span id="input-error-terms" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                ${kcSanitize(messagesPerField.get('terms'))?no_esc}
                             </span>
+                    </#if>
                 </div>
-            </#if>
+            </div>
         </div>
     </#if>
 </#macro>

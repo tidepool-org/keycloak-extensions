@@ -416,6 +416,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 .login-pf-page #kc-form-buttons {
   display: flex;
   align-items: center;
+  margin-top: 0;
 }
 
 .login-pf-page #kc-form-buttons input[type="submit"], .login-pf-page #kc-form-buttons button[type="submit"] {
@@ -431,7 +432,6 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 
 #kc-register-form input[type=submit] {
   width: 100%;
-  margin-top: 20px;
 }
 
 .tp-register-title {
