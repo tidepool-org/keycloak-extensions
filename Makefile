@@ -1,4 +1,4 @@
-keycloak_version = 25.0.4
+keycloak_version = 25.0.6
 date = $(shell date -u +"%Y-%m-%dT%H-%M-%S")
 image_tag = $(keycloak_version)-$(date)
 
