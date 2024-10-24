@@ -14,3 +14,6 @@ themes/base
 
 # OSX files
 .DS_Store
+
+# Maven shade plugin
+admin/dependency-reduced-pom.xml

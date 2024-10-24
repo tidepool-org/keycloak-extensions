@@ -16,7 +16,7 @@ public class SMARTIdentityProviderFactory extends AbstractIdentityProviderFactor
 
     public static final String PROVIDER_ID = "smart";
 
-    public static final String[] SUPPORTED_FHIR_VERSIONS = {"R4"};
+    public static final String[] SUPPORTED_FHIR_VERSIONS = {SMARTIdentityProvider.FHIR_R4};
 
     @Override
     public String getName() {
