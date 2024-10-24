@@ -55,9 +55,7 @@ public class RoleBean {
 
     public static boolean hasClinicianRoleFromAuthenticationSession(AuthenticationSessionModel authenticationSession) {
         if (authenticationSession != null) {
-            if (ROLES_CLINICIAN_SET.contains(authenticationSession.getAuthNote(AUTH_NOTE_ROLE))) {
-                return true;
-            }
+            return ROLES_CLINICIAN_SET.contains(authenticationSession.getAuthNote(AUTH_NOTE_ROLE));
         }
         return false;
     }

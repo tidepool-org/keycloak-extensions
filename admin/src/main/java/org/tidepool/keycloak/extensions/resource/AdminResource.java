@@ -13,22 +13,22 @@ import org.keycloak.services.resources.admin.AdminAuth;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.permissions.AdminPermissions;
 
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.NotAuthorizedException;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.HttpHeaders;
 
 public abstract class AdminResource {
 
-    @Context
-    private HttpHeaders headers;
-
-    @Context
-    private KeycloakSession session;
+    final private KeycloakSession session;
 
     protected AdminPermissionEvaluator auth;
 
+    public AdminResource(KeycloakSession session) {
+        this.session = session;
+    }
+
     protected void setup() {
+        HttpHeaders headers = session.getContext().getRequestHeaders();
         String tokenString = AppAuthManager.extractAuthorizationHeaderToken(headers);
         if (tokenString == null) throw new NotAuthorizedException("Bearer");
         AccessToken token;

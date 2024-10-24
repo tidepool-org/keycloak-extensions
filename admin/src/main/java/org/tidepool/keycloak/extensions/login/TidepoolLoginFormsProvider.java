@@ -3,7 +3,7 @@ package org.tidepool.keycloak.extensions.login;
 import java.net.URI;
 import java.util.Locale;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import org.keycloak.forms.login.freemarker.FreeMarkerLoginFormsProvider;
 import org.keycloak.models.KeycloakSession;
