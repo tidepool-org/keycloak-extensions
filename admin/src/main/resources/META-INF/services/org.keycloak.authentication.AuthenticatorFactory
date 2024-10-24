@@ -2,3 +2,4 @@ org.tidepool.keycloak.extensions.authenticator.ConditionUserInContextFactory
 org.tidepool.keycloak.extensions.authenticator.RedirectToRegistrationPageFactory
 org.tidepool.keycloak.extensions.authenticator.RegistrationRoleDiscoveryAuthenticatorFactory
 org.tidepool.keycloak.extensions.authenticator.ResetUserInContextFactory
+org.tidepool.keycloak.extensions.authenticator.SMARTIdentityProviderAuthenticatorFactory
