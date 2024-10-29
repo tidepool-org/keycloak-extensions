@@ -12,13 +12,11 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
-import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.tidepool.keycloak.extensions.broker.FHIRContext;
 import org.tidepool.keycloak.extensions.broker.SMARTIdentityProvider;
-import org.tidepool.keycloak.extensions.broker.SMARTIdentityProviderFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;

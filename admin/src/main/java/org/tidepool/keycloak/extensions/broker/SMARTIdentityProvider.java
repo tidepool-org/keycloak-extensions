@@ -1,12 +1,8 @@
 package org.tidepool.keycloak.extensions.broker;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import ca.uhn.fhir.rest.client.api.IClientInterceptor;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.jboss.logging.Logger;
 import org.keycloak.broker.oidc.OIDCIdentityProvider;
@@ -26,22 +22,23 @@ import java.util.HashSet;
 public class SMARTIdentityProvider extends OIDCIdentityProvider {
     private static final Logger LOG = Logger.getLogger(SMARTIdentityProvider.class);
 
-    private static final String[] defaultForwardParameters = {"launch", "aud", "iss"};
+    public static final String FHIR_VERSION = "smart/fhir_version";
+    public static final String FHIR_BASE_URL = "smart/fhir_base_url";
 
-    public static  final String FHIR_R4 = "R4";
+    private static final String[] DEFAULT_FORWARD_PARAMETERS = {"launch", "aud", "iss"};
 
     private final SMARTIdentityProviderConfig config;
 
     public SMARTIdentityProvider(KeycloakSession session, SMARTIdentityProviderConfig config) {
         super(session, discoverConfig(session, config.getIssuer()));
+
+        this.config = config;
         getConfig().setClientId(config.getClientId());
         getConfig().setClientSecret(config.getClientSecret());
         getConfig().setDefaultScope(config.getScopes());
         getConfig().setAlias(config.getAlias());
         getConfig().setForwardParameters(withDefaultForwardParameters(config.getForwardParameters()));
         getConfig().setDisableUserInfoService(true);
-
-        this.config = config;
     }
 
     @Override
@@ -50,7 +47,7 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
 
         Practitioner practitioner = getPractitioner(idToken.getSubject(), accessToken);
         for (ContactPoint c : practitioner.getTelecom()) {
-            if (c.getSystem() == ContactPoint.ContactPointSystem.EMAIL && c.getValue() != null && !c.getValue().isEmpty()) {
+            if (c.getSystem() == ContactPoint.ContactPointSystem.EMAIL && c.getValue() != null && !c.getValue().isBlank()) {
                 identity.setEmail(c.getValue());
                 break;
             }
@@ -59,38 +56,22 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         identity.setFirstName(practitioner.getNameFirstRep().getGivenAsSingleString());
         identity.setLastName(practitioner.getNameFirstRep().getFamily());
 
+        identity.getContextData().put(FHIR_VERSION, config.getFHIRVersion());
+        identity.getContextData().put(FHIR_BASE_URL, config.getIssuer());
+
         return identity;
     }
 
     private Practitioner getPractitioner(String id, String accessToken) {
-        if (!FHIR_R4.equals(config.getFHIRVersion())) {
-            throw new IdentityBrokerException("Unsupported FHIR Version: " + config.getFHIRVersion());
-        }
-
-        FhirContext ctx = FHIRContext.getR4();
-        IClientInterceptor authInterceptor = new BearerTokenAuthInterceptor(accessToken);
-        IGenericClient client = ctx.newRestfulGenericClient(config.getIssuer());
-        client.registerInterceptor(authInterceptor);
+        IGenericClient client = FHIRContext.getFHIRClient(config.getFHIRVersion(), config.getIssuer(), accessToken);
         Practitioner practitioner = client.read().resource(Practitioner.class).withId(id).execute();
 
         if (LOG.isTraceEnabled()) {
-            IParser parser = ctx.newJsonParser();
-            String serialized = parser.encodeResourceToString(practitioner);
-            LOG.tracef("Retrieved practitioner resource: " + serialized);
+            IParser parser = FHIRContext.getR4().newJsonParser();
+            LOG.tracef("Retrieved practitioner resource: %s", parser.encodeResourceToString(practitioner));
         }
 
         return practitioner;
-    }
-
-    private Patient getPatient(String id, String accessToken) {
-        if (!FHIR_R4.equals(config.getFHIRVersion())) {
-            throw new IdentityBrokerException("Unsupported FHIR Version: " + config.getFHIRVersion());
-        }
-
-        FhirContext ctx = FHIRContext.getR4();
-        IClientInterceptor authInterceptor = new BearerTokenAuthInterceptor(accessToken);
-        IGenericClient client = ctx.newRestfulGenericClient(config.getIssuer());
-        return client.read().resource(Patient.class).withId(id).execute();
     }
 
     private static String withDefaultForwardParameters(String params){
@@ -99,7 +80,7 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         }
 
         HashSet<String> set = new HashSet<>(Arrays.asList(params.split(",")));
-        set.addAll(Arrays.asList(defaultForwardParameters));
+        set.addAll(Arrays.asList(DEFAULT_FORWARD_PARAMETERS));
         return String.join(",", set.stream().map(String::trim).toArray(String[]::new));
     }
 
@@ -121,11 +102,13 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         try {
             SimpleHttp.Response response = request.asResponse();
             if (response.getStatus() != 200) {
-                String msg = "failed to invoke url [" + smartConfigurationUrl + "]";
+                String detail = String.format("Unexpected response %d", response.getStatus());
                 String tmp = response.asString();
-                if (tmp != null) msg = tmp;
+                if (tmp != null) detail = tmp;
 
-                throw new IdentityBrokerException("Failed to invoke url [" + smartConfigurationUrl + "]: " + msg);
+                String msg = String.format("Failed to invoke url [%s]: %s", smartConfigurationUrl, detail) ;
+
+                throw new IdentityBrokerException(msg);
             }
 
             identityProviderConfig.setConfig(factory.parseConfig(session, response.asString()));
