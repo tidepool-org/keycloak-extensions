@@ -1,5 +1,6 @@
 package org.tidepool.keycloak.extensions.broker;
 
+import org.keycloak.Config;
 import org.keycloak.broker.provider.AbstractIdentityProviderFactory;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.KeycloakSession;
@@ -16,7 +17,8 @@ public class SMARTIdentityProviderFactory extends AbstractIdentityProviderFactor
 
     public static final String PROVIDER_ID = "smart";
 
-    public static final String[] SUPPORTED_FHIR_VERSIONS = {SMARTIdentityProvider.FHIR_R4};
+    public static final String FHIR_R4 = "R4";
+    public static final String[] SUPPORTED_FHIR_VERSIONS = {FHIR_R4};
 
     @Override
     public String getName() {
@@ -63,5 +65,11 @@ public class SMARTIdentityProviderFactory extends AbstractIdentityProviderFactor
     @Override
     public String getId() {
         return PROVIDER_ID;
+    }
+
+    @Override
+    public void init(Config.Scope config) {
+        // Load the FHIR Context on startup
+        FHIRContext.getR4();
     }
 }

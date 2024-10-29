@@ -2,8 +2,10 @@ package org.tidepool.keycloak.extensions.authenticator;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
+import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.AuthenticationProcessor;
 import org.keycloak.authentication.Authenticator;
+import org.keycloak.events.Errors;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -22,19 +24,34 @@ public class SMARTIdentityProviderAuthenticator implements Authenticator {
 
     protected static final String ACCEPTS_PROMPT_NONE = "acceptsPromptNoneForwardFromClient";
 
-    private static final String ISSUER = "iss";
+    public static final String CORRELATION_ID = "correlation_id";
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        String issuer = context.getUriInfo().getQueryParameters().getFirst(ISSUER);
+        String issuer = context.getUriInfo().getQueryParameters().getFirst(OIDCLoginProtocol.ISSUER);
         if (issuer == null || issuer.isBlank()) {
-            LOG.warnf("No issuer set or %s query parameter provided", ISSUER);
-            context.attempted();
+            LOG.warnf("No issuer %s query parameter provided", OIDCLoginProtocol.ISSUER);
+            respondWithInvalidRequest(context, OIDCLoginProtocol.ISSUER + "query parameter is required");
             return;
         }
 
-        LOG.infof("Redirecting: %s set to %s", ISSUER, issuer);
+        String correlationId = context.getUriInfo().getQueryParameters().getFirst(CORRELATION_ID);
+        if (correlationId == null || issuer.isBlank()) {
+            LOG.warnf("No correlationId %s query parameter provided", CORRELATION_ID);
+            respondWithInvalidRequest(context, CORRELATION_ID + "query parameter is required");
+            return;
+        }
+
+        context.getAuthenticationSession().setClientNote(CORRELATION_ID, correlationId);
+
+        LOG.infof("Redirecting with correlationId %s: %s set to %s", correlationId, OIDCLoginProtocol.ISSUER, issuer);
         redirect(context, issuer);
+    }
+
+    protected void respondWithInvalidRequest(AuthenticationFlowContext context, String errorMessage) {
+        context.getEvent().error(Errors.IDENTITY_PROVIDER_ERROR);
+        Response challenge = context.form().setError("Invalid request: " + errorMessage).createErrorPage(Response.Status.BAD_REQUEST);
+        context.failure(AuthenticationFlowError.IDENTITY_PROVIDER_ERROR, challenge, "Invalid request", errorMessage);
     }
 
     protected void redirect(AuthenticationFlowContext context, String issuer) {
