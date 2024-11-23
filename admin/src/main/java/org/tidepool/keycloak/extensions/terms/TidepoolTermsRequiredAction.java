@@ -23,6 +23,7 @@ public class TidepoolTermsRequiredAction implements RequiredActionProvider, Requ
 
     public static final Map<String, String> FORMS = Map.of(
             "patient","patient_terms.ftl",
+            "clinic", "clinician_terms.ftl",
             "clinician", "clinician_terms.ftl"
     );
 
