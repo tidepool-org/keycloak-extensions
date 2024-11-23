@@ -3,7 +3,7 @@ package org.tidepool.keycloak.extensions.authenticator;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 
 import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormContext;
@@ -32,6 +32,13 @@ final class RegistrationTermsFormAction implements FormAction {
 
     @Override
     public void buildPage(FormContext context, LoginFormsProvider form) {
+        // TEMPORARY: Currently only for Clinician registration which includes TOS/PP
+        // agreement on clinician registration form. Remove conditional once TOS/PP agreement
+        // included on personal registration form.
+        if (RoleBean.hasClinicianRoleFromAuthenticationSession(context.getAuthenticationSession()) ||
+                RoleBean.hasClinicianRoleFromRealmUser(context.getRealm(), context.getUser())) {
+            form.setAttribute("termsAcceptanceRequired", true);
+        }
     }
 
     @Override

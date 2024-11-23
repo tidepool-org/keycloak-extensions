@@ -19,7 +19,7 @@
                            id="username"
                            class="${properties.kcInputClass!}"
                            type="text" autocomplete="off"
-                           value="${brokerContext.modelUsername}"
+                           value="${brokerContext.email}"
                     />
                 </div>
             </div>

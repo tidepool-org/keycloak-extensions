@@ -20,14 +20,14 @@ services:
       - 6543:5432
 
   providers:
-    image: busybox
-    command: ["/bin/sh", "-c",  "cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/toddkazakov/keycloak-home-idp-discovery/releases/download/0.3.0/keycloak-home-idp-discovery.jar"]
+    image: alpine:3.20.3
+    command: ["/bin/sh", "-c",  "apk add ca-certificates && update-ca-certificates && rm -f /providers/* && cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/tidepool-org/keycloak-home-idp-discovery/releases/download/v25.0.0-test/keycloak-home-idp-discovery.jar"]
     volumes:
       - ./admin/target/admin-LATEST.jar:/local/admin.jar
       - providers:/providers
 
   keycloak:
-    image: quay.io/keycloak/keycloak:21.1.1
+    image: quay.io/keycloak/keycloak:25.0.6
     container_name: tp-keycloak
     environment:
       KC_DB: postgres

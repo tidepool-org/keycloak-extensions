@@ -247,6 +247,11 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
   margin: 0;
 }
 
+.login-pf-page .login-pf-header {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .login-pf-page .card-pf .logo {
   margin-top: 40px;
   margin-bottom: 40px;
@@ -276,7 +281,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 }
 
 .login-pf-page #kc-form-wrapper {
-  max-width: 500px;
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -316,10 +321,11 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
   }
 }
 
-@media(max-width: 512px) {
+@media(max-width: 580px) {
   .login-pf-page #kc-form, .login-pf-page #kc-register-form, .login-pf-page #tp-role-prompt {
     margin-right: auto;
     margin-left: auto;
+    width: 100%;
   }
 }
 
@@ -389,6 +395,14 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
   text-decoration: none;
 }
 
+/* Password visibility toggle */
+.tp-password-visibility:after {
+  border-color: #979797;
+}
+
+.tp-password-visibility:after:hover {
+  border-color: #6078ff;
+}
 
 /* Forgot password */
 .login-pf-page .tp-form-options-wrapper {
@@ -402,6 +416,7 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 .login-pf-page #kc-form-buttons {
   display: flex;
   align-items: center;
+  margin-top: 0;
 }
 
 .login-pf-page #kc-form-buttons input[type="submit"], .login-pf-page #kc-form-buttons button[type="submit"] {
@@ -417,7 +432,6 @@ a.tp-btn-primary:hover, .tp-btn-primary:hover:enabled {
 
 #kc-register-form input[type=submit] {
   width: 100%;
-  margin-top: 20px;
 }
 
 .tp-register-title {
