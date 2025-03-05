@@ -18,9 +18,8 @@
                                        class="${properties.kcInputClass!}" name="username"
                                        value="${(login.username!'')}"
                                        type="text" autofocus autocomplete="username"
-                                       dir="ltr"
                                        placeholder="<#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>"
-                                />
+                                       dir="ltr"/>
 
                                 <#if messagesPerField.existsError('username')>
                                     <div id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
