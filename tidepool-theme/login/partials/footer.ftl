@@ -12,12 +12,4 @@
     <a href="http://support.tidepool.org/" id="support" target="_blank" rel="noreferrer noopener">Get Support</a>
     <a href="http://tidepool.org/legal/" id="legal" target="_blank" rel="noreferrer noopener">Privacy and Terms of Use</a>
   </div>
-  <div class="footer-link footer-jdrf">
-    <a href="http://jdrf.org/" id="jdrf" target="_blank" rel="noreferrer noopener">
-      Made possible by<div class="jdrf-logo-container">
-        <img src="${url.resourcesPath}/img/jdrf_hover.png" alt="JDRF" class="jdrf-logo-hover">
-        <img src="${url.resourcesPath}/img/jdrf.png" alt="JDRF" class="jdrf-logo">
-      </div>
-    </a>
-  </div>
 </div>

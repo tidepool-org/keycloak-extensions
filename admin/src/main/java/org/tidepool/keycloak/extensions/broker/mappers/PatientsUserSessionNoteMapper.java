@@ -122,7 +122,7 @@ public class PatientsUserSessionNoteMapper extends AbstractIdentityProviderMappe
             try {
                 patients = PatientsUserSessionNote.deserializeFromString(noteValue);
             } catch (IOException e) {
-                LOG.warnf("Unable to deserialize patient notes: %s", noteValue);
+                LOG.warnf(e, "Unable to deserialize patient notes: %s.", noteValue);
                 return;
             }
         } else {
