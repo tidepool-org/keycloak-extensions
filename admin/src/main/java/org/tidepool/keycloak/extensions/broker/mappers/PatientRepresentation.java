@@ -11,6 +11,8 @@ public class PatientRepresentation {
     public String mrn;
     public Long timestamp;
 
+    public PatientRepresentation() { }
+
     public PatientRepresentation(Patient patient) {
         id = patient.getId();
         firstName = patient.getNameFirstRep().getGivenAsSingleString();
