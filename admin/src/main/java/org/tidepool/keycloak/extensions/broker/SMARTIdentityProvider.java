@@ -14,6 +14,8 @@ import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
+import org.keycloak.utils.EmailValidationUtil;
+import org.keycloak.validate.validators.EmailValidator;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
 
     public static final String FHIR_VERSION = "smart/fhir_version";
     public static final String FHIR_BASE_URL = "smart/fhir_base_url";
+    public static final String LAUNCH_TOKEN_SYSLOGIN = "syslogin";
 
     private static final String[] DEFAULT_FORWARD_PARAMETERS = {"launch", "aud", "iss"};
 
@@ -46,11 +49,20 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         BrokeredIdentityContext identity = super.extractIdentity(tokenResponse, accessToken, idToken);
 
         Practitioner practitioner = getPractitioner(idToken.getSubject(), accessToken);
-        for (ContactPoint c : practitioner.getTelecom()) {
-            if (c.getSystem() == ContactPoint.ContactPointSystem.EMAIL && c.getValue() != null && !c.getValue().isBlank()) {
-                identity.setEmail(c.getValue());
-                break;
+
+        if (identity.getEmail() == null) {
+            for (ContactPoint c : practitioner.getTelecom()) {
+                if (c.getSystem() == ContactPoint.ContactPointSystem.EMAIL && c.getValue() != null && !c.getValue().isBlank()) {
+                    identity.setEmail(c.getValue());
+                    break;
+                }
             }
+        }
+
+        // Use the login claim from the token response as the email if it exists
+        if (identity.getEmail() == null) {
+            String email = this.extractEmailFromLaunchToken(tokenResponse, LAUNCH_TOKEN_SYSLOGIN);
+            identity.setEmail(email);
         }
 
         identity.setFirstName(practitioner.getNameFirstRep().getGivenAsSingleString());
@@ -60,6 +72,17 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         identity.getContextData().put(FHIR_BASE_URL, config.getIssuer());
 
         return identity;
+    }
+
+    private String extractEmailFromLaunchToken(AccessTokenResponse tokenResponse, String launchTokenSyslogin) {
+        Object value = tokenResponse.getOtherClaims().getOrDefault(launchTokenSyslogin, null);
+        if (!(value instanceof String)) {
+            return null;
+        }
+        if (!EmailValidationUtil.isValidEmail((String)value)) {
+            return null;
+        }
+        return (String) value;
     }
 
     private Practitioner getPractitioner(String id, String accessToken) {
