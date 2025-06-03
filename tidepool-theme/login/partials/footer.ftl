@@ -8,7 +8,6 @@
     </a>
   </div>
   <div class="footer-link secondary large-format-only">
-    <a href="http://tidepool.org/products/tidepool-mobile/" id="mobile" target="_blank" rel="noreferrer noopener">Get Mobile App</a>
     <a href="http://support.tidepool.org/" id="support" target="_blank" rel="noreferrer noopener">Get Support</a>
     <a href="http://tidepool.org/legal/" id="legal" target="_blank" rel="noreferrer noopener">Privacy and Terms of Use</a>
   </div>
