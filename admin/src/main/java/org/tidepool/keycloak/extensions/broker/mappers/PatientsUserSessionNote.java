@@ -12,8 +12,8 @@ public class PatientsUserSessionNote extends HashMap<String, PatientRepresentati
         super();
     }
 
-    public void addPatient(String correlationId, Patient patient) {
-        this.put(correlationId, new PatientRepresentation(patient));
+    public void addPatient(String correlationId, Patient patient, String mrnIdentifierType) {
+        this.put(correlationId, new PatientRepresentation(patient, mrnIdentifierType));
     }
 
     public String serializeAsString() throws IOException {

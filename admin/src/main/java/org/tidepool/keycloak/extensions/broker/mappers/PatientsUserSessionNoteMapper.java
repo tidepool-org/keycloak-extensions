@@ -19,7 +19,6 @@ import org.tidepool.keycloak.extensions.broker.FHIRContext;
 import org.tidepool.keycloak.extensions.broker.SMARTIdentityProvider;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +35,7 @@ public class PatientsUserSessionNoteMapper extends AbstractIdentityProviderMappe
 
     private static final String[] COMPATIBLE_PROVIDERS = { ANY_PROVIDER };
 
-    private static final List<ProviderConfigProperty> CONFIG_PROPERTIES = new ArrayList<>();
+    private static final String CONF_MRN_IDENTIFIER_TYPE = "mrnIdentifierType";
 
     private static final Set<IdentityProviderSyncMode> IDENTITY_PROVIDER_SYNC_MODES =
             new HashSet<>(Arrays.asList(IdentityProviderSyncMode.values()));
@@ -65,7 +64,15 @@ public class PatientsUserSessionNoteMapper extends AbstractIdentityProviderMappe
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        return CONFIG_PROPERTIES;
+        ProviderConfigProperty mrnIdentifierType = new ProviderConfigProperty();
+        mrnIdentifierType.setType(ProviderConfigProperty.STRING_TYPE);
+        mrnIdentifierType.setName(CONF_MRN_IDENTIFIER_TYPE);
+        mrnIdentifierType.setLabel("MRN Identifier Type");
+        mrnIdentifierType.setHelpText("The type of the name of the patient identifier that will be used to populate the MRN variable");
+        mrnIdentifierType.setRequired(true);
+        mrnIdentifierType.setDefaultValue("mrn");
+
+        return List.of(mrnIdentifierType);
     }
 
     @Override
@@ -81,16 +88,18 @@ public class PatientsUserSessionNoteMapper extends AbstractIdentityProviderMappe
     @Override
     public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user,
                               IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
-        addPatientToSessionNote(session, realm, context);
+        String mrnIdentifierName = mapperModel.getConfig().get(CONF_MRN_IDENTIFIER_TYPE);
+        addPatientToSessionNote(session, realm, context, mrnIdentifierName);
     }
 
     @Override
     public void updateBrokeredUser(KeycloakSession session, RealmModel realm, UserModel user,
                                    IdentityProviderMapperModel mapperModel, BrokeredIdentityContext context) {
-        addPatientToSessionNote(session, realm, context);
+        String mrnIdentifierName = mapperModel.getConfig().get(CONF_MRN_IDENTIFIER_TYPE);
+        addPatientToSessionNote(session, realm, context, mrnIdentifierName);
     }
 
-    private void addPatientToSessionNote(KeycloakSession session, RealmModel realm, BrokeredIdentityContext context) {
+    private void addPatientToSessionNote(KeycloakSession session, RealmModel realm, BrokeredIdentityContext context, String mrnIdentifierType) {
         String correlationId = context.getAuthenticationSession().getClientNote(CORRELATION_ID);
         if (correlationId.isBlank()) {
             LOG.warnf("Client correlationId is not defined for brokered user %s", context.getBrokerUserId());
@@ -129,7 +138,7 @@ public class PatientsUserSessionNoteMapper extends AbstractIdentityProviderMappe
             patients = new PatientsUserSessionNote();
         }
 
-        patients.addPatient(correlationId, patient);
+        patients.addPatient(correlationId, patient, mrnIdentifierType);
         try {
             context.setSessionNote(PATIENTS_NOTE_NAME, patients.serializeAsString());
         } catch (IOException e) {
