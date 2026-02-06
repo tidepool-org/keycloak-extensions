@@ -15,7 +15,6 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.utils.EmailValidationUtil;
-import org.keycloak.validate.validators.EmailValidator;
 
 import java.io.IOException;
 import java.util.Arrays;
