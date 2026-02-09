@@ -1,6 +1,7 @@
 package org.tidepool.keycloak.extensions.authenticator;
 
 
+import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.authenticators.broker.AbstractIdpAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
@@ -12,10 +13,16 @@ import org.keycloak.utils.EmailValidationUtil;
 
 public class RequireValidBrokerEmail extends AbstractIdpAuthenticator {
 
+    private static final Logger LOG = Logger.getLogger(RequireValidBrokerEmail.class);
+
     @Override
     protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
         String email = brokerContext.getEmail();
-        if (EmailValidationUtil.isValidEmail(email)) {
+        boolean isValid = EmailValidationUtil.isValidEmail(email);
+
+        LOG.debugf("broker email '%s' for user '%s' of provider '%s' is%s valid", email, brokerContext.getUsername(), brokerContext.getIdpConfig().getAlias(), isValid ? "" : " not");
+
+        if (isValid) {
             context.success();
             return;
         }

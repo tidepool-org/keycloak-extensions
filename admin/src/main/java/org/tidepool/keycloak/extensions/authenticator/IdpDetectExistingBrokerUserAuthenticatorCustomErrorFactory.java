@@ -13,7 +13,7 @@ import org.keycloak.provider.ProviderConfigProperty;
 
 public class IdpDetectExistingBrokerUserAuthenticatorCustomErrorFactory implements AuthenticatorFactory {
 
-    public static final String PROVIDER_ID = "idp-detect-existing-broker-user-custom-error";
+    public static final String PROVIDER_ID = "idp-existing-user-custom-error";
 
     public static final String CONF_ERROR_MESSAGE = "errorMessage";
 
