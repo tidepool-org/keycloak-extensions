@@ -44,7 +44,7 @@ public class IdpDetectExistingBrokerUserAuthenticatorCustomError extends IdpDete
             .map(f -> f.get(IdpDetectExistingBrokerUserAuthenticatorCustomErrorFactory.CONF_ERROR_MESSAGE))
             .filter(m -> !m.isBlank())
             .ifPresent(message -> {
-                LOG.warnf("User %s doesn't exists in the realm, returning custom error message", username);
+                LOG.warnf("User %s doesn't exist in the realm, returning custom error message", username);
                 context.challenge(
                     context.form()
                         .setError(message, username, brokerContext.getIdpConfig().getAlias())

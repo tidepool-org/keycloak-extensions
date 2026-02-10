@@ -40,7 +40,7 @@ public class PatientRepresentation {
     private static String getIdentifier(Patient patient, String mrnIdentifierType) {
         Identifier id = null;
         for (Identifier t : patient.getIdentifier()) {
-            if (!t.hasType() || !mrnIdentifierType.equalsIgnoreCase(t.getType().getText())) {
+            if (!t.hasType() || mrnIdentifierType == null || !mrnIdentifierType.equalsIgnoreCase(t.getType().getText())) {
                 continue;
             }
             id = chooseId(id, t);
