@@ -67,7 +67,7 @@ public class IdpDetectExistingBrokerUserAuthenticatorCustomErrorFactory implemen
 
     @Override
     public String getHelpText() {
-        return "Detect if there is an existing Keycloak account with same email like identity provider. If no, throw the configured error.";
+        return "Detect if there is an existing account that has a matching email address to the one obtained from the IDP. If no, throw the configured error.";
     }
 
     @Override
