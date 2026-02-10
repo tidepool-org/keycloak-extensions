@@ -1,1 +1,2 @@
 org.tidepool.keycloak.extensions.broker.mappers.PatientsUserSessionNoteMapper
+org.tidepool.keycloak.extensions.broker.mappers.ContextTokenUserSessionNoteMapper
