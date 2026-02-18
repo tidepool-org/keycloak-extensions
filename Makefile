@@ -1,6 +1,6 @@
 keycloak_version = 26.1.3
 date := $(shell date -u +"%Y-%m-%dT%H-%M-%S")
-image_tag := $(keycloak_version)-$(date)
+image_tag := $(keycloak_version)-$(git rev-parse --abbrev-ref HEAD)-$(git rev-parse --short HEAD)-$(date)
 
 build-artifacts:
 	./mvnw clean compile package
