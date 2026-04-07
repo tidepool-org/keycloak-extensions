@@ -15,11 +15,9 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
 import org.keycloak.utils.EmailValidationUtil;
-import org.keycloak.validate.validators.EmailValidator;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 public class SMARTIdentityProvider extends OIDCIdentityProvider {
     private static final Logger LOG = Logger.getLogger(SMARTIdentityProvider.class);
@@ -42,6 +40,7 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         getConfig().setAlias(config.getAlias());
         getConfig().setForwardParameters(withDefaultForwardParameters(config.getForwardParameters()));
         getConfig().setDisableUserInfoService(true);
+        getConfig().setStoreToken(true);
     }
 
     @Override
