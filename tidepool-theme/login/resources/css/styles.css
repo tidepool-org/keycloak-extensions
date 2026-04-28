@@ -508,6 +508,15 @@ svg {
   margin: 0 auto;
 }
 
+/* hidpd-select-idp.ftl emits unsized <svg viewBox=...>, so constrain it here. */
+#kc-social-providers a svg {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  margin: 0 0.5em 0 0;
+  vertical-align: middle;
+}
+
 .footer-facebook {
   width: 32px;
   height: 32px;
