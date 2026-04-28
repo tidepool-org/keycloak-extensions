@@ -1,9 +1,10 @@
-keycloak_version = 26.1.3
+keycloak_version = 26.6.1
 date := $(shell date -u +"%Y-%m-%dT%H-%M-%S")
 image_tag := $(keycloak_version)-$(date)
 
 build-artifacts:
 	./mvnw clean compile package
+
 
 # Builds the docker image
 build: build-artifacts
