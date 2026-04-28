@@ -508,13 +508,84 @@ svg {
   margin: 0 auto;
 }
 
-/* hidpd-select-idp.ftl emits unsized <svg viewBox=...>, so constrain it here. */
-#kc-social-providers a svg {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  margin: 0 0.5em 0 0;
-  vertical-align: middle;
+/* Home IdP Discovery: render the plugin's IdP buttons with the same look as
+   the built-in authenticator selection (select-auth-box-parent). The provider
+   name is pulled from the anchor's aria-label since the template emits only
+   an SVG inside the <a> for known aliases. The hidpd template lives directly
+   inside #kc-content-wrapper (max-width 800px) without a <form> wrapper, so
+   we constrain width here to match the rest of the login form (360px). */
+.login-pf-page .pf-v5-c-login__main-footer-band,
+.login-pf-page #kc-social-providers {
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#hidpd-select-provider-title {
+  text-align: center;
+}
+
+#kc-social-providers {
+  text-align: left;
+}
+
+#kc-social-providers .kc-social-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#kc-social-providers .kc-social-links li {
+  margin: 0;
+}
+
+#kc-social-providers a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  min-height: 56px;
+  margin-bottom: 8px;
+  border: none;
+  outline: 0;
+  background-color: #fff;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23375178' d='M5 3h11v2H5zM5 7h11v2H5zM5 11h11v2H5zM1 3h2v2H1zM1 7h2v2H1zM1 11h2v2H1z'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 14'><path d='M1 1l6 6-6 6' fill='none' stroke='%23375178' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat, no-repeat;
+  background-position: 16px center, right 16px center;
+  background-size: 24px auto, 8px auto;
+  padding: 8px 32px 8px 56px;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  color: #375178;
+}
+
+#kc-social-providers a:hover {
+  text-decoration: none;
+}
+
+#kc-social-providers a:hover::after {
+  border-bottom-color: rgb(98, 124, 255);
+}
+
+/* Drop the bundled provider SVGs and any inner display-name spans;
+   the headline below is rendered from aria-label instead. */
+#kc-social-providers a > * {
+  display: none;
+}
+
+/* zocial.css applies position:absolute to a::before for its sprite icons,
+   which knocks pseudo-elements out of flex flow. Force static to keep the
+   headline as a flex item beside the background-image icons. */
+#kc-social-providers a::before {
+  content: attr(aria-label);
+  position: static;
+  flex: 1 1 auto;
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: bold;
 }
 
 .footer-facebook {
