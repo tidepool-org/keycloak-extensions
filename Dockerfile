@@ -12,9 +12,9 @@ RUN unset MAVEN_CONFIG && \
     ./mvnw versions:set -DnewVersion=LATEST && \
     ./mvnw install && \
     ./mvnw clean compile package && \
-    wget -O keycloak-rest-provider.jar https://github.com/daniel-frak/keycloak-user-migration/releases/download/6.0.2/keycloak-rest-provider-6.0.2.jar && \
+    wget -O keycloak-rest-provider.jar https://github.com/daniel-frak/keycloak-user-migration/releases/download/6.2.1/keycloak-rest-provider-6.2.1.jar && \
     wget -O keycloak-metrics-spi.jar https://github.com/aerogear/keycloak-metrics-spi/releases/download/7.0.0/keycloak-metrics-spi-7.0.0.jar && \
-    wget -O keycloak-home-idp-discovery.jar https://github.com/tidepool-org/keycloak-home-idp-discovery/releases/download/v26.1.1/keycloak-home-idp-discovery.jar
+    wget -O keycloak-home-idp-discovery.jar https://github.com/tidepool-org/keycloak-home-idp-discovery/releases/download/v26.6.1/keycloak-home-idp-discovery.jar
 
 FROM alpine:latest as release
 
