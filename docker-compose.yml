@@ -22,13 +22,13 @@ services:
     command: [
       "/bin/sh",
       "-c",
-      "apk add ca-certificates && update-ca-certificates && rm -f /providers/* && cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/tidepool-org/keycloak-home-idp-discovery/releases/download/v26.1.1/keycloak-home-idp-discovery.jar"]
+      "apk add ca-certificates && update-ca-certificates && rm -f /providers/* && cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/tidepool-org/keycloak-home-idp-discovery/releases/download/v26.6.1/keycloak-home-idp-discovery.jar"]
     volumes:
       - ./admin/target/admin-LATEST.jar:/local/admin.jar
       - providers:/providers
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.6.0
+    image: quay.io/keycloak/keycloak:26.6.1
     container_name: tp-keycloak
     environment:
       KC_DB: postgres
