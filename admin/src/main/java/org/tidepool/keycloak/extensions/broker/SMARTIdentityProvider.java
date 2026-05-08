@@ -34,6 +34,7 @@ public class SMARTIdentityProvider extends OIDCIdentityProvider {
         super(session, discoverConfig(session, config.getIssuer()));
 
         this.config = config;
+        getConfig().setEnabled(config.isEnabled());
         getConfig().setClientId(config.getClientId());
         getConfig().setClientSecret(config.getClientSecret());
         getConfig().setDefaultScope(config.getScopes());

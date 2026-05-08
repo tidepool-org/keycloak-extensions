@@ -5,8 +5,8 @@
 # Artifacts
 target/
 
-# Original theme
-themes/base
+# Original themes
+themes/
 
 # Environment
 .env

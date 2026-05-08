@@ -10,8 +10,8 @@ import org.keycloak.services.managers.AppAuthManager;
 import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.resources.admin.AdminAuth;
-import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
-import org.keycloak.services.resources.admin.permissions.AdminPermissions;
+import org.keycloak.services.resources.admin.fgap.AdminPermissionEvaluator;
+import org.keycloak.services.resources.admin.fgap.AdminPermissions;
 
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
@@ -42,7 +42,7 @@ public abstract class AdminResource {
         RealmManager realmManager = new RealmManager(session);
         RealmModel realm = realmManager.getRealmByName(realmName);
         RealmModel realmInContext = session.getContext().getRealm();
-        if (realm == null || !realm.equals(realmManager.getKeycloakAdminstrationRealm())) {
+        if (realm == null || !realm.equals(realmManager.getKeycloakAdministrationRealm())) {
             throw new NotAuthorizedException("Unknown realm");
         }
 
