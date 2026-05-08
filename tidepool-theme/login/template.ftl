@@ -123,7 +123,11 @@
                     <img class="logo" src="${url.resourcesPath}/img/tidepool-logo-890x96.png" alt="Tidepool"/>
                 </#if>
             </a>
-        <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
+        <#-- Skip the disabled "attempted username" header on login-username.ftl: the home-idp-discovery -->
+        <#-- authenticator pre-populates the email via login_hint, which makes auth.showUsername() true even -->
+        <#-- on the first step. The page already renders an editable username input, so the disabled one -->
+        <#-- would duplicate it (two elements with id="username"). -->
+        <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials()) || (pageId?? && pageId == 'login-username')>
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
                     <div class="${properties.kcLabelWrapperClass!} subtitle">
