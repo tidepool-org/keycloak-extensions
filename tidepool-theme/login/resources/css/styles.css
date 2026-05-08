@@ -570,17 +570,10 @@ svg {
   border-bottom-color: rgb(98, 124, 255);
 }
 
-/* Drop the bundled provider SVGs and any inner display-name spans;
-   the headline below is rendered from aria-label instead. */
-#kc-social-providers a > * {
-  display: none;
-}
-
 /* zocial.css applies position:absolute to a::before for its sprite icons,
    which knocks pseudo-elements out of flex flow. Force static to keep the
    headline as a flex item beside the background-image icons. */
 #kc-social-providers a::before {
-  content: attr(aria-label);
   position: static;
   flex: 1 1 auto;
   font-size: 16px;
