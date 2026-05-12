@@ -2,6 +2,7 @@
 <#import "passkeys.ftl" as passkeys>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username') displayInfo=(realm.password && realm.registrationAllowed && !registrationDisabled??); section>
     <#if section = "header">
+        <#-- Tidepool change: branded headline replacing upstream "Sign in to your account". -->
         ${msg("letsGetStarted")}
     <#elseif section = "form">
         <div id="kc-form">
@@ -11,6 +12,9 @@
                           method="post">
                         <#if !usernameHidden??>
                             <div class="${properties.kcFormGroupClass!}">
+                                <#-- Tidepool change: label uses prompt-style strings ("Enter your email" etc.) instead of -->
+                                <#-- the upstream bare noun ("Email"). The bare noun is reused below as the input placeholder, -->
+                                <#-- so the field reads as "Enter your email" / placeholder "Email". -->
                                 <label for="username"
                                        class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("enterYourUsername")}<#elseif !realm.registrationEmailAsUsername>${msg("enterYourUsernameOrEmail")}<#else>${msg("enterYourEmail")}</#if></label>
 
@@ -23,6 +27,8 @@
                                        placeholder="<#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>"
                                        dir="ltr"/>
 
+                                <#-- Tidepool change: <span> -> <div> so the error message renders as a block under the input -->
+                                <#-- (the tp-form-error class assumes block-level layout). -->
                                 <#if messagesPerField.existsError('username')>
                                     <div id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                         ${kcSanitize(messagesPerField.get('username'))?no_esc}
@@ -49,6 +55,8 @@
                             </div>
                         </div>
 
+                        <#-- Tidepool change: button label is "Next" (this is step 1 of a two-step flow that proceeds to -->
+                        <#-- the password screen in login.ftl), not the upstream "Sign In". -->
                         <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
                             <input tabindex="4"
                                    class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}"
@@ -88,6 +96,7 @@
                 </ul>
             </div>
         </#if>
+    <#-- Tidepool addition: render the Tidepool footer (consumed by the "footer" slot in template.ftl). -->
     <#elseif section = "footer" >
         <#include "./partials/footer.ftl">
     </#if>

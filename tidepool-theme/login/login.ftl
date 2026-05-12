@@ -1,7 +1,12 @@
 <#import "template.ftl" as layout>
 <#import "passkeys.ftl" as passkeys>
+<#-- Tidepool change: hardcode displayInfo=false to suppress the "New user? Register" link. -->
+<#-- Reason: this template is the password (step 2) screen in Tidepool's flow — users only land here -->
+<#-- when an account already exists, so the registration CTA is irrelevant. The registration link is -->
+<#-- shown on step 1 (login-username.ftl) instead, where displayInfo follows realm settings. -->
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=false; section>
     <#if section = "header">
+        <#-- Tidepool change: branded headline instead of upstream "Sign in to your account". -->
         ${msg("letsGetStarted")}
     <#elseif section = "form">
         <div id="kc-form">
@@ -12,6 +17,8 @@
                         <div class="${properties.kcFormGroupClass!}">
                             <label for="username" class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if></label>
 
+                            <#-- Tidepool change: add a placeholder mirroring the label text. The Tidepool design moves the -->
+                            <#-- field label outside the input, so a placeholder is shown until the user types. -->
                             <input tabindex="2" id="username" class="${properties.kcInputClass!}" name="username" value="${(login.username!'')}"  type="text"
                                    autofocus autocomplete="${(enableWebAuthnConditionalUI?has_content)?then('username webauthn', 'username')}"
                                    placeholder="<#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>"
@@ -19,6 +26,10 @@
                                    dir="ltr"
                             />
 
+                            <#-- Tidepool change: render the error wrapper as <div> instead of upstream <span>. -->
+                            <#-- The tp-form-error class targets block-level layout; using <span> made the error wrap inline -->
+                            <#-- next to the field and broke spacing. Same change is applied a few lines below for the -->
+                            <#-- username-hidden branch. -->
                             <#if messagesPerField.existsError('username','password')>
                                 <div id="input-error" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                                         ${kcSanitize(messagesPerField.getFirstError('username','password'))?no_esc}
@@ -116,6 +127,8 @@
                 </ul>
             </div>
         </#if>
+    <#-- Tidepool addition: render the Tidepool-branded footer (social links + support/legal). -->
+    <#-- The "footer" section is consumed by the customized footer slot in template.ftl. -->
     <#elseif section = "footer" >
         <#include "./partials/footer.ftl">
     </#if>

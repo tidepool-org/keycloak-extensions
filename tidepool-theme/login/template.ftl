@@ -82,6 +82,8 @@
         </script>
     </#if>
 
+    <#-- Tidepool addition: load the Zendesk widget so users can request support directly from the login UI. -->
+    <#-- The key is wired through theme.properties from the TIDEPOOL_ZENDESK_KEY env var; if it's empty the widget is skipped. -->
     <#if properties.zendeskKey?has_content>
       <!-- Start of tidepoolsupport Zendesk Widget script -->
       <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=${properties.zendeskKey}" type="text/javascript"></script>
@@ -115,7 +117,11 @@
                     </div>
                 </div>
             </#if>
+            <#-- Tidepool addition: optional "pre-header" slot for screens that want to render content above the logo. -->
             <#nested "pre-header">
+            <#-- Tidepool addition: replace Keycloak's default kc-header text block with a branded logo. The kcHeaderClass -->
+            <#-- is set to "hidden" in theme.properties so the upstream header is suppressed; this block renders instead. -->
+            <#-- The clinician-vs-patient logo is chosen via the `role` helper exposed by Tidepool's custom registration flow. -->
             <a class="logo-link" href="${properties.tidepoolUrl!}">
                 <#if role?? && role.hasClinicianRole()>
                     <img class="logo" src="${url.resourcesPath}/img/tidepool-plus-logo-985x96.png" alt="Tidepool+"/>
@@ -148,11 +154,14 @@
                     </div>
                     <div class="col-md-10">
                         <#nested "show-username">
+                        <#-- Tidepool change: extract the upstream inline "kc-username + restart-login tooltip" markup -->
+                        <#-- into partials/attempted-username.ftl so it can be reused (e.g. on the IDP linking screens). -->
                         <#include "./partials/attempted-username.ftl">
                     </div>
                 </div>
             <#else>
                 <#nested "show-username">
+                <#-- Tidepool change: see comment above; same partial extraction. -->
                 <#include "./partials/attempted-username.ftl">
             </#if>
         </#if>
@@ -199,6 +208,9 @@
       </div>
 
     </div>
+    <#-- Tidepool change: drop upstream <@loginFooter.content/> (which renders Keycloak's locale/footer block) and -->
+    <#-- replace it with a Tidepool-branded footer slot. Pages opt in by defining the "footer" section (see -->
+    <#-- partials/footer.ftl, included from login.ftl / login-username.ftl). -->
     <div id="kc-footer" class="${properties.kcFooterClass!}">
       <div id="kc-footer-wrapper" class="${properties.kcFooterWrapperClass!}">
           <#nested "footer">

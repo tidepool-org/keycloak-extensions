@@ -1,4 +1,7 @@
 <#import "template.ftl" as layout>
+<#-- Tidepool change: switched to the sectioned emailLayout. Upstream emits a single ${msg("emailVerificationBodyHtml", ...)} -->
+<#-- blob; here we hand the link to the layout's actionLink slot so it renders as a Tidepool CTA button, and the body copy -->
+<#-- is inlined in English. -->
 <@layout.emailLayout displayHeader=true displayAction=true; section>
     <#if section = "header">
         Hey there!

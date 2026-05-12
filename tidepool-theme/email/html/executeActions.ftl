@@ -3,6 +3,8 @@
 </#outputformat>
 
 <#import "template.ftl" as layout>
+<#-- Tidepool change: switched to the sectioned emailLayout — body kept as the upstream msg() call, but the action -->
+<#-- link is broken out into actionLink/actionText slots so it renders as the Tidepool CTA button. -->
 <@layout.emailLayout displayHeader=true displayAction=true; section>
     <#if section = "header">
       Hey there!
