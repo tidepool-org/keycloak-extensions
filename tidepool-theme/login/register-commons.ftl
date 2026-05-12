@@ -1,3 +1,10 @@
+<#-- Tidepool change: complete rewrite of the upstream termsAcceptance macro. -->
+<#-- Upstream renders two stacked form-groups: a "Terms and Conditions" body block (msg("termsText")) plus a -->
+<#-- separate "I agree" checkbox named "termsAccepted". Tidepool collapses this into a single inline checkbox -->
+<#-- with the Tidepool ToU and Privacy Policy links built directly into the label (hard-coded URLs, not msg -->
+<#-- keys, because both links are Tidepool-global and never localized/per-realm). -->
+<#-- Note the form field is renamed from "termsAccepted" to "terms" to match the field name expected by -->
+<#-- Tidepool's terms-validation logic on the server side (and by clinician_terms.ftl / patient_terms.ftl). -->
 <#macro termsAcceptance>
     <#if termsAcceptanceRequired??>
         <div class="${properties.kcFormGroupClass!}">

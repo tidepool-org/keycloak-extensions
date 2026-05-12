@@ -1,3 +1,10 @@
+<#-- Tidepool change: full replacement of the upstream emailLayout macro. -->
+<#-- Upstream is a trivial wrapper: `<html><body><#nested></body></html>` that just emits whatever the -->
+<#-- per-template body passes in. Tidepool replaces this with a fully-styled, Outlook-safe HTML email -->
+<#-- shell (inline styles, MSO conditional blocks, Tidepool logo + social/support links in the footer) -->
+<#-- and converts the macro signature to accept `displayHeader` / `displayAction` flags. Each calling -->
+<#-- template now supplies named sections (`header`, `content`, `actionText`, `actionLink`) via the -->
+<#-- `<#nested "name">` mechanism instead of dumping a single raw nested block. -->
 <#macro emailLayout displayHeader=false displayAction=false>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${locale.language}" dir="${(ltr)?then('ltr','rtl')}">

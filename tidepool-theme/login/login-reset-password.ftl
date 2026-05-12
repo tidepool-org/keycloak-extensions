@@ -9,6 +9,10 @@
                     <label for="username" class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if></label>
                 </div>
                 <div class="${properties.kcInputWrapperClass!}">
+                    <#-- Tidepool change: make the username field readonly when it was already supplied by the login -->
+                    <#-- step (auth.attemptedUsername is non-empty). The user has just typed it on the previous screen, -->
+                    <#-- so we lock it in to avoid them sending the reset to a different address by accident. When the -->
+                    <#-- field is empty (deep-linked into reset), the input stays editable. -->
                     <input type="text" id="username" name="username" class="${properties.kcInputClass!}" autofocus value="${(auth.attemptedUsername!'')}" aria-invalid="<#if messagesPerField.existsError('username')>true</#if>" <#if auth.attemptedUsername?has_content>readonly="readonly"</#if>  dir="ltr"/>
                     <#if messagesPerField.existsError('username')>
                         <span id="input-error-username" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
