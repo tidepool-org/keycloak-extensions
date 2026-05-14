@@ -6,6 +6,7 @@
   --tp-color-brand-purple: #281946;
   --tp-color-indigo: #627cff;
   --tp-color-indigo-hover: #4f63d6;
+  --tp-color-indigo-bg: #f0f5ff;   /* Figma blue.00 — selected card bg */
   --tp-color-blue-30: #708fc2;   /* placeholder text */
   --tp-color-blue-50: #4f6a92;   /* field labels */
   --tp-color-blue-60: #445f87;   /* secondary form text (e.g. Remember me) */
@@ -135,6 +136,13 @@ body.login-pf,
   display: none;
 }
 
+/* Clinician-role screens get the Tidepool+ wordmark instead of the standard */
+/* Tidepool logo. template.ftl adds a "tp-role-clinician" class on <body> when */
+/* the auth session's role bean reports a clinician role. */
+body.tp-role-clinician #kc-header-wrapper {
+  background-image: url('../img/tidepool-plus-logo.png');
+}
+
 /* Card. */
 .pf-v5-c-login__main {
   grid-area: main;
@@ -178,13 +186,16 @@ body.login-pf,
 
 /* Form group spacing: 16px between rows, then a larger 48px gap before the */
 /* action button (the last form group, which wraps the primary submit). */
-#kc-form-login {
+/* Applied to both the login form and the registration form. */
+#kc-form-login,
+#kc-register-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-#kc-form-login > .pf-v5-c-form__group:last-child {
+#kc-form-login > .pf-v5-c-form__group:last-child,
+#kc-register-form > .pf-v5-c-form__group:last-child {
   margin-top: 32px;
 }
 
@@ -194,7 +205,7 @@ body.login-pf,
 }
 
 .pf-v5-c-form__group-label {
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .pf-v5-c-form__label,
@@ -204,6 +215,21 @@ body.login-pf,
   font-weight: 500;
   line-height: 20px;
   color: var(--tp-color-blue-50);
+}
+
+/* Hide the required-asterisk indicator that PatternFly emits via @field.group */
+/* — design uses an "(optional)" suffix on optional fields instead (see below). */
+.pf-v5-c-form__label-required {
+  display: none !important;
+}
+
+/* Append "(optional)" to the label of any field that does NOT have a required */
+/* asterisk in its DOM (the @group macro only renders the asterisk when */
+/* required=true, so :not(:has(.label-required)) reliably matches optional). */
+.pf-v5-c-form__group-label .pf-v5-c-form__label:not(:has(.pf-v5-c-form__label-required)) .pf-v5-c-form__label-text::after {
+  content: " (optional)";
+  color: var(--tp-color-blue-30);
+  font-weight: 400;
 }
 
 /* Inputs. */
@@ -506,6 +532,153 @@ body.login-pf,
   top: 1px;
 }
 
+/* Inline link inside a checkbox label (e.g. ToU + Privacy Policy in the */
+/* terms acceptance checkbox on the clinician registration screen). */
+.pf-v5-c-check__label .tp-inline-link,
+.tp-inline-link {
+  color: var(--tp-color-indigo);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.pf-v5-c-check__label .tp-inline-link:hover,
+.pf-v5-c-check__label .tp-inline-link:focus,
+.tp-inline-link:hover,
+.tp-inline-link:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
+/* When a checkbox label has inline links (terms acceptance), the label wraps */
+/* to multiple lines on narrow viewports. align-items: center on the parent */
+/* would center the checkbox vertically across the entire wrapped block; */
+/* instead, align to the top so the checkbox sits beside the FIRST line. */
+.pf-v5-c-check:has(.tp-inline-link) {
+  align-items: flex-start;
+}
+
+/* The checkbox input has align-self: center (to fix Remember me's baseline */
+/* offset). Override that here so the input respects the parent's flex-start. */
+/* Then nudge the checkbox down 2px so it visually centers on the first line */
+/* (16px checkbox in a 20px line-box → 2px above and below). */
+.pf-v5-c-check:has(.tp-inline-link) .pf-v5-c-check__input {
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* Role picker on user_role_prompt.ftl — two stacked cards. Visual style */
+/* matches the "Navigational Cards v2" component from Figma (file */
+/* g8xYrHViRt9nd1oXx0OuIF, node 11631:25234): 1.5px border, 24px padding, */
+/* indigo title, blue-60 description, light-indigo bg + check icon on select. */
+.tp-role-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tp-role-option {
+  display: block;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hide the native radio but keep it focusable. */
+.tp-role-option-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.tp-role-option-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  border: 1.5px solid var(--tp-color-card-border);
+  border-radius: var(--tp-input-radius);
+  background: var(--tp-color-card-bg);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tp-role-option-text {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tp-role-option-title {
+  font-family: var(--tp-font-family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  color: var(--tp-color-indigo);
+}
+
+.tp-role-option-description {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
+.tp-role-option-check {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-color-indigo);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tp-role-option-check svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Hover state — keep neutral border but hint at interactivity. */
+.tp-role-option:hover .tp-role-option-card {
+  border-color: var(--tp-color-indigo);
+}
+
+/* Focus on the (visually hidden) radio input. */
+.tp-role-option-input:focus-visible + .tp-role-option-card {
+  border-color: var(--tp-color-indigo);
+  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+}
+
+/* Selected: indigo border, light-indigo background, check icon visible. */
+.tp-role-option-input:checked + .tp-role-option-card {
+  border-color: var(--tp-color-indigo);
+  background-color: var(--tp-color-indigo-bg);
+}
+
+.tp-role-option-input:checked + .tp-role-option-card .tp-role-option-check {
+  opacity: 1;
+}
+
+/* Disabled primary button (the Continue button before a role is picked). */
+.pf-v5-c-button.pf-m-primary:disabled {
+  background-color: #9aa4d8;
+  cursor: not-allowed;
+}
+
+#tp-role-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#tp-role-prompt > .pf-v5-c-form__group:last-child {
+  margin-top: 32px;
+}
+
 /* Primary button. */
 .pf-v5-c-button.pf-m-primary {
   background-color: var(--tp-color-indigo);
@@ -574,6 +747,22 @@ body.login-pf,
 
 #kc-registration a:hover,
 #kc-registration a:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
+/* Cross-flow links on the registration screens ("Personal Account" / */
+/* "Clinician Account") match the primary indigo used for other links. */
+#kc-registration-clinician a,
+#kc-registration-personal a {
+  color: var(--tp-color-indigo);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+#kc-registration-clinician a:hover,
+#kc-registration-clinician a:focus,
+#kc-registration-personal a:hover,
+#kc-registration-personal a:focus {
   color: var(--tp-color-indigo-hover);
 }
 
