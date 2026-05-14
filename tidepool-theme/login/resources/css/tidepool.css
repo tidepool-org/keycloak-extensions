@@ -1,0 +1,705 @@
+/* Tidepool theme overrides on top of keycloak.v2. Sizing + tokens come from the */
+/* Figma design (file g8xYrHViRt9nd1oXx0OuIF, node 11630:22547). */
+
+:root {
+  /* Brand palette (Figma variables). */
+  --tp-color-brand-purple: #281946;
+  --tp-color-indigo: #627cff;
+  --tp-color-indigo-hover: #4f63d6;
+  --tp-color-blue-30: #708fc2;   /* placeholder text */
+  --tp-color-blue-50: #4f6a92;   /* field labels */
+  --tp-color-blue-60: #445f87;   /* secondary form text (e.g. Remember me) */
+  --tp-color-blue-gray-10: #d1d6e1;  /* input border */
+  --tp-color-blue-gray-30: #838ca0;  /* checkbox border */
+  --tp-color-card-border: #d9d9d9;
+  --tp-color-error: #cc2900;     /* Figma Feedback/red.50 */
+  --tp-color-muted: #8a8a8e;     /* "Don't have an account?" */
+  --tp-color-page-bg: #f7f7f8;
+  --tp-color-card-bg: #ffffff;
+  --tp-color-footer-link: #6b7280;
+
+  /* Shape. */
+  --tp-card-radius: 4px;
+  --tp-input-radius: 4px;
+  --tp-button-radius: 3px;
+
+  --tp-font-family: 'Basis', 'Basis Grotesque Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* Brand font (Basis Grotesque). */
+@font-face {
+  font-family: 'Basis';
+  src: url('../fonts/basis/basis-grotesque-regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Basis';
+  src: url('../fonts/basis/basis-grotesque-medium.woff') format('woff');
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Basis';
+  src: url('../fonts/basis/basis-grotesque-bold.woff') format('woff');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Replace keycloak.v2's dark hero background with the Tidepool page surface. */
+body.login-pf,
+.login-pf body,
+#keycloak-bg {
+  background: var(--tp-color-page-bg) !important;
+  color: var(--tp-color-brand-purple);
+  font-family: var(--tp-font-family);
+  min-height: 100vh;
+}
+
+.login-pf body {
+  background: var(--tp-color-page-bg) !important;
+}
+
+/* Outer wrapper: full-height grid so the footer is reliably anchored at the */
+/* bottom row. With flexbox the container's auto-basis was overflowing past */
+/* 100vh on shorter viewports and pushing the footer below the fold. */
+.pf-v5-c-login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 48px 16px 32px;
+}
+
+/* Center logo + card column, near the top of the available space. */
+/* Column caps at the Figma's 600px but shrinks to fit narrower viewports — */
+/* minmax(0, 600px) lets the track collapse below 600px instead of overflowing. */
+/* The Figma frame is huge (1728×1157); on shorter laptop viewports (MacBook */
+/* Air 15"), the absolute padding/gap values felt too generous — tightened */
+/* both to keep the logo close to the page top and to the card. */
+.pf-v5-c-login__container {
+  display: grid;
+  grid-template-columns: minmax(0, 600px);
+  grid-template-areas:
+    "header"
+    "main";
+  align-content: start;
+  /* Don't let the outer login grid vertically center the container — anchor */
+  /* it to the top of its 1fr row so the logo sits near the top of the page. */
+  align-self: start;
+  gap: 48px;
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Header: swap keycloak text logo for the Tidepool wordmark image. */
+/* Override the upstream margin-top: 64px (which also collapses to 0 at some */
+/* breakpoints, causing the gap to disappear on smaller screens). Anchor the */
+/* logo-to-card gap in the container's grid-row gap so it's consistent. */
+.pf-v5-c-login__header {
+  display: flex;
+  justify-content: center;
+  grid-area: header;
+  margin: 0;
+}
+
+#kc-header-wrapper {
+  background-image: url('../img/tidepool-logo.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 44px;
+  width: 100%;
+  max-width: 390px;
+  /* Upstream keycloak.v2 styles inject margin-bottom: 48px on this wrapper. */
+  /* Suppress so the logo-to-card gap is controlled by the container's grid gap. */
+  margin: 0 !important;
+  /* Hide the upstream text content while preserving accessibility. */
+  text-indent: -9999px;
+  overflow: hidden;
+  white-space: nowrap;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+/* The kc-header-wrapper contains a nested kc-logo-text div that the upstream */
+/* keycloak.v2 stylesheet paints with the Keycloak logo. Hide it so our Tidepool */
+/* background-image is the only thing visible. */
+#kc-header-wrapper .kc-logo-text {
+  display: none;
+}
+
+/* Card. */
+.pf-v5-c-login__main {
+  grid-area: main;
+  background: var(--tp-color-card-bg);
+  border: 1px solid var(--tp-color-card-border);
+  border-radius: var(--tp-card-radius);
+  padding: 32px;
+  box-shadow: none;
+}
+
+/* Drop keycloak.v2's colored top border + 70/30 grid on the card header. */
+.pf-v5-c-login__main-header {
+  border-top: none;
+  padding: 0;
+  margin-bottom: 48px;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  div.pf-v5-c-login__main-header {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Title: "Log in to Tidepool". */
+#kc-page-title,
+.pf-v5-c-login__main-header .pf-v5-c-title {
+  font-family: var(--tp-font-family);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--tp-color-brand-purple);
+  text-align: center;
+  margin: 0;
+  line-height: 24px;
+}
+
+/* Form body spacing. */
+.pf-v5-c-login__main-body {
+  padding: 0;
+}
+
+/* Form group spacing: 16px between rows, then a larger 48px gap before the */
+/* action button (the last form group, which wraps the primary submit). */
+#kc-form-login {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#kc-form-login > .pf-v5-c-form__group:last-child {
+  margin-top: 32px;
+}
+
+/* Form group / label. */
+.pf-v5-c-form__group {
+  margin: 0;
+}
+
+.pf-v5-c-form__group-label {
+  margin-bottom: 4px;
+}
+
+.pf-v5-c-form__label,
+.pf-v5-c-form__label-text {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-50);
+}
+
+/* Inputs. */
+.pf-v5-c-form-control {
+  border: 1px solid var(--tp-color-blue-gray-10);
+  border-radius: var(--tp-input-radius);
+  background: var(--tp-color-card-bg);
+  padding: 0;
+  min-height: 40px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pf-v5-c-form-control input {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-brand-purple);
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+.pf-v5-c-form-control input::placeholder {
+  color: var(--tp-color-blue-30);
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* Hover: darken border subtly. */
+.pf-v5-c-form-control:hover:not(:focus-within) {
+  border-color: var(--tp-color-blue-gray-30);
+}
+
+/* Focus: indigo border + soft halo. Suppress the browser's default outline */
+/* on the inner <input> (it renders a heavy blue rectangle that doesn't match */
+/* the design). */
+.pf-v5-c-form-control:focus-within {
+  border-color: var(--tp-color-indigo);
+  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+}
+
+.pf-v5-c-form-control input:focus,
+.pf-v5-c-form-control input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* PatternFly v5 paints a 2px blue underline via .pf-v5-c-form-control::after */
+/* on focus. Suppress both pseudos so the focus state is just our border + halo. */
+.pf-v5-c-form-control::before,
+.pf-v5-c-form-control::after {
+  display: none !important;
+}
+
+.pf-v5-c-form-control.pf-m-error {
+  border-color: var(--tp-color-error);
+}
+
+/* Read-only "attempted username" field: shows the email from the previous */
+/* step on login-password.ftl with a "Not you?" reset link on the right. */
+.tp-attempted-username {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--tp-color-blue-gray-10);
+  border-radius: var(--tp-input-radius);
+  background: var(--tp-color-card-bg);
+  padding: 10px 16px;
+  min-height: 40px;
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.tp-attempted-username-value {
+  color: var(--tp-color-blue-50);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tp-attempted-username-reset {
+  color: var(--tp-color-indigo);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.tp-attempted-username-reset:hover,
+.tp-attempted-username-reset:focus {
+  text-decoration: underline;
+  color: var(--tp-color-indigo-hover);
+}
+
+/* Password input + visibility toggle: render the input and the eye button */
+/* as one unified bordered control (upstream renders them as two separate */
+/* boxes side by side). */
+.pf-v5-c-input-group {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--tp-color-blue-gray-10);
+  border-radius: var(--tp-input-radius);
+  background: var(--tp-color-card-bg);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  min-height: 40px;
+}
+
+.pf-v5-c-input-group:hover:not(:focus-within) {
+  border-color: var(--tp-color-blue-gray-30);
+}
+
+.pf-v5-c-input-group:focus-within {
+  border-color: var(--tp-color-indigo);
+  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+}
+
+.pf-v5-c-input-group .pf-v5-c-form-control {
+  border: none !important;
+  background: transparent;
+  min-height: auto;
+}
+
+.pf-v5-c-input-group .pf-v5-c-form-control:focus-within {
+  box-shadow: none;
+}
+
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 14px;
+  color: var(--tp-color-blue-50);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Upstream PatternFly draws the password-toggle button's visible border via */
+/* a ::after pseudo-element. Strip top/right/bottom so only the left edge */
+/* remains as a visual separator between the input and the eye icon. */
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control::after {
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+}
+
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control:hover,
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control:focus {
+  color: var(--tp-color-brand-purple);
+}
+
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control i {
+  font-size: 18px;
+}
+
+/* Hide the upstream form-control status icon (red exclamation circle) — the */
+/* design relies on border + error text for the error state, not an icon. */
+.pf-v5-c-form-control__icon.pf-m-status {
+  display: none !important;
+}
+
+/* Reorder helper text so the error message renders directly under the input, */
+/* with "Forgot your password?" below it (matches figma). #input-error-container */
+/* is the @group macro's error slot, rendered after the field's helper-text div. */
+/* Scope to form groups that have a helper-text (i.e. the password field) so */
+/* we don't disturb the username group's layout. */
+.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) {
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-form__group-label {
+  order: 1;
+}
+
+.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-form-control,
+.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-input-group {
+  order: 2;
+}
+
+.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > [id^="input-error-container"] {
+  order: 3;
+}
+
+.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-form__helper-text {
+  order: 4;
+}
+
+/* Error state: red border on the field + red message text below. */
+.pf-v5-c-input-group:has(.pf-m-error),
+.pf-v5-c-form-control.pf-m-error {
+  border-color: var(--tp-color-error);
+}
+
+.pf-v5-c-helper-text__item.pf-m-error .pf-v5-c-helper-text__item-text,
+.pf-v5-c-form__helper-text .pf-m-error {
+  color: var(--tp-color-error);
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.0917px;
+}
+
+.pf-v5-c-form__helper-text {
+  margin-top: 4px;
+  display: block;
+}
+
+/* Forgot password link sits in the same helper-text area as the error. */
+.pf-v5-c-form__helper-text a,
+.pf-v5-c-input-helper-text a {
+  color: var(--tp-color-blue-60);
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+.pf-v5-c-form__helper-text a:hover,
+.pf-v5-c-form__helper-text a:focus {
+  color: var(--tp-color-blue-50);
+}
+
+/* Remember me checkbox. Native unchecked rendering is inconsistent across */
+/* engines (headless chromium drew it as a filled black square), so we draw */
+/* our own skin with appearance: none. */
+.pf-v5-c-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pf-v5-c-check__input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--tp-color-blue-gray-30);
+  border-radius: 2px;
+  background: var(--tp-color-card-bg);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  flex-shrink: 0;
+  align-self: center;
+  /* Upstream keycloak.v2 applies transform: translateY(~4px) to nudge the */
+  /* native checkbox onto the text baseline. We render our own custom skin */
+  /* (appearance: none), so the nudge instead pushes the box below the label. */
+  /* Reset the transform. */
+  transform: none;
+}
+
+.pf-v5-c-check__input:hover {
+  border-color: var(--tp-color-indigo);
+}
+
+.pf-v5-c-check__input:focus-visible {
+  outline: 2px solid var(--tp-color-indigo);
+  outline-offset: 2px;
+}
+
+.pf-v5-c-check__input:checked {
+  background-color: var(--tp-color-indigo);
+  border-color: var(--tp-color-indigo);
+}
+
+.pf-v5-c-check__input:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.pf-v5-c-check__label {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+  cursor: pointer;
+  /* Font visual center sits slightly above the line-box geometric center, */
+  /* so the text appears 1px higher than the checkbox even when their boxes */
+  /* are centered. Nudge the label down by 1px to match the visual baseline. */
+  position: relative;
+  top: 1px;
+}
+
+/* Primary button. */
+.pf-v5-c-button.pf-m-primary {
+  background-color: var(--tp-color-indigo);
+  border: none;
+  border-radius: var(--tp-button-radius);
+  color: #fff;
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  min-height: 32px;
+  padding: 6px 16px;
+  transition: background-color 0.15s ease;
+}
+
+.pf-v5-c-button.pf-m-primary:hover,
+.pf-v5-c-button.pf-m-primary:focus {
+  background-color: var(--tp-color-indigo-hover);
+  color: #fff;
+}
+
+.pf-v5-c-button.pf-m-block {
+  width: 100%;
+}
+
+.pf-v5-c-form__actions {
+  padding-top: 0;
+}
+
+/* "Don't have an account? Sign Up" info section. Strip PatternFly's */
+/* separator border + extra padding so the link sits as plain text. */
+.pf-v5-c-login__main-footer-band {
+  border-top: none;
+  padding-top: 0;
+}
+
+.pf-v5-c-login__main-footer-band:first-child {
+  margin-block-start: 0;
+}
+
+#kc-info {
+  text-align: center;
+  /* Figma uses a uniform 48px gap between card sections. #kc-info is the */
+  /* last section (Sign Up) and sits in the card's main-footer wrapper, */
+  /* outside #kc-form-login's flex gap — apply the spacing explicitly. */
+  margin-top: 48px;
+}
+
+#kc-info,
+#kc-info-wrapper,
+#kc-registration,
+#kc-registration span {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--tp-color-muted);
+}
+
+#kc-registration a {
+  color: var(--tp-color-indigo);
+  text-decoration: underline;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+#kc-registration a:hover,
+#kc-registration a:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
+/* "Try Another Way" doesn't appear in the new design. The link is rendered */
+/* by template.ftl when auth.showTryAnotherWayLink() is true; hide it for now. */
+#kc-select-try-another-way-form {
+  display: none;
+}
+
+/* Page footer (below the card, full-width at page bottom). Three-column grid */
+/* keeps the social icons on the left, the links visually centered, and a */
+/* balancing empty track on the right. */
+/* No internal padding — the page-level .pf-v5-c-login padding (32px 16px) */
+/* handles the space below the footer, matching the space above the logo. */
+/* Font weight is 400 (regular) to match app.tidepool.org/logged-out. */
+#tp-footer {
+  width: 100%;
+  background: var(--tp-color-page-bg);
+  padding: 0;
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--tp-color-footer-link);
+}
+
+#tp-footer a {
+  color: var(--tp-color-footer-link);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+#tp-footer a:hover,
+#tp-footer a:focus {
+  color: var(--tp-color-blue-50);
+}
+
+#tp-footer .tp-footer-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  justify-self: start;
+}
+
+/* Hide social icons on mobile (matches app.tidepool.org's large-format-only) */
+/* and collapse the footer to a single centered column so the links don't get */
+/* squeezed by the 1fr | auto | 1fr layout on narrow viewports. */
+@media (max-width: 767px) {
+  #tp-footer {
+    grid-template-columns: 1fr;
+  }
+  #tp-footer .tp-footer-social {
+    display: none;
+  }
+}
+
+#tp-footer .tp-footer-social a svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+#tp-footer .tp-footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  justify-self: center;
+}
+
+/* Help pill — fixed in the bottom-right corner of the viewport, floating over */
+/* whatever is on the page (including the footer band). 16px offset on mobile, */
+/* 32px on tablet+. */
+#tp-help {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 50;
+  background: var(--tp-color-indigo);
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(98, 124, 255, 0.25);
+  transition: background-color 0.15s ease;
+}
+
+@media (min-width: 768px) {
+  #tp-help {
+    bottom: 32px;
+    right: 32px;
+  }
+}
+
+#tp-help:hover,
+#tp-help:focus {
+  background-color: var(--tp-color-indigo-hover);
+  color: #fff;
+  text-decoration: none;
+}
+
+#tp-help svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* On mobile, collapse the pill to an icon-only circle — only the question */
+/* mark is shown; the "Help" text is hidden but kept accessible via aria-label. */
+@media (max-width: 767px) {
+  #tp-help {
+    padding: 12px;
+    gap: 0;
+  }
+  #tp-help .tp-help-label {
+    display: none;
+  }
+}
