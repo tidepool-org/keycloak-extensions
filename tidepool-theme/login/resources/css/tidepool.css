@@ -14,6 +14,7 @@
   --tp-color-blue-gray-30: #838ca0;  /* checkbox border */
   --tp-color-card-border: #d9d9d9;
   --tp-color-error: #cc2900;     /* Figma Feedback/red.50 */
+  --tp-color-success-bg: #daf9e4;  /* Figma Feedback/green.05 — success alert background */
   --tp-color-muted: #8a8a8e;     /* "Don't have an account?" */
   --tp-color-page-bg: #f7f7f8;
   --tp-color-card-bg: #ffffff;
@@ -25,6 +26,15 @@
   --tp-button-radius: 3px;
 
   --tp-font-family: 'Basis', 'Basis Grotesque Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+
+  /* Retint PatternFly's default link color (a blue not in our palette) so any */
+  /* unstyled <a> inside a PF component picks up the Tidepool indigo. */
+  --pf-v5-global--link--Color: var(--tp-color-indigo);
+
+  /* Same idea for PF's "primary" brand color: drives primary button bg, */
+  /* selected-item accents, etc. */
+  --pf-v5-global--primary-color--100: var(--tp-color-indigo);
+  --pf-v5-global--primary-color--200: var(--tp-color-indigo-hover);
 }
 
 /* Brand font (Basis Grotesque). */
@@ -182,6 +192,50 @@ body.tp-role-clinician #kc-header-wrapper {
 /* Form body spacing. */
 .pf-v5-c-login__main-body {
   padding: 0;
+}
+
+/* Subtitle rendered directly under the page title (inside the main-header). */
+/* Pages pass the copy via the `subtitle` parameter on registrationLayout. */
+/* 16px gap from the title is enforced here — the main-header is a block */
+/* container so its declared flex `gap` doesn't kick in. */
+.tp-login-subtitle {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--tp-color-muted);
+  text-align: center;
+  margin: 16px 0 0;
+}
+
+/* Alert banner (e.g. error/info messages above the form). PatternFly's inline */
+/* alert paints only a colored top border; the Figma design uses a flat tinted */
+/* background with no border and the same radius as the rest of the form. */
+.pf-v5-c-alert.pf-m-inline,
+.pf-v5-c-alert.pf-m-inline .pf-v5-c-alert__title {
+  border: none;
+  border-radius: var(--tp-input-radius);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Center the alert icon vertically against the (possibly multi-line) text. */
+/* PatternFly lays the alert out as a grid with align-items: normal, so the */
+/* icon cell stretches to the title's height and the icon sits at the top. */
+.pf-v5-c-alert.pf-m-inline {
+  align-items: center;
+}
+
+/* Success variant: Feedback/green.05 background with Primary/blue.50 text */
+/* (Figma node 11673:35697). */
+.pf-v5-c-alert.pf-m-inline.pf-m-success {
+  background: var(--tp-color-success-bg);
+  color: var(--tp-color-blue-50);
+}
+
+.pf-v5-c-alert.pf-m-inline.pf-m-success .pf-v5-c-alert__title,
+.pf-v5-c-alert.pf-m-inline.pf-m-success .kc-feedback-text {
+  color: var(--tp-color-blue-50);
 }
 
 /* Form group spacing: 16px between rows, then a larger 48px gap before the */
@@ -400,27 +454,31 @@ body.tp-role-clinician #kc-header-wrapper {
 /* Reorder helper text so the error message renders directly under the input, */
 /* with "Forgot your password?" below it (matches figma). #input-error-container */
 /* is the @group macro's error slot, rendered after the field's helper-text div. */
-/* Scope to form groups that have a helper-text (i.e. the password field) so */
-/* we don't disturb the username group's layout. */
-.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) {
+/* Scope to form groups whose own direct child is a helper-text (i.e. the */
+/* password macro adds one for "Forgot your password?"). Direct-child `:has(>)` */
+/* is required so we don't also match groups where the helper-text class only */
+/* appears nested inside #input-error-container — e.g. the registration email */
+/* field on duplicate-email error, where matching would put the input above */
+/* the label. */
+.pf-v5-c-form__group:has(> .pf-v5-c-form__helper-text) {
   display: flex;
   flex-direction: column;
 }
 
-.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-form__group-label {
+.pf-v5-c-form__group:has(> .pf-v5-c-form__helper-text) > .pf-v5-c-form__group-label {
   order: 1;
 }
 
-.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-form-control,
-.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-input-group {
+.pf-v5-c-form__group:has(> .pf-v5-c-form__helper-text) > .pf-v5-c-form-control,
+.pf-v5-c-form__group:has(> .pf-v5-c-form__helper-text) > .pf-v5-c-input-group {
   order: 2;
 }
 
-.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > [id^="input-error-container"] {
+.pf-v5-c-form__group:has(> .pf-v5-c-form__helper-text) > [id^="input-error-container"] {
   order: 3;
 }
 
-.pf-v5-c-form__group:has(.pf-v5-c-form__helper-text) > .pf-v5-c-form__helper-text {
+.pf-v5-c-form__group:has(> .pf-v5-c-form__helper-text) > .pf-v5-c-form__helper-text {
   order: 4;
 }
 
@@ -679,12 +737,11 @@ body.tp-role-clinician #kc-header-wrapper {
   margin-top: 32px;
 }
 
-/* Primary button. */
-.pf-v5-c-button.pf-m-primary {
-  background-color: var(--tp-color-indigo);
-  border: none;
+/* Shared button sizing and typography — applies to all PF buttons (primary, */
+/* secondary, default) so they share the same height, padding, and font. */
+/* Variant-specific colors stay on the .pf-m-* rules below. */
+.pf-v5-c-button {
   border-radius: var(--tp-button-radius);
-  color: #fff;
   font-family: var(--tp-font-family);
   font-size: 14px;
   font-weight: 500;
@@ -692,6 +749,13 @@ body.tp-role-clinician #kc-header-wrapper {
   min-height: 32px;
   padding: 6px 16px;
   transition: background-color 0.15s ease;
+}
+
+/* Primary button. */
+.pf-v5-c-button.pf-m-primary {
+  background-color: var(--tp-color-indigo);
+  border: none;
+  color: #fff;
 }
 
 .pf-v5-c-button.pf-m-primary:hover,
@@ -706,6 +770,12 @@ body.tp-role-clinician #kc-header-wrapper {
 
 .pf-v5-c-form__actions {
   padding-top: 0;
+}
+
+/* On the password-reset page, the design calls for 48px between the email */
+/* row and the Next button (Figma). Add the extra margin scoped to that form. */
+#kc-reset-password-form .pf-v5-c-form__actions {
+  margin-top: 12px;
 }
 
 /* "Don't have an account? Sign Up" info section. Strip PatternFly's */

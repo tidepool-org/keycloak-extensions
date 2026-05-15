@@ -1,5 +1,13 @@
 <#import "field.ftl" as field>
 <#import "footer.ftl" as loginFooter>
+
+<#-- Page IDs that should NOT render the attempted-username header even when -->
+<#-- auth.showUsername() returns true. The home-idp-discovery plugin pre-populates -->
+<#-- the username via login_hint, which trips auth.showUsername() on pages that -->
+<#-- already render an editable username input — without this list the page -->
+<#-- would render two elements with id="username". -->
+<#assign attemptedUsernameHiddenPages = ["login-username", "trusted-device-register"]>
+
 <#macro username>
   <#assign label>
     <#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if>
@@ -15,7 +23,7 @@
   </@field.group>
 </#macro>
 
-<#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false>
+<#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false subtitle="">
 <!DOCTYPE html>
 <html class="${properties.kcHtmlClass!}" lang="${lang}"<#if realm.internationalizationEnabled> dir="${(locale.rtl)?then('rtl','ltr')}"</#if>>
 
@@ -69,6 +77,45 @@
         );
         </#outputformat>
     </script>
+    <#if url.loginRestartFlowUrl?? && pageId == "login-username">
+    <script type="module">
+        <#outputformat "JavaScript">
+        // When the user hits Back from the password screen, the browser
+        // restores or re-fetches THIS page (the username step). We want that
+        // arrival to behave the same as the "Not you?" link — restart the
+        // flow so the form is clean. Without this, Safari/Firefox would
+        // restore this page from bfcache with the Next button still disabled
+        // (set by onsubmit), and Chrome would re-fetch it with no obvious
+        // problem but the prior typed value still in the input. Scoped to
+        // pageId == "login-username" because the script must run on the
+        // arrival page, not the page Back was pressed on.
+        const restartUrl = "${url.loginRestartFlowUrl}";
+
+        function isBackNav() {
+            const entries = performance.getEntriesByType("navigation");
+            if (entries.length && entries[0].type === "back_forward") return true;
+            // Legacy fallback for older Chrome/Edge that don't surface
+            // type="back_forward" reliably via the new API.
+            if (performance.navigation && performance.navigation.type === 2) return true;
+            return false;
+        }
+
+        function restart() {
+            window.location.replace(restartUrl);
+        }
+
+        if (isBackNav()) {
+            restart();
+        }
+
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted || isBackNav()) {
+                restart();
+            }
+        });
+        </#outputformat>
+    </script>
+    </#if>
     <script type="module">
         document.addEventListener("click", (event) => {
             const link = event.target.closest("a[data-once-link]");
@@ -115,6 +162,12 @@
     <main class="${properties.kcLoginMain!}">
       <div class="${properties.kcLoginMainHeader!}">
         <h1 class="${properties.kcLoginMainTitle!}" id="kc-page-title"><#nested "header"></h1>
+        <#-- Optional subtitle rendered directly under the title. Passed by -->
+        <#-- individual pages as a parameter to the registrationLayout macro -->
+        <#-- so per-page templates don't have to re-implement the position. -->
+        <#if subtitle?has_content>
+            <p class="tp-login-subtitle">${subtitle}</p>
+        </#if>
         <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
         <div class="${properties.kcLoginMainHeaderUtilities!}">
           <div class="${properties.kcInputClass!}">
@@ -137,7 +190,7 @@
         </#if>
       </div>
       <div class="${properties.kcLoginMainBody!}">
-        <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
+        <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials()) || (pageId?? && attemptedUsernameHiddenPages?seq_contains(pageId))>
             <#if displayRequiredFields>
                 <div class="${properties.kcContentWrapperClass!}">
                     <div class="${properties.kcLabelWrapperClass!} subtitle">
@@ -176,7 +229,7 @@
                     <#if message.type = 'error'><span class="${properties.kcFeedbackErrorIcon!}"></span></#if>
                     <#if message.type = 'info'><span class="${properties.kcFeedbackInfoIcon!}"></span></#if>
                 </div>
-                <span class="${properties.kcAlertTitleClass!} kc-feedback-text">${message.summary}</span>
+                <span class="${properties.kcAlertTitleClass!} kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
             </div>
         </#if>
 
