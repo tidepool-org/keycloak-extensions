@@ -1020,6 +1020,599 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   color: var(--tp-color-indigo-hover);
 }
 
+/* TOTP setup (login-config-totp.ftl). The single form renders two visual steps */
+/* — QR code on step 1 and verify-code+name on step 2 — controlled via a */
+/* `data-step` attribute toggled by JS. Step transitions are client-side; the */
+/* form posts once with both fields filled in. Matches Figma nodes 11627:14609 */
+/* (QR) and 11627:14610 (verify) in file g8xYrHViRt9nd1oXx0OuIF. */
+.tp-totp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.tp-totp-form[data-step="qr"] .tp-totp-step--verify,
+.tp-totp-form[data-step="verify"] .tp-totp-step--qr {
+  display: none;
+}
+
+.tp-totp-step {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.tp-totp-section-title {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #375178; /* blue.80 */
+  margin: 0;
+}
+
+.tp-totp-section-help {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+  margin: 4px 0 0;
+}
+
+/* Authenticator apps block: bold heading + indented list of supported apps. */
+.tp-totp-apps {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tp-totp-apps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
+/* QR block: prompt + framed QR image + "trouble scanning" link. */
+.tp-totp-qr-block,
+.tp-totp-secret {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+.tp-totp-qr-block .tp-totp-section-title,
+.tp-totp-secret .tp-totp-section-title {
+  width: 100%;
+  text-align: left;
+}
+
+/* The keycloak-generated QR PNG ships with its own quiet-zone (white border) */
+/* baked into the image. Center the image inside a fixed-size frame and let */
+/* overflow: hidden crop the gutter symmetrically — this is the only way to */
+/* shave the baked-in whitespace without skewing one side. */
+.tp-totp-qr {
+  border: 1px solid var(--tp-color-card-border);
+  border-radius: 5px;
+  background: var(--tp-color-card-bg);
+  width: 224px;
+  height: 224px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tp-totp-qr img {
+  display: block;
+  width: 224px;
+  height: 224px;
+  flex-shrink: 0;
+  /* PatternFly applies max-width: 100% globally to <img>, which clamps the */
+  /* image's width to the frame and leaves the height alone — that's what */
+  /* skewed the crop. Reset it so width and height crop symmetrically. */
+  max-width: none;
+}
+
+/* Manual-entry secret key block (figma node 11627:14611): a flat tinted box */
+/* with the base32-encoded secret centered inside at 18px / 32px line-height. */
+/* The encoded value comes with single spaces between every 4 chars from */
+/* keycloak; widen the gap with word-spacing so the groups read clearly. */
+.tp-totp-secret-box {
+  background: var(--tp-color-page-bg);
+  border-radius: 8px;
+  padding: 24px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tp-totp-secret-key {
+  font-family: var(--tp-font-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 32px;
+  color: var(--tp-color-brand-purple);
+  margin: 0;
+  text-align: center;
+  word-spacing: 0.4em;
+  letter-spacing: 0.02em;
+}
+
+/* Type / Algorithm / Digits / Interval rendered as small horizontal pills */
+/* below the secret-key box. Each item shows `Label: Value` with the label */
+/* bold and the value in regular weight, all inside a rounded tinted chip. */
+.tp-totp-policy {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  align-self: stretch;
+}
+
+.tp-totp-policy-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--tp-color-page-bg);
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.tp-totp-policy-item dt {
+  font-weight: 700;
+  color: #375178;
+}
+
+.tp-totp-policy-item dt::after {
+  content: ":";
+}
+
+.tp-totp-policy-item dd {
+  margin: 0;
+  font-weight: 500;
+  color: var(--tp-color-blue-60);
+}
+
+.tp-totp-mode-switch {
+  margin: 0;
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.tp-totp-mode-switch a {
+  color: var(--tp-color-blue-50);
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+.tp-totp-mode-switch a:hover,
+.tp-totp-mode-switch a:focus {
+  color: var(--tp-color-blue-60);
+}
+
+/* Verify step header (title + sub-help). */
+.tp-totp-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Stack the two form fields with the figma's 16px rhythm — tighter than the */
+/* 48px section gap because they belong to one logical group. */
+.tp-totp-step--verify > .pf-v5-c-form__group + .pf-v5-c-form__group {
+  margin-top: -32px;
+}
+
+.tp-totp-logout {
+  margin: 0;
+}
+
+/* Override upstream's #kc-form-options layout so the checkbox renders inline */
+/* the same way as the Remember Me checkbox on login.ftl. */
+.tp-totp-logout #kc-form-options {
+  margin: 0;
+  padding: 0;
+}
+
+.tp-totp-logout .checkbox {
+  margin: 0;
+}
+
+.tp-totp-logout .checkbox label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-50);
+  cursor: pointer;
+}
+
+/* Style the native checkbox the same way as .pf-v5-c-check__input. Upstream */
+/* renders this control without the PatternFly wrapper, so we target the bare */
+/* input rather than reusing the existing .pf-v5-c-check selectors. */
+.tp-totp-logout .checkbox input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--tp-color-blue-gray-30);
+  border-radius: 2px;
+  background: var(--tp-color-card-bg);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tp-totp-logout .checkbox input[type="checkbox"]:checked {
+  background-color: var(--tp-color-indigo);
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-totp-logout .checkbox input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+/* Side-by-side action buttons (Cancel/Back + primary). 1fr each, equal width, */
+/* matching the figma's 50/50 split with a 12px gap between them. */
+.tp-totp-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Single-button layout when the secondary button is hidden (non-AIA step 1). */
+.tp-totp-actions:has(> .pf-m-block),
+.tp-totp-actions > .pf-m-block {
+  grid-column: 1 / -1;
+}
+
+/* "Asked for additional details?" support link rendered below the card */
+/* actions. Small, blue-indigo, underline, with a leading arrow glyph. */
+.tp-totp-support {
+  margin: 0;
+  text-align: center;
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 10px;
+}
+
+.tp-totp-support a {
+  color: var(--tp-color-indigo);
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tp-totp-support a::before {
+  content: "↗";
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tp-totp-support a:hover,
+.tp-totp-support a:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
+/* Trusted device prompt (trusted-device-register.ftl) — overrides the basic */
+/* SPI-bundled template to match Figma node 11629:21144. Two body paragraphs */
+/* sit above a side-by-side No/Yes action pair using the shared 48px section */
+/* rhythm. */
+body[data-page-id="login-trusted-device-register"] #kc-form-trusted-device {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.tp-trusted-device-explanation {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tp-trusted-device-explanation p {
+  margin: 0;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
+/* Recovery codes config (login-recovery-authn-code-config.ftl). Figma node */
+/* 11627:14617. Sections separated by 48px (matching other 2FA screens). */
+body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main-body {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* Intro: "Download recovery codes" + description + learn-more link. */
+.tp-recovery-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.tp-recovery-intro-title {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #375178;
+  margin: 0;
+}
+
+.tp-recovery-intro-body {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+  margin: 0;
+}
+
+/* "Learn how to store recovery codes safely" link with leading arrow glyph. */
+.tp-recovery-learn-more {
+  margin: 12px 0 0;
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 10px;
+}
+
+.tp-recovery-learn-more a {
+  color: var(--tp-color-indigo);
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tp-recovery-learn-more a::before {
+  content: "↗";
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tp-recovery-learn-more a:hover,
+.tp-recovery-learn-more a:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
+/* Wrapping block: warning banner + code list + actions sit together in a */
+/* tight 16px stack, separated from the surrounding sections by the parent's */
+/* 48px gap. */
+.tp-recovery-codes-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+/* Gold "save these somewhere safe" warning banner. */
+.tp-recovery-warning {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #FFE8CF; /* Feedback/gold.050 */
+  border-radius: 4px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tp-recovery-warning-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: 18px;
+  height: 16px;
+  color: #CC6D00; /* Feedback/gold.30 */
+}
+
+.tp-recovery-warning-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tp-recovery-warning-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.tp-recovery-warning-title {
+  margin: 0;
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  color: var(--tp-color-blue-50);
+}
+
+.tp-recovery-warning-body {
+  margin: 0;
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  color: var(--tp-color-blue-60);
+}
+
+/* Code list block: tinted background, 10px radius, 32px padding, codes shown */
+/* in a 2-column column-first grid (1..6 on the left, 7..12 on the right). */
+.tp-recovery-codes {
+  background: var(--tp-color-page-bg);
+  border-radius: 10px;
+  padding: 32px;
+}
+
+.tp-recovery-codes-list {
+  list-style: none;
+  counter-reset: tp-recovery-counter;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  grid-template-rows: repeat(6, auto);
+  grid-auto-flow: column;
+  gap: 4px 44px;
+}
+
+.tp-recovery-codes-list li {
+  counter-increment: tp-recovery-counter;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--tp-font-family);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 32px;
+  color: #000;
+}
+
+.tp-recovery-codes-list li::before {
+  content: counter(tp-recovery-counter) ".";
+  min-width: 18px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #A0A0A0;
+  text-align: right;
+}
+
+/* Download / Copy action row — text + icon, no button chrome. */
+.tp-recovery-actions {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tp-recovery-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 4px;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-50);
+  cursor: pointer;
+}
+
+.tp-recovery-action svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tp-recovery-action:hover,
+.tp-recovery-action:focus {
+  color: #375178;
+}
+
+/* Confirmation row + buttons share one flex container for vertical rhythm. */
+.tp-recovery-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tp-recovery-confirm-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+  cursor: pointer;
+}
+
+/* Custom-skin the confirmation checkbox so it matches the others on the */
+/* 2FA setup screen — appearance: none + indigo when checked. */
+.tp-recovery-confirm-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--tp-color-blue-gray-30);
+  border-radius: 2px;
+  background: var(--tp-color-card-bg);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tp-recovery-confirm-label input[type="checkbox"]:checked {
+  background-color: var(--tp-color-indigo);
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-recovery-confirm-label input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+/* Faded primary look while disabled (Finish button before confirmation). */
+body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-button.pf-m-primary:disabled {
+  background-color: #A9B1DB;
+}
+
 /* Shared button sizing and typography — applies to all PF buttons (primary, */
 /* secondary, default) so they share the same height, padding, and font. */
 /* Variant-specific colors stay on the .pf-m-* rules below. */
