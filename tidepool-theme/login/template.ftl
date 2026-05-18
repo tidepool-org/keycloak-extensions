@@ -6,7 +6,7 @@
 <#-- the username via login_hint, which trips auth.showUsername() on pages that -->
 <#-- already render an editable username input — without this list the page -->
 <#-- would render two elements with id="username". -->
-<#assign attemptedUsernameHiddenPages = ["login-username", "trusted-device-register"]>
+<#assign attemptedUsernameHiddenPages = ["login-username", "trusted-device-register", "login-otp", "select-authenticator", "login-recovery-authn-code-input"]>
 
 <#macro username>
   <#assign label>

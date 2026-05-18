@@ -737,6 +737,289 @@ body.tp-role-clinician #kc-header-wrapper {
   margin-top: 32px;
 }
 
+/* Authenticator selection (select-authenticator.ftl) — "Select your preferred */
+/* way to log in" with stacked picker cards. Visual matches Figma node 11631:25233 */
+/* and shares its design language with the role picker (tp-role-option) above. */
+.tp-auth-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tp-auth-option {
+  display: block;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hide the native radio but keep it focusable. */
+.tp-auth-option-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.tp-auth-option-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  border: 1.5px solid var(--tp-color-card-border);
+  border-radius: var(--tp-input-radius);
+  background: var(--tp-color-card-bg);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tp-auth-option-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-color-indigo);
+  padding: 4px;
+}
+
+.tp-auth-option-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tp-auth-option-text {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tp-auth-option-title {
+  font-family: var(--tp-font-family);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 30px;
+  color: var(--tp-color-indigo);
+}
+
+.tp-auth-option-description {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
+.tp-auth-option-check {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-color-indigo);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tp-auth-option-check svg {
+  width: 28px;
+  height: 28px;
+}
+
+.tp-auth-option:hover .tp-auth-option-card {
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-auth-option-input:focus-visible + .tp-auth-option-card {
+  border-color: var(--tp-color-indigo);
+  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+}
+
+.tp-auth-option-input:checked + .tp-auth-option-card {
+  border-color: var(--tp-color-indigo);
+  background-color: var(--tp-color-indigo-bg);
+}
+
+.tp-auth-option-input:checked + .tp-auth-option-card .tp-auth-option-check {
+  opacity: 1;
+}
+
+/* Section spacing on the selector page: 48px between the form and the */
+/* disclaimer block to match the in-card rhythm used elsewhere in 2FA flows. */
+body[data-page-id="login-select-authenticator"] #kc-select-credential-form {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+body[data-page-id="login-select-authenticator"] #kc-select-credential-form > .pf-v5-c-form__group:last-child {
+  margin-top: 0;
+}
+
+body[data-page-id="login-select-authenticator"] .tp-otp-disclaimer {
+  margin-top: 48px;
+}
+
+/* OTP / 2FA page (login-otp.ftl) and recovery-code page */
+/* (login-recovery-authn-code-input.ftl). The card sections are spaced 48px */
+/* apart to match the Figma design (file g8xYrHViRt9nd1oXx0OuIF, nodes */
+/* 11630:22523 and 11631:25236), which is wider than the default 16px row */
+/* gap used by other login forms. */
+body[data-page-id="login-login-otp"] #kc-otp-login-form,
+body[data-page-id="login-login-recovery-authn-code-input"] #kc-recovery-code-login-form {
+  gap: 48px;
+}
+
+/* The submit button is the final form group and would otherwise inherit the */
+/* shared 32px margin-top — the 48px parent gap already gives the spacing. */
+body[data-page-id="login-login-otp"] #kc-otp-login-form > .pf-v5-c-form__group:last-child,
+body[data-page-id="login-login-recovery-authn-code-input"] #kc-recovery-code-login-form > .pf-v5-c-form__group:last-child {
+  margin-top: 0;
+}
+
+/* "You will receive the code on / Sally's iPhone 16 Pro" block. Two stacked */
+/* lines: a small blue-60 hint above the device label in body text. */
+.tp-otp-device {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tp-otp-device-hint {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
+.tp-otp-device-name {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #000;
+}
+
+/* Multi-credential selector (when the user has more than one OTP registered). */
+/* Stacks the available authenticators as radio-style cards; selecting one */
+/* writes its id into the hidden selectedCredentialId input. */
+.tp-otp-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tp-otp-credential {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--tp-color-blue-gray-10);
+  border-radius: var(--tp-input-radius);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tp-otp-credential:hover {
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-otp-credential--selected {
+  border-color: var(--tp-color-indigo);
+  background-color: var(--tp-color-indigo-bg);
+}
+
+.tp-otp-credential input[type="radio"] {
+  accent-color: var(--tp-color-indigo);
+  flex-shrink: 0;
+}
+
+.tp-otp-credential-label {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-brand-purple);
+}
+
+/* "Can't access your device right now? Try a Different Log In Method" — */
+/* the standard "Try another way" action rendered as a centered sentence. */
+/* The template-level fallback form is hidden globally via */
+/* #kc-select-try-another-way-form; this one (#tp-otp-try-another-way) is the */
+/* visible Tidepool-styled replacement. */
+/* 48px top margin matches the in-card section rhythm from the Figma design — */
+/* the main form's flex gap doesn't reach here because this form is a sibling, */
+/* not a child of #kc-otp-login-form. */
+#tp-otp-try-another-way,
+#tp-recovery-try-another-way {
+  margin: 48px 0 0;
+}
+
+body[data-page-id="login-login-otp"] .tp-otp-disclaimer,
+body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
+  margin-top: 48px;
+}
+
+.tp-otp-try-another-way {
+  margin: 0;
+  text-align: center;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-muted);
+}
+
+.tp-otp-try-another-way a {
+  color: var(--tp-color-indigo);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+.tp-otp-try-another-way a:hover,
+.tp-otp-try-another-way a:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
+/* Disclaimer block at the bottom of the OTP card: two short paragraphs with */
+/* bolded leads ("Having trouble logging in?" / "Important:"). Left-aligned */
+/* small text, distinct from the centered "Try another way" sentence above. */
+.tp-otp-disclaimer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: var(--tp-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--tp-color-muted);
+}
+
+.tp-otp-disclaimer p {
+  margin: 0;
+}
+
+.tp-otp-disclaimer strong {
+  font-weight: 700;
+}
+
+.tp-otp-disclaimer a {
+  color: var(--tp-color-indigo);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+}
+
+.tp-otp-disclaimer a:hover,
+.tp-otp-disclaimer a:focus {
+  color: var(--tp-color-indigo-hover);
+}
+
 /* Shared button sizing and typography — applies to all PF buttons (primary, */
 /* secondary, default) so they share the same height, padding, and font. */
 /* Variant-specific colors stay on the .pf-m-* rules below. */
