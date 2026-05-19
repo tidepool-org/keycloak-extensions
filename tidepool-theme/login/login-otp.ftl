@@ -23,16 +23,19 @@
             <input id="selectedCredentialId" type="hidden" name="selectedCredentialId" value="${otpLogin.selectedCredentialId!''}">
 
             <#if otpLogin?? && otpLogin.userOtpCredentials?? && otpLogin.userOtpCredentials?size gt 1>
-                <div class="tp-otp-credentials" role="radiogroup" aria-label="${msg("loginChooseAuthenticator")}">
-                    <#list otpLogin.userOtpCredentials as otpCredential>
-                        <#assign isSelected = otpCredential.id == (otpLogin.selectedCredentialId!'')>
-                        <label class="tp-otp-credential<#if isSelected> tp-otp-credential--selected</#if>">
-                            <input type="radio" name="otpCredentialSelector" value="${otpCredential.id}"
-                                   onchange="document.getElementById('selectedCredentialId').value=this.value;document.querySelectorAll('.tp-otp-credential').forEach(function(el){el.classList.remove('tp-otp-credential--selected');});this.parentElement.classList.add('tp-otp-credential--selected');"
-                                   <#if isSelected>checked</#if>/>
-                            <span class="tp-otp-credential-label">${otpCredential.userLabel}</span>
-                        </label>
-                    </#list>
+                <div class="tp-otp-device">
+                    <span class="tp-otp-device-hint">${msg("loginOtpDeviceHint")}</span>
+                    <div class="tp-otp-credentials" role="radiogroup" aria-label="${msg("loginChooseAuthenticator")}">
+                        <#list otpLogin.userOtpCredentials as otpCredential>
+                            <#assign isSelected = otpCredential.id == (otpLogin.selectedCredentialId!'')>
+                            <label class="tp-otp-credential<#if isSelected> tp-otp-credential--selected</#if>">
+                                <input type="radio" name="otpCredentialSelector" value="${otpCredential.id}"
+                                       onchange="document.getElementById('selectedCredentialId').value=this.value;document.querySelectorAll('.tp-otp-credential').forEach(function(el){el.classList.remove('tp-otp-credential--selected');});this.parentElement.classList.add('tp-otp-credential--selected');"
+                                       <#if isSelected>checked</#if>/>
+                                <span class="tp-otp-credential-label">${otpCredential.userLabel}</span>
+                            </label>
+                        </#list>
+                    </div>
                 </div>
             <#elseif selectedLabel?has_content && selectedLabel?lower_case != "unnamed">
                 <#-- Skip the device-name block when the credential has no real -->
