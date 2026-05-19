@@ -28,6 +28,12 @@
                                     <@field.errorIcon error=usernameError />
                                 </span>
                             </@field.group>
+                        <#else>
+                            <#-- AIA re-auth path: there's no editable username input, but -->
+                            <#-- we still know who's signing in (auth.attemptedUsername). -->
+                            <#-- Render the read-only attempted-username row so the user -->
+                            <#-- can confirm the identity (and "Not you?" to restart). -->
+                            <@layout.username />
                         </#if>
 
                         <#if realm.rememberMe && !usernameHidden??>

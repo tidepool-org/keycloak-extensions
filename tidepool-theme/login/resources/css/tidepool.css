@@ -1340,12 +1340,21 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 }
 
 /* The actions are <a> tags styled with .pf-v5-c-button; strip the anchor */
-/* underline and make sure the text sits centered like a real button. */
-.tp-page-expired-actions a.pf-v5-c-button {
+/* underline and make sure the text sits centered like a real button. The */
+/* same treatment also applies to the .tp-back-to-app links on info.ftl, */
+/* error.ftl, and logout-confirm.ftl that render "Back to Application" as a */
+/* primary button instead of an inline link. */
+.tp-page-expired-actions a.pf-v5-c-button,
+a.tp-back-to-app.pf-v5-c-button {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Space the back-to-app button away from the message text above it. */
+.tp-back-to-app {
+  margin-top: 24px;
 }
 
 /* Trusted device prompt (trusted-device-register.ftl) — overrides the basic */
