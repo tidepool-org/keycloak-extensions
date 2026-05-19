@@ -242,7 +242,9 @@ body.tp-role-clinician #kc-header-wrapper {
 /* action button (the last form group, which wraps the primary submit). */
 /* Applied to both the login form and the registration form. */
 #kc-form-login,
-#kc-register-form {
+#kc-register-form,
+#kc-update-email-form,
+#kc-passwd-update-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -250,6 +252,14 @@ body.tp-role-clinician #kc-header-wrapper {
 
 #kc-form-login > .pf-v5-c-form__group:last-child,
 #kc-register-form > .pf-v5-c-form__group:last-child {
+  margin-top: 32px;
+}
+
+/* update-email.ftl / login-update-password.ftl: 48px between the last form */
+/* item (the "Log out of other devices" checkbox) and the action buttons. */
+/* Parent gap already gives 16px, so add another 32px on the actions row. */
+#kc-update-email-form > .tp-totp-actions,
+#kc-passwd-update-form > .tp-totp-actions {
   margin-top: 32px;
 }
 
