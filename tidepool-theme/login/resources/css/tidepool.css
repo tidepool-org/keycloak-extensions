@@ -1150,46 +1150,6 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   letter-spacing: 0.02em;
 }
 
-/* Type / Algorithm / Digits / Interval rendered as small horizontal pills */
-/* below the secret-key box. Each item shows `Label: Value` with the label */
-/* bold and the value in regular weight, all inside a rounded tinted chip. */
-.tp-totp-policy {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  align-self: stretch;
-}
-
-.tp-totp-policy-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--tp-color-page-bg);
-  font-family: var(--tp-font-family);
-  font-size: 12px;
-  line-height: 18px;
-}
-
-.tp-totp-policy-item dt {
-  font-weight: 700;
-  color: #375178;
-}
-
-.tp-totp-policy-item dt::after {
-  content: ":";
-}
-
-.tp-totp-policy-item dd {
-  margin: 0;
-  font-weight: 500;
-  color: var(--tp-color-blue-60);
-}
-
 .tp-totp-mode-switch {
   margin: 0;
   font-family: var(--tp-font-family);
@@ -1335,7 +1295,7 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 .tp-page-expired-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
 }
 
