@@ -34,7 +34,10 @@
                         </label>
                     </#list>
                 </div>
-            <#elseif selectedLabel?has_content>
+            <#elseif selectedLabel?has_content && selectedLabel?lower_case != "unnamed">
+                <#-- Skip the device-name block when the credential has no real -->
+                <#-- userLabel — Keycloak falls back to the literal string "unnamed" -->
+                <#-- and showing "You will receive the code on / unnamed" looks broken. -->
                 <div class="tp-otp-device">
                     <span class="tp-otp-device-hint">${msg("loginOtpDeviceHint")}</span>
                     <span class="tp-otp-device-name">${selectedLabel}</span>
