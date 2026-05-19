@@ -1,3 +1,4 @@
+org.tidepool.keycloak.extensions.authenticator.ConditionAppInitiatedActionFactory
 org.tidepool.keycloak.extensions.authenticator.ConditionUserInContextFactory
 org.tidepool.keycloak.extensions.authenticator.IdpDetectExistingBrokerUserAuthenticatorCustomErrorFactory
 org.tidepool.keycloak.extensions.authenticator.RedirectToRegistrationPageFactory
