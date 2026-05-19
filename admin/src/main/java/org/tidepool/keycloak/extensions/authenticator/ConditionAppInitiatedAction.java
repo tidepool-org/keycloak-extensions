@@ -15,13 +15,20 @@ public class ConditionAppInitiatedAction implements ConditionalAuthenticator {
     public boolean matchCondition(AuthenticationFlowContext context) {
         boolean isAia = isAppInitiatedAction(context.getAuthenticationSession());
 
+        // Negate defaults to TRUE to match the factory's UI default. Without this,
+        // admins who add the condition but never click Save in the config dialog
+        // get the opposite of the documented behavior — the config map is empty
+        // and Boolean.parseBoolean(null) is false.
+        boolean negateOutput = true;
         AuthenticatorConfigModel authConfig = context.getAuthenticatorConfig();
         if (authConfig != null && authConfig.getConfig() != null) {
-            boolean negateOutput = Boolean.parseBoolean(authConfig.getConfig().get(ConditionAppInitiatedActionFactory.CONF_NEGATE));
-            return negateOutput != isAia;
+            String configured = authConfig.getConfig().get(ConditionAppInitiatedActionFactory.CONF_NEGATE);
+            if (configured != null) {
+                negateOutput = Boolean.parseBoolean(configured);
+            }
         }
 
-        return isAia;
+        return negateOutput != isAia;
     }
 
     /**
