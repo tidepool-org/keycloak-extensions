@@ -1329,6 +1329,25 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   color: var(--tp-color-indigo-hover);
 }
 
+/* Page-expired screen (login-page-expired.ftl). Two stacked block buttons */
+/* take the place of upstream's "click here" inline links — restart (primary) */
+/* at the top, continue (secondary) below. */
+.tp-page-expired-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* The actions are <a> tags styled with .pf-v5-c-button; strip the anchor */
+/* underline and make sure the text sits centered like a real button. */
+.tp-page-expired-actions a.pf-v5-c-button {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Trusted device prompt (trusted-device-register.ftl) — overrides the basic */
 /* SPI-bundled template to match Figma node 11629:21144. Two body paragraphs */
 /* sit above a side-by-side No/Yes action pair using the shared 48px section */
