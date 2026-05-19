@@ -44,31 +44,6 @@
                         <div class="tp-totp-secret-box">
                             <p class="tp-totp-secret-key" id="kc-totp-secret-key">${totp.totpSecretEncoded}</p>
                         </div>
-                        <dl class="tp-totp-policy">
-                            <div class="tp-totp-policy-item">
-                                <dt>${msg("loginTotpType")}</dt>
-                                <dd>${msg("loginTotp." + totp.policy.type)}</dd>
-                            </div>
-                            <div class="tp-totp-policy-item">
-                                <dt>${msg("loginTotpAlgorithm")}</dt>
-                                <dd>${totp.policy.getAlgorithmKey()}</dd>
-                            </div>
-                            <div class="tp-totp-policy-item">
-                                <dt>${msg("loginTotpDigits")}</dt>
-                                <dd>${totp.policy.digits}</dd>
-                            </div>
-                            <#if totp.policy.type = "totp">
-                                <div class="tp-totp-policy-item">
-                                    <dt>${msg("loginTotpInterval")}</dt>
-                                    <dd>${totp.policy.period}s</dd>
-                                </div>
-                            <#elseif totp.policy.type = "hotp">
-                                <div class="tp-totp-policy-item">
-                                    <dt>${msg("loginTotpCounter")}</dt>
-                                    <dd>${totp.policy.initialCounter}</dd>
-                                </div>
-                            </#if>
-                        </dl>
                         <p class="tp-totp-mode-switch">
                             <a href="${totp.qrUrl}" id="mode-barcode">${msg("loginTotpScanBarcode")}</a>
                         </p>
