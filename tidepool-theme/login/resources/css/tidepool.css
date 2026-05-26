@@ -60,6 +60,20 @@
   font-display: swap;
 }
 
+/* Flaticon UIcons (bold straight), subset to a few identity glyphs in */
+/* fonts/uicons/ — used for the home-IDP-selection card icon. To change the */
+/* glyph, swap the content codepoint in .tp-idp-option-icon i::before below. */
+/* Available in the subset: building \e27c, cloud \e409, shield-check \edb1, */
+/* fingerprint \e6d6, key \e922, globe \e793, id-badge \e8b4, user-lock \f0c1. */
+@font-face {
+  font-family: 'tp-idp-icons';
+  src: url('../fonts/uicons/tp-idp-icons.woff2') format('woff2'),
+       url('../fonts/uicons/tp-idp-icons.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 /* Replace keycloak.v2's dark hero background with the Tidepool page surface. */
 body.login-pf,
 .login-pf body,
@@ -855,6 +869,75 @@ body.tp-role-clinician #kc-header-wrapper {
 
 .tp-auth-option-input:checked + .tp-auth-option-card .tp-auth-option-check {
   opacity: 1;
+}
+
+/* Identity-provider selection (hidpd-select-idp.ftl) — "Select your home */
+/* identity provider" picker cards. Reuses the select-authenticator card */
+/* language, but each card is a direct navigation link (an <a>), so there is */
+/* no radio/checked state or trailing check icon. */
+.tp-idp-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tp-idp-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  border: 1.5px solid var(--tp-color-card-border);
+  border-radius: var(--tp-input-radius);
+  background: var(--tp-color-card-bg);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tp-idp-option:hover {
+  border-color: var(--tp-color-indigo);
+  text-decoration: none;
+}
+
+.tp-idp-option:focus-visible {
+  outline: none;
+  border-color: var(--tp-color-indigo);
+  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+}
+
+.tp-idp-option-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-color-indigo);
+  padding: 4px;
+}
+
+.tp-idp-option-icon i {
+  font-style: normal;
+  line-height: 1;
+}
+
+.tp-idp-option-icon i::before {
+  font-family: 'tp-idp-icons';
+  content: "\e27c"; /* fi-bs-building */
+  font-size: 22px;
+  line-height: 1;
+}
+
+.tp-idp-option-title {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--tp-font-family);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 30px;
+  color: var(--tp-color-indigo);
 }
 
 /* Section spacing on the selector page: 48px between the form and the */
