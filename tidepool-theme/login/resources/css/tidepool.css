@@ -1382,14 +1382,33 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   color: var(--tp-color-indigo-hover);
 }
 
-/* Page-expired screen (login-page-expired.ftl). Two stacked block buttons */
-/* take the place of upstream's "click here" inline links — restart (primary) */
-/* at the top, continue (secondary) below. */
+/* Two stacked block buttons that take the place of upstream's inline "click */
+/* here" links. Shared by login-page-expired.ftl (restart / continue) and */
+/* login-idp-link-email.ftl (Verify email / Resend) — primary on top, */
+/* secondary below. */
 .tp-page-expired-actions {
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
+}
+
+/* login-idp-link-email.ftl: the form body stacks an instruction, the read-only */
+/* email field, a helper line, then the action buttons. main-body has no gap of */
+/* its own and .instruction is an unstyled <p>, so space the children explicitly */
+/* (16px between rows, +8px before the buttons for a 24px break). */
+body[data-page-id="login-login-idp-link-email"] .pf-v5-c-login__main-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+body[data-page-id="login-login-idp-link-email"] .instruction {
+  margin: 0;
+}
+
+body[data-page-id="login-login-idp-link-email"] .tp-page-expired-actions {
+  margin-top: 8px;
 }
 
 /* The actions are <a> tags styled with .pf-v5-c-button; strip the anchor */
