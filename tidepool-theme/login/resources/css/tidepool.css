@@ -871,20 +871,33 @@ body.tp-role-clinician #kc-header-wrapper {
   opacity: 1;
 }
 
-/* Identity-provider selection (hidpd-select-idp.ftl) — "Select your home */
-/* identity provider" picker cards. Reuses the select-authenticator card */
-/* language, but each card is a direct navigation link (an <a>), so there is */
-/* no radio/checked state or trailing check icon. */
+/* Identity-provider selection (hidpd-select-idp.ftl) — "Select your preferred */
+/* way to log in" picker cards (Figma node 13885:30576). Same radio-card language */
+/* as select-authenticator (tp-auth-option), but the icon is a Flaticon UIcons */
+/* font glyph and selecting a card enables a Next button that navigates to that */
+/* provider client-side. */
 .tp-idp-options {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 .tp-idp-option {
+  display: block;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hide the native radio but keep it focusable. */
+.tp-idp-option-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.tp-idp-option-card {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -892,19 +905,7 @@ body.tp-role-clinician #kc-header-wrapper {
   border: 1.5px solid var(--tp-color-card-border);
   border-radius: var(--tp-input-radius);
   background: var(--tp-color-card-bg);
-  text-decoration: none;
   transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.tp-idp-option:hover {
-  border-color: var(--tp-color-indigo);
-  text-decoration: none;
-}
-
-.tp-idp-option:focus-visible {
-  outline: none;
-  border-color: var(--tp-color-indigo);
-  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
 }
 
 .tp-idp-option-icon {
@@ -938,6 +939,60 @@ body.tp-role-clinician #kc-header-wrapper {
   font-weight: 700;
   line-height: 30px;
   color: var(--tp-color-indigo);
+}
+
+.tp-idp-option-check {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-color-indigo);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tp-idp-option-check svg {
+  width: 28px;
+  height: 28px;
+}
+
+.tp-idp-option:hover .tp-idp-option-card {
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-idp-option-input:focus-visible + .tp-idp-option-card {
+  border-color: var(--tp-color-indigo);
+  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+}
+
+.tp-idp-option-input:checked + .tp-idp-option-card {
+  border-color: var(--tp-color-indigo);
+  background-color: var(--tp-color-indigo-bg);
+}
+
+.tp-idp-option-input:checked + .tp-idp-option-card .tp-idp-option-check {
+  opacity: 1;
+}
+
+/* Section spacing: 48px between the cards and Next button, and before the */
+/* support disclaimer (matches the Figma frame's 48px rhythm). */
+#kc-idp-select-form {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+#kc-idp-select-form + .tp-otp-disclaimer {
+  margin-top: 48px;
+}
+
+/* Figma uses Primary/blue.60 / weight 500 for this page's subtitle, not the */
+/* muted gray the shared .tp-login-subtitle defaults to. */
+body[data-page-id="login-hidpd-select-idp"] .tp-login-subtitle {
+  color: var(--tp-color-blue-60);
+  font-weight: 500;
 }
 
 /* Section spacing on the selector page: 48px between the form and the */
