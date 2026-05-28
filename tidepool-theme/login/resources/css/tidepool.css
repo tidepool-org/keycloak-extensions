@@ -1393,22 +1393,42 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   width: 100%;
 }
 
-/* login-idp-link-email.ftl: the form body stacks an instruction, the read-only */
-/* email field, a helper line, then the action buttons. main-body has no gap of */
-/* its own and .instruction is an unstyled <p>, so space the children explicitly */
-/* (16px between rows, +8px before the buttons for a 24px break). */
+/* login-idp-link-email.ftl: the form body stacks a warning banner, a helper */
+/* block, the read-only email field, then the action buttons. main-body has no */
+/* gap of its own, so space the children explicitly (16px between rows, +32px */
+/* before the buttons for a 48px break per the Figma frame). */
 body[data-page-id="login-login-idp-link-email"] .pf-v5-c-login__main-body {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-body[data-page-id="login-login-idp-link-email"] .instruction {
-  margin: 0;
+/* Figma uses Primary/blue.60 for this page's subtitle, not the muted gray the */
+/* shared .tp-login-subtitle defaults to. */
+body[data-page-id="login-login-idp-link-email"] .tp-login-subtitle {
+  color: var(--tp-color-blue-60);
+  font-weight: 500;
 }
 
-body[data-page-id="login-login-idp-link-email"] .tp-page-expired-actions {
-  margin-top: 8px;
+body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
+  margin-top: 32px;
+}
+
+/* Two-line helper text under the warning banner: 16px blue-60 body copy with a */
+/* tight 4px gap between the lines (the "Already verified?" line bolds "Next"). */
+.tp-idp-link-help {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tp-idp-link-help p {
+  margin: 0;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
 }
 
 /* The actions are <a> tags styled with .pf-v5-c-button; strip the anchor */
@@ -1417,6 +1437,7 @@ body[data-page-id="login-login-idp-link-email"] .tp-page-expired-actions {
 /* error.ftl, and logout-confirm.ftl that render "Back to Application" as a */
 /* primary button instead of an inline link. */
 .tp-page-expired-actions a.pf-v5-c-button,
+.tp-totp-actions a.pf-v5-c-button,
 a.tp-back-to-app.pf-v5-c-button {
   text-decoration: none;
   display: inline-flex;
@@ -1529,8 +1550,10 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   width: 100%;
 }
 
-/* Gold "save these somewhere safe" warning banner. */
-.tp-recovery-warning {
+/* Gold warning banner: a leading triangle icon next to a bold title (and an */
+/* optional body line). Shared by login-recovery-authn-code-config.ftl ("save */
+/* these somewhere safe") and login-idp-link-email.ftl ("verify your email"). */
+.tp-warning-banner {
   display: flex;
   gap: 10px;
   align-items: flex-start;
@@ -1541,7 +1564,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   box-sizing: border-box;
 }
 
-.tp-recovery-warning-icon {
+.tp-warning-banner-icon {
   flex-shrink: 0;
   display: inline-flex;
   width: 18px;
@@ -1549,19 +1572,19 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   color: #CC6D00; /* Feedback/gold.30 */
 }
 
-.tp-recovery-warning-icon svg {
+.tp-warning-banner-icon svg {
   width: 100%;
   height: 100%;
 }
 
-.tp-recovery-warning-text {
+.tp-warning-banner-text {
   display: flex;
   flex-direction: column;
   gap: 4px;
   flex: 1;
 }
 
-.tp-recovery-warning-title {
+.tp-warning-banner-title {
   margin: 0;
   font-family: var(--tp-font-family);
   font-size: 12px;
@@ -1570,7 +1593,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   color: var(--tp-color-blue-50);
 }
 
-.tp-recovery-warning-body {
+.tp-warning-banner-body {
   margin: 0;
   font-family: var(--tp-font-family);
   font-size: 12px;

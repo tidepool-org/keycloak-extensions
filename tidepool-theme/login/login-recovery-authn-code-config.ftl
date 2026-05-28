@@ -12,13 +12,13 @@
         </div>
 
         <div class="tp-recovery-codes-block">
-            <div class="tp-recovery-warning" role="alert">
-                <span class="tp-recovery-warning-icon" aria-hidden="true">
+            <div class="tp-warning-banner" role="alert">
+                <span class="tp-warning-banner-icon" aria-hidden="true">
                     <svg viewBox="0 0 18 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8.13 1.5a1 1 0 0 1 1.74 0l7.36 12.75A1 1 0 0 1 16.36 16H1.64a1 1 0 0 1-.87-1.75L8.13 1.5zM9 6a.75.75 0 0 0-.75.75v3.5a.75.75 0 0 0 1.5 0v-3.5A.75.75 0 0 0 9 6zm0 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
                 </span>
-                <div class="tp-recovery-warning-text">
-                    <p class="tp-recovery-warning-title">${msg("recovery-code-config-warning-title")}</p>
-                    <p class="tp-recovery-warning-body">${msg("recovery-code-config-warning-message")}</p>
+                <div class="tp-warning-banner-text">
+                    <p class="tp-warning-banner-title">${msg("recovery-code-config-warning-title")}</p>
+                    <p class="tp-warning-banner-body">${msg("recovery-code-config-warning-message")}</p>
                 </div>
             </div>
 
