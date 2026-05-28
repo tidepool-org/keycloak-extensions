@@ -5,37 +5,70 @@
   used instead of the one bundled in the plugin jar — keeping all design changes
   in this repository rather than in the upstream submodule.
 
-  Functional logic (the hidpd.providers guard, loop, loginUrl and title) is
-  preserved from the upstream template. Each provider is rendered as a card
-  (.tp-idp-option*, styled in css/tidepool.css) matching the
-  authenticator-selection screen, with a single Flaticon UIcons font glyph
-  (subset in fonts/uicons/) — change the glyph via .tp-idp-option-icon i::before.
+  Functional logic (the hidpd.providers guard, loop, loginUrl) is preserved from
+  upstream. Design per Figma file g8xYrHViRt9nd1oXx0OuIF, node 13885:30576: each
+  provider is a radio-selectable card (.tp-idp-option*, styled in css/tidepool.css)
+  with a Flaticon UIcons font glyph (subset in fonts/uicons/ — change the glyph via
+  .tp-idp-option-icon i::before). Unlike upstream's direct links, the user picks a
+  provider and a Next button navigates to its loginUrl client-side.
 -->
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username') displayInfo=(realm.password && realm.registrationAllowed && !registrationDisabled??); section>
+<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username') displayInfo=(realm.password && realm.registrationAllowed && !registrationDisabled??) subtitle=msg("hidpdSelectIdpSubtitle"); section>
     <#if section = "header">
-        ${msg("loginAccountTitle")}
+        ${msg("hidpdSelectIdpTitle")}
     <#elseif section = "socialProviders">
         <#-- providers are rendered in the form section (below) so they appear above the "try another way" button -->
     <#elseif section = "form">
         <#if realm.password && hidpd.providers?? && hidpd.providers?has_content>
-            <div class="pf-v5-c-login__main-footer-band">
-                <p class="pf-v5-c-login__main-footer-band-item" id="hidpd-select-provider-title">
-                    ${msg("home-idp-discovery-identity-provider-login-label")}
-                </p>
-            </div>
-            <div id="kc-social-providers" class="${properties.kcFormSocialAccountSectionClass!}">
-                <ul class="tp-idp-options">
+            <form id="kc-idp-select-form" class="${properties.kcFormClass!}" onsubmit="return false;">
+                <div class="tp-idp-options" role="radiogroup" aria-label="${msg("hidpdSelectIdpTitle")}">
                     <#list hidpd.providers as p>
-                        <li class="tp-idp-option-item">
-                            <a id="social-${p.alias}" class="tp-idp-option" aria-label="${p.displayName}" href="${p.loginUrl}">
+                        <label class="tp-idp-option">
+                            <input type="radio" name="idpSelection" id="idp-${p.alias}"
+                                   class="tp-idp-option-input" value="${p.loginUrl}"/>
+                            <span class="tp-idp-option-card">
                                 <span class="tp-idp-option-icon" aria-hidden="true"><i></i></span>
                                 <span class="tp-idp-option-title">${p.displayName!}</span>
-                            </a>
-                        </li>
+                                <span class="tp-idp-option-check" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                </span>
+                            </span>
+                        </label>
                     </#list>
-                </ul>
+                </div>
+
+                <div class="${properties.kcFormGroupClass!}">
+                    <div class="${properties.kcFormActionGroupClass!}">
+                        <button id="kc-idp-next" class="${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!}" type="button" disabled>${msg("next")}</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="tp-otp-disclaimer">
+                <p>
+                    <strong>${msg("loginOtpHelpPromptStrong")}</strong>
+                    ${msg("loginOtpHelpPrompt")}
+                    <a href="http://support.tidepool.org/" target="_blank" rel="noreferrer noopener">${msg("loginOtpHelpLink")}</a>
+                </p>
             </div>
+
+            <script>
+                (function () {
+                    var next = document.getElementById('kc-idp-next');
+                    var selectedUrl = null;
+                    document.querySelectorAll('input[name="idpSelection"]').forEach(function (radio) {
+                        radio.addEventListener('change', function () {
+                            selectedUrl = this.value;
+                            next.disabled = false;
+                        });
+                    });
+                    next.addEventListener('click', function () {
+                        if (selectedUrl) {
+                            window.location.href = selectedUrl;
+                        }
+                    });
+                })();
+            </script>
         </#if>
     </#if>
 </@layout.registrationLayout>
