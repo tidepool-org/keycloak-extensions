@@ -1394,6 +1394,18 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 
 /* Side-by-side action buttons (Cancel/Back + primary). 1fr each, equal width, */
 /* matching the figma's 50/50 split with a 12px gap between them. */
+/* Body message on the delete-credential (AIA "Delete <device>") page. Moved out */
+/* of the centered title subtitle slot into left-aligned card body copy per the */
+/* 2FA Figma (node 11639:28634); 48px below matches the design's body→buttons gap. */
+.tp-delete-credential-message {
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+  margin: 0 0 48px;
+}
+
 .tp-totp-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,14 +1,15 @@
 <#import "template.ftl" as layout>
 <#-- Tidepool override of keycloak.v2's delete-credential.ftl — the AIA prompt shown -->
 <#-- when a user removes their OTP/2FA device. Figma file g8xYrHViRt9nd1oXx0OuIF, node -->
-<#-- 11639:28634: "Delete <device>" title, a subtitle noting 2FA can be re-enabled -->
+<#-- 11639:28634: "Delete <device>" title, a body message noting 2FA can be re-enabled -->
 <#-- later, and a side-by-side Cancel / Delete pair (secondary + primary) reusing -->
 <#-- the shared .tp-totp-actions grid. The form posts to url.loginAction; `accept` -->
 <#-- confirms the deletion, `cancel-aia` aborts the application-initiated action. -->
-<@layout.registrationLayout displayMessage=false subtitle=msg("deleteCredentialMessage", credentialLabel); section>
+<@layout.registrationLayout displayMessage=false; section>
     <#if section = "header">
         ${msg("deleteCredentialTitle", credentialLabel)}
     <#elseif section = "form">
+        <p class="tp-delete-credential-message">${msg("deleteCredentialMessage", credentialLabel)}</p>
         <form id="kc-delete-credential-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="POST">
             <div class="tp-totp-actions">
                 <button type="submit" name="cancel-aia" value="true"
