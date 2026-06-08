@@ -1610,6 +1610,37 @@ body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
   color: var(--tp-color-blue-60);
 }
 
+/* Broker link confirmation (login-idp-link-confirm.ftl) — Figma node */
+/* 13831:31031. Body prose then a full-width Next button, separated by the */
+/* same 48px the card uses elsewhere; the title→body gap comes from the */
+/* main-header margin. */
+.tp-idp-link-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* Two paragraphs of blue-60 body copy; the blank line between them in the */
+/* Figma is rendered as a paragraph gap rather than empty <br>s. */
+.tp-idp-link-confirm-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tp-idp-link-confirm-body p {
+  margin: 0;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
+.tp-idp-link-confirm form {
+  margin: 0;
+}
+
 /* The actions are <a> tags styled with .pf-v5-c-button; strip the anchor */
 /* underline and make sure the text sits centered like a real button. The */
 /* same treatment also applies to the .tp-back-to-app links on info.ftl, */
