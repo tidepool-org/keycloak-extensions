@@ -761,6 +761,118 @@ body.tp-role-clinician #kc-header-wrapper {
   margin-top: 32px;
 }
 
+/* Personal-account terms screen (patient_terms.ftl) — Figma node 11691:48930. */
+/* Two stacked groups (age radios, terms acceptance) separated by the same 48px */
+/* the card uses everywhere; the title→age gap comes from the main-header margin. */
+.tp-terms {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+/* Age radio group: gray copy beside a custom 14px indigo radio. */
+.tp-terms-age {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Reset the <fieldset> defaults (border/margin/padding). */
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.tp-terms-age-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+/* Hide the native radio but keep it focusable; the .tp-terms-age-mark span is */
+/* the visible control. */
+.tp-terms-age-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.tp-terms-age-mark {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--tp-color-blue-gray-30);
+  border-radius: 50%;
+  background: var(--tp-color-card-bg);
+  position: relative;
+  transition: border-color 0.15s ease;
+  /* Center the 14px control on the first line of the 20px-tall label. */
+  margin-top: 3px;
+}
+
+.tp-terms-age-mark::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tp-color-indigo);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.15s ease;
+}
+
+.tp-terms-age-option:hover .tp-terms-age-mark {
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-terms-age-input:focus-visible + .tp-terms-age-mark {
+  outline: 2px solid var(--tp-color-indigo);
+  outline-offset: 2px;
+}
+
+.tp-terms-age-input:checked + .tp-terms-age-mark {
+  border-color: var(--tp-color-indigo);
+}
+
+.tp-terms-age-input:checked + .tp-terms-age-mark::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.tp-terms-age-label {
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: var(--tp-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--tp-color-muted);
+}
+
+/* Terms acceptance: reuses the .pf-v5-c-check checkbox skin (blue-60 label, */
+/* indigo .tp-inline-link links) with the full-width Next button below. */
+.tp-terms-accept {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tp-terms-form {
+  margin: 0;
+  width: 100%;
+}
+
+.tp-terms-sorry {
+  font-family: var(--tp-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--tp-color-blue-60);
+}
+
 /* Authenticator selection (select-authenticator.ftl) — "Select your preferred */
 /* way to log in" with stacked picker cards. Visual matches Figma node 11631:25233 */
 /* and shares its design language with the role picker (tp-role-option) above. */

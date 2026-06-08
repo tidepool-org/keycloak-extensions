@@ -19,14 +19,16 @@ function updatePatientTermsForm() {
     sorryVisible = true;
   }
 
+  // terms-wrapper / terms-child-wrapper are .pf-v5-c-check flex rows, so show
+  // them as "flex" (not "block") to preserve the checkbox/label layout.
   if (termsVisible) {
-    document.getElementById("terms-wrapper").style.display = "block"
+    document.getElementById("terms-wrapper").style.display = "flex"
   } else {
     document.getElementById("terms-wrapper").style.display = "none"
   }
 
   if (termsChildVisible) {
-    document.getElementById("terms-child-wrapper").style.display = "block"
+    document.getElementById("terms-child-wrapper").style.display = "flex"
   } else {
     document.getElementById("terms-child-wrapper").style.display = "none"
   }
