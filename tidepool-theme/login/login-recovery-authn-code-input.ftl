@@ -1,5 +1,6 @@
 <#import "template.ftl" as layout>
 <#import "field.ftl" as field>
+<#import "tp-commons.ftl" as tp>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('recoveryCodeInput') subtitle=msg("loginRecoverySubtitle"); section>
     <#if section = "header">
         ${msg("auth-recovery-code-header")}
@@ -27,16 +28,6 @@
             </form>
         </#if>
 
-        <div class="tp-otp-disclaimer">
-            <p>
-                <strong>${msg("loginOtpHelpPromptStrong")}</strong>
-                ${msg("loginOtpHelpPrompt")}
-                <a href="http://support.tidepool.org/" target="_blank" rel="noreferrer noopener">${msg("loginOtpHelpLink")}</a>
-            </p>
-            <p>
-                <strong>${msg("loginOtpImportantStrong")}</strong>
-                ${msg("loginOtpImportant")}
-            </p>
-        </div>
+        <@tp.otpDisclaimer/>
     </#if>
 </@layout.registrationLayout>

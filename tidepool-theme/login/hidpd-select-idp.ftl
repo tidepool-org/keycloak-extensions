@@ -7,12 +7,13 @@
 
   Functional logic (the hidpd.providers guard, loop, loginUrl) is preserved from
   upstream. Design per Figma file g8xYrHViRt9nd1oXx0OuIF, node 13885:30576: each
-  provider is a radio-selectable card (.tp-idp-option*, styled in css/tidepool.css)
+  provider is a radio-selectable card (.tp-card-option*, styled in css/tidepool.css)
   with a Flaticon UIcons font glyph (subset in fonts/uicons/ — change the glyph via
-  .tp-idp-option-icon i::before). Unlike upstream's direct links, the user picks a
+  .tp-card-option-icon i::before). Unlike upstream's direct links, the user picks a
   provider and a Next button navigates to its loginUrl client-side.
 -->
 <#import "template.ftl" as layout>
+<#import "tp-commons.ftl" as tp>
 <@layout.registrationLayout displayMessage=!messagesPerField.existsError('username') displayInfo=(realm.password && realm.registrationAllowed && !registrationDisabled??) subtitle=msg("hidpdSelectIdpSubtitle"); section>
     <#if section = "header">
         ${msg("hidpdSelectIdpTitle")}
@@ -21,17 +22,15 @@
     <#elseif section = "form">
         <#if realm.password && hidpd.providers?? && hidpd.providers?has_content>
             <form id="kc-idp-select-form" class="${properties.kcFormClass!}" onsubmit="return false;">
-                <div class="tp-idp-options" role="radiogroup" aria-label="${msg("hidpdSelectIdpTitle")}">
+                <div class="tp-card-options" role="radiogroup" aria-label="${msg("hidpdSelectIdpTitle")}">
                     <#list hidpd.providers as p>
-                        <label class="tp-idp-option">
+                        <label class="tp-card-option">
                             <input type="radio" name="idpSelection" id="idp-${p.alias}"
-                                   class="tp-idp-option-input" value="${p.loginUrl}"/>
-                            <span class="tp-idp-option-card">
-                                <span class="tp-idp-option-icon" aria-hidden="true"><i></i></span>
-                                <span class="tp-idp-option-title">${p.displayName!}</span>
-                                <span class="tp-idp-option-check" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                </span>
+                                   class="tp-card-option-input" value="${p.loginUrl}"/>
+                            <span class="tp-card-option-card">
+                                <span class="tp-card-option-icon" aria-hidden="true"><i></i></span>
+                                <span class="tp-card-option-text"><span class="tp-card-option-title">${p.displayName!}</span></span>
+                                <span class="tp-card-option-check" aria-hidden="true"><@tp.checkIcon/></span>
                             </span>
                         </label>
                     </#list>
@@ -44,13 +43,7 @@
                 </div>
             </form>
 
-            <div class="tp-otp-disclaimer">
-                <p>
-                    <strong>${msg("loginOtpHelpPromptStrong")}</strong>
-                    ${msg("loginOtpHelpPrompt")}
-                    <a href="http://support.tidepool.org/" target="_blank" rel="noreferrer noopener">${msg("loginOtpHelpLink")}</a>
-                </p>
-            </div>
+            <@tp.otpDisclaimer showImportant=false/>
 
             <script>
                 (function () {

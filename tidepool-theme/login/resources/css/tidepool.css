@@ -10,12 +10,17 @@
   --tp-color-blue-30: #708fc2;   /* placeholder text */
   --tp-color-blue-50: #4f6a92;   /* field labels */
   --tp-color-blue-60: #445f87;   /* secondary form text (e.g. Remember me) */
+  --tp-color-blue-80: #375178;   /* section titles (TOTP / recovery intro) */
   --tp-color-blue-gray-10: #d1d6e1;  /* input border */
   --tp-color-blue-gray-30: #838ca0;  /* checkbox border */
   --tp-color-card-border: #d9d9d9;
   --tp-color-error: #cc2900;     /* Figma Feedback/red.50 */
   --tp-color-success-bg: #daf9e4;  /* Figma Feedback/green.05 — success alert background */
+  --tp-color-warning-bg: #ffe8cf;  /* Figma Feedback/gold.05 — warning banner background */
+  --tp-color-warning-icon: #cc6d00; /* Figma Feedback/gold.30 — warning banner icon */
   --tp-color-muted: #8a8a8e;     /* "Don't have an account?" */
+  --tp-color-counter: #a0a0a0;   /* recovery-code list numbering */
+  --tp-color-disabled-primary: #9aa4d8;  /* faded indigo for disabled primary buttons */
   --tp-color-page-bg: #f7f7f8;
   --tp-color-card-bg: #ffffff;
   --tp-color-footer-link: #6b7280;
@@ -24,6 +29,9 @@
   --tp-card-radius: 4px;
   --tp-input-radius: 4px;
   --tp-button-radius: 3px;
+
+  /* Indigo focus halo shared by inputs, the input-group, and the radio cards. */
+  --tp-focus-ring: 0 0 0 3px rgba(98, 124, 255, 0.18);
 
   --tp-font-family: 'Basis', 'Basis Grotesque Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 
@@ -62,7 +70,7 @@
 
 /* Flaticon UIcons (bold straight), subset to a few identity glyphs in */
 /* fonts/uicons/ — used for the home-IDP-selection card icon. To change the */
-/* glyph, swap the content codepoint in .tp-idp-option-icon i::before below. */
+/* glyph, swap the content codepoint in .tp-card-option-icon i::before below. */
 /* Available in the subset: building \e27c, cloud \e409, shield-check \edb1, */
 /* fingerprint \e6d6, key \e922, globe \e793, id-badge \e8b4, user-lock \f0c1. */
 @font-face {
@@ -349,7 +357,7 @@ body.tp-role-clinician #kc-header-wrapper {
 /* the design). */
 .pf-v5-c-form-control:focus-within {
   border-color: var(--tp-color-indigo);
-  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+  box-shadow: var(--tp-focus-ring);
 }
 
 .pf-v5-c-form-control input:focus,
@@ -426,7 +434,7 @@ body.tp-role-clinician #kc-header-wrapper {
 
 .pf-v5-c-input-group:focus-within {
   border-color: var(--tp-color-indigo);
-  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+  box-shadow: var(--tp-focus-ring);
 }
 
 .pf-v5-c-input-group .pf-v5-c-form-control {
@@ -553,7 +561,14 @@ body.tp-role-clinician #kc-header-wrapper {
   gap: 10px;
 }
 
-.pf-v5-c-check__input {
+/* Shared custom checkbox skin: an appearance:none box that turns indigo with a */
+/* rotated ::after tick when checked. Used by the Remember me / terms checkboxes */
+/* (.pf-v5-c-check__input), the TOTP "log out of other devices" checkbox, and */
+/* the recovery-codes confirmation checkbox — each wrapped differently by */
+/* upstream, so the selectors are grouped rather than sharing one class. */
+.pf-v5-c-check__input,
+.tp-totp-logout .checkbox input[type="checkbox"],
+.tp-recovery-confirm-label input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
   width: 16px;
@@ -564,13 +579,15 @@ body.tp-role-clinician #kc-header-wrapper {
   background: var(--tp-color-card-bg);
   cursor: pointer;
   position: relative;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
   flex-shrink: 0;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Remember me / terms variant only: upstream keycloak.v2 applies */
+/* transform: translateY(~4px) to push the native box onto the text baseline. */
+/* We render our own skin, so reset that and center the box on the line instead. */
+.pf-v5-c-check__input {
   align-self: center;
-  /* Upstream keycloak.v2 applies transform: translateY(~4px) to nudge the */
-  /* native checkbox onto the text baseline. We render our own custom skin */
-  /* (appearance: none), so the nudge instead pushes the box below the label. */
-  /* Reset the transform. */
   transform: none;
 }
 
@@ -583,12 +600,16 @@ body.tp-role-clinician #kc-header-wrapper {
   outline-offset: 2px;
 }
 
-.pf-v5-c-check__input:checked {
+.pf-v5-c-check__input:checked,
+.tp-totp-logout .checkbox input[type="checkbox"]:checked,
+.tp-recovery-confirm-label input[type="checkbox"]:checked {
   background-color: var(--tp-color-indigo);
   border-color: var(--tp-color-indigo);
 }
 
-.pf-v5-c-check__input:checked::after {
+.pf-v5-c-check__input:checked::after,
+.tp-totp-logout .checkbox input[type="checkbox"]:checked::after,
+.tp-recovery-confirm-label input[type="checkbox"]:checked::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -647,24 +668,26 @@ body.tp-role-clinician #kc-header-wrapper {
   margin-top: 2px;
 }
 
-/* Role picker on user_role_prompt.ftl — two stacked cards. Visual style */
-/* matches the "Navigational Cards v2" component from Figma (file */
-/* g8xYrHViRt9nd1oXx0OuIF, node 11631:25234): 1.5px border, 24px padding, */
-/* indigo title, blue-60 description, light-indigo bg + check icon on select. */
-.tp-role-options {
+/* Stacked radio-card picker — shared by the role prompt (user_role_prompt.ftl, */
+/* Figma node 11631:25234), the authenticator selector (select-authenticator.ftl, */
+/* 11631:25233), and the home-IDP selector (hidpd-select-idp.ftl, 13885:30576). */
+/* "Navigational Cards v2": 1.5px border, 24px padding, indigo title, blue-60 */
+/* description, light-indigo bg + check icon on select. Per-screen differences */
+/* (role uses lighter weights; auth/idp add a leading icon) are modifiers below. */
+.tp-card-options {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.tp-role-option {
+.tp-card-option {
   display: block;
   cursor: pointer;
   position: relative;
 }
 
 /* Hide the native radio but keep it focusable. */
-.tp-role-option-input {
+.tp-card-option-input {
   position: absolute;
   opacity: 0;
   width: 0;
@@ -672,7 +695,7 @@ body.tp-role-clinician #kc-header-wrapper {
   pointer-events: none;
 }
 
-.tp-role-option-card {
+.tp-card-option-card {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -683,7 +706,38 @@ body.tp-role-clinician #kc-header-wrapper {
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
-.tp-role-option-text {
+/* Leading icon: an inline SVG (authenticator picker) or a Flaticon UIcons font */
+/* glyph (IDP picker). To change the IDP glyph, swap the content codepoint in */
+/* .tp-card-option-icon i::before (subset listed at the top of this file). */
+.tp-card-option-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tp-color-indigo);
+  padding: 4px;
+}
+
+.tp-card-option-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tp-card-option-icon i {
+  font-style: normal;
+  line-height: 1;
+}
+
+.tp-card-option-icon i::before {
+  font-family: 'tp-idp-icons';
+  content: "\e27c"; /* fi-bs-building */
+  font-size: 22px;
+  line-height: 1;
+}
+
+.tp-card-option-text {
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
@@ -691,23 +745,32 @@ body.tp-role-clinician #kc-header-wrapper {
   min-width: 0;
 }
 
-.tp-role-option-title {
+.tp-card-option-title {
   font-family: var(--tp-font-family);
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 30px;
   color: var(--tp-color-indigo);
 }
 
-.tp-role-option-description {
+.tp-card-option-description {
   font-family: var(--tp-font-family);
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 500;
   line-height: 20px;
   color: var(--tp-color-blue-60);
 }
 
-.tp-role-option-check {
+/* Role picker uses slightly lighter weights than the 2FA pickers. */
+.tp-card-options--role .tp-card-option-title {
+  font-weight: 600;
+}
+
+.tp-card-options--role .tp-card-option-description {
+  font-weight: 400;
+}
+
+.tp-card-option-check {
   flex-shrink: 0;
   width: 48px;
   height: 48px;
@@ -719,35 +782,35 @@ body.tp-role-clinician #kc-header-wrapper {
   transition: opacity 0.15s ease;
 }
 
-.tp-role-option-check svg {
+.tp-card-option-check svg {
   width: 28px;
   height: 28px;
 }
 
-/* Hover state — keep neutral border but hint at interactivity. */
-.tp-role-option:hover .tp-role-option-card {
+/* Hover — keep neutral border but hint at interactivity. */
+.tp-card-option:hover .tp-card-option-card {
   border-color: var(--tp-color-indigo);
 }
 
 /* Focus on the (visually hidden) radio input. */
-.tp-role-option-input:focus-visible + .tp-role-option-card {
+.tp-card-option-input:focus-visible + .tp-card-option-card {
   border-color: var(--tp-color-indigo);
-  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
+  box-shadow: var(--tp-focus-ring);
 }
 
 /* Selected: indigo border, light-indigo background, check icon visible. */
-.tp-role-option-input:checked + .tp-role-option-card {
+.tp-card-option-input:checked + .tp-card-option-card {
   border-color: var(--tp-color-indigo);
   background-color: var(--tp-color-indigo-bg);
 }
 
-.tp-role-option-input:checked + .tp-role-option-card .tp-role-option-check {
+.tp-card-option-input:checked + .tp-card-option-card .tp-card-option-check {
   opacity: 1;
 }
 
 /* Disabled primary button (the Continue button before a role is picked). */
 .pf-v5-c-button.pf-m-primary:disabled {
-  background-color: #9aa4d8;
+  background-color: var(--tp-color-disabled-primary);
   cursor: not-allowed;
 }
 
@@ -873,271 +936,42 @@ body.tp-role-clinician #kc-header-wrapper {
   color: var(--tp-color-blue-60);
 }
 
-/* Authenticator selection (select-authenticator.ftl) — "Select your preferred */
-/* way to log in" with stacked picker cards. Visual matches Figma node 11631:25233 */
-/* and shares its design language with the role picker (tp-role-option) above. */
-.tp-auth-options {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.tp-auth-option {
-  display: block;
-  cursor: pointer;
-  position: relative;
-}
-
-/* Hide the native radio but keep it focusable. */
-.tp-auth-option-input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-.tp-auth-option-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 24px;
-  border: 1.5px solid var(--tp-color-card-border);
-  border-radius: var(--tp-input-radius);
-  background: var(--tp-color-card-bg);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.tp-auth-option-icon {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tp-color-indigo);
-  padding: 4px;
-}
-
-.tp-auth-option-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.tp-auth-option-text {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.tp-auth-option-title {
-  font-family: var(--tp-font-family);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 30px;
-  color: var(--tp-color-indigo);
-}
-
-.tp-auth-option-description {
-  font-family: var(--tp-font-family);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--tp-color-blue-60);
-}
-
-.tp-auth-option-check {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tp-color-indigo);
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.tp-auth-option-check svg {
-  width: 28px;
-  height: 28px;
-}
-
-.tp-auth-option:hover .tp-auth-option-card {
-  border-color: var(--tp-color-indigo);
-}
-
-.tp-auth-option-input:focus-visible + .tp-auth-option-card {
-  border-color: var(--tp-color-indigo);
-  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
-}
-
-.tp-auth-option-input:checked + .tp-auth-option-card {
-  border-color: var(--tp-color-indigo);
-  background-color: var(--tp-color-indigo-bg);
-}
-
-.tp-auth-option-input:checked + .tp-auth-option-card .tp-auth-option-check {
-  opacity: 1;
-}
-
-/* Identity-provider selection (hidpd-select-idp.ftl) — "Select your preferred */
-/* way to log in" picker cards (Figma node 13885:30576). Same radio-card language */
-/* as select-authenticator (tp-auth-option), but the icon is a Flaticon UIcons */
-/* font glyph and selecting a card enables a Next button that navigates to that */
-/* provider client-side. */
-.tp-idp-options {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.tp-idp-option {
-  display: block;
-  cursor: pointer;
-  position: relative;
-}
-
-/* Hide the native radio but keep it focusable. */
-.tp-idp-option-input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-.tp-idp-option-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 24px;
-  border: 1.5px solid var(--tp-color-card-border);
-  border-radius: var(--tp-input-radius);
-  background: var(--tp-color-card-bg);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.tp-idp-option-icon {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tp-color-indigo);
-  padding: 4px;
-}
-
-.tp-idp-option-icon i {
-  font-style: normal;
-  line-height: 1;
-}
-
-.tp-idp-option-icon i::before {
-  font-family: 'tp-idp-icons';
-  content: "\e27c"; /* fi-bs-building */
-  font-size: 22px;
-  line-height: 1;
-}
-
-.tp-idp-option-title {
-  flex: 1 1 0;
-  min-width: 0;
-  font-family: var(--tp-font-family);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 30px;
-  color: var(--tp-color-indigo);
-}
-
-.tp-idp-option-check {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tp-color-indigo);
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.tp-idp-option-check svg {
-  width: 28px;
-  height: 28px;
-}
-
-.tp-idp-option:hover .tp-idp-option-card {
-  border-color: var(--tp-color-indigo);
-}
-
-.tp-idp-option-input:focus-visible + .tp-idp-option-card {
-  border-color: var(--tp-color-indigo);
-  box-shadow: 0 0 0 3px rgba(98, 124, 255, 0.18);
-}
-
-.tp-idp-option-input:checked + .tp-idp-option-card {
-  border-color: var(--tp-color-indigo);
-  background-color: var(--tp-color-indigo-bg);
-}
-
-.tp-idp-option-input:checked + .tp-idp-option-card .tp-idp-option-check {
-  opacity: 1;
-}
-
-/* Section spacing: 48px between the cards and Next button, and before the */
-/* support disclaimer (matches the Figma frame's 48px rhythm). */
-#kc-idp-select-form {
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-}
-
-#kc-idp-select-form + .tp-otp-disclaimer {
-  margin-top: 48px;
-}
-
-/* Figma uses Primary/blue.60 / weight 500 for this page's subtitle, not the */
-/* muted gray the shared .tp-login-subtitle defaults to. */
-body[data-page-id="login-hidpd-select-idp"] .tp-login-subtitle {
-  color: var(--tp-color-blue-60);
-  font-weight: 500;
-}
-
-/* Section spacing on the selector page: 48px between the form and the */
-/* disclaimer block to match the in-card rhythm used elsewhere in 2FA flows. */
+/* Card sections spaced on the Figma's 48px rhythm (cards → Next → disclaimer) */
+/* rather than the default 16px row gap. The IDP-selection and authenticator */
+/* picker forms set their own flex; the OTP / recovery-input forms are already */
+/* flex via .pf-v5-c-form, so they only need the wider gap. */
+#kc-idp-select-form,
 body[data-page-id="login-select-authenticator"] #kc-select-credential-form {
   display: flex;
   flex-direction: column;
   gap: 48px;
 }
 
-body[data-page-id="login-select-authenticator"] #kc-select-credential-form > .pf-v5-c-form__group:last-child {
-  margin-top: 0;
-}
-
-body[data-page-id="login-select-authenticator"] .tp-otp-disclaimer {
-  margin-top: 48px;
-}
-
-/* OTP / 2FA page (login-otp.ftl) and recovery-code page */
-/* (login-recovery-authn-code-input.ftl). The card sections are spaced 48px */
-/* apart to match the Figma design (file g8xYrHViRt9nd1oXx0OuIF, nodes */
-/* 11630:22523 and 11631:25236), which is wider than the default 16px row */
-/* gap used by other login forms. */
 body[data-page-id="login-login-otp"] #kc-otp-login-form,
 body[data-page-id="login-login-recovery-authn-code-input"] #kc-recovery-code-login-form {
   gap: 48px;
 }
 
-/* The submit button is the final form group and would otherwise inherit the */
-/* shared 32px margin-top — the 48px parent gap already gives the spacing. */
+/* On these forms the submit button is the final group; suppress the shared */
+/* 32px last-child margin-top since the 48px parent gap already spaces it. */
+body[data-page-id="login-select-authenticator"] #kc-select-credential-form > .pf-v5-c-form__group:last-child,
 body[data-page-id="login-login-otp"] #kc-otp-login-form > .pf-v5-c-form__group:last-child,
 body[data-page-id="login-login-recovery-authn-code-input"] #kc-recovery-code-login-form > .pf-v5-c-form__group:last-child {
   margin-top: 0;
+}
+
+/* 48px between the picker form and the disclaimer block below it. */
+#kc-idp-select-form + .tp-otp-disclaimer,
+body[data-page-id="login-select-authenticator"] .tp-otp-disclaimer {
+  margin-top: 48px;
+}
+
+/* Subtitle override shared by the IDP-selection and IDP-link-email pages — */
+/* Figma uses Primary/blue.60 / weight 500, not the muted gray default. */
+body[data-page-id="login-hidpd-select-idp"] .tp-login-subtitle,
+body[data-page-id="login-login-idp-link-email"] .tp-login-subtitle {
+  color: var(--tp-color-blue-60);
+  font-weight: 500;
 }
 
 /* "You will receive the code on / Sally's iPhone 16 Pro" block. Two stacked */
@@ -1307,7 +1141,7 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   font-size: 16px;
   font-weight: 700;
   line-height: 20px;
-  color: #375178; /* blue.80 */
+  color: var(--tp-color-blue-80);
   margin: 0;
 }
 
@@ -1469,55 +1303,11 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   cursor: pointer;
 }
 
-/* Style the native checkbox the same way as .pf-v5-c-check__input. Upstream */
-/* renders this control without the PatternFly wrapper, so we target the bare */
-/* input rather than reusing the existing .pf-v5-c-check selectors. */
-.tp-totp-logout .checkbox input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  border: 1.5px solid var(--tp-color-blue-gray-30);
-  border-radius: 2px;
-  background: var(--tp-color-card-bg);
-  cursor: pointer;
-  position: relative;
-  flex-shrink: 0;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.tp-totp-logout .checkbox input[type="checkbox"]:checked {
-  background-color: var(--tp-color-indigo);
-  border-color: var(--tp-color-indigo);
-}
-
-.tp-totp-logout .checkbox input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 5px;
-  width: 4px;
-  height: 8px;
-  border: solid #fff;
-  border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg);
-}
+/* The bare checkbox here is skinned by the shared .pf-v5-c-check__input rule */
+/* group near the top of this file. */
 
 /* Side-by-side action buttons (Cancel/Back + primary). 1fr each, equal width, */
 /* matching the figma's 50/50 split with a 12px gap between them. */
-/* Body message on the delete-credential (AIA "Delete <device>") page. Moved out */
-/* of the centered title subtitle slot into left-aligned card body copy per the */
-/* 2FA Figma (node 11639:28634); 48px below matches the design's body→buttons gap. */
-.tp-delete-credential-message {
-  font-family: var(--tp-font-family);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--tp-color-blue-60);
-  margin: 0 0 48px;
-}
-
 .tp-totp-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1541,7 +1331,10 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   line-height: 10px;
 }
 
-.tp-totp-support a {
+/* Shared "indigo link with a leading ↗ glyph" — the support link below the */
+/* 2FA actions and the "Learn how to store recovery codes safely" link. */
+.tp-totp-support a,
+.tp-recovery-learn-more a {
   color: var(--tp-color-indigo);
   text-decoration: underline;
   text-decoration-skip-ink: none;
@@ -1550,14 +1343,17 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
   gap: 4px;
 }
 
-.tp-totp-support a::before {
+.tp-totp-support a::before,
+.tp-recovery-learn-more a::before {
   content: "↗";
   font-size: 14px;
   font-weight: 500;
 }
 
 .tp-totp-support a:hover,
-.tp-totp-support a:focus {
+.tp-totp-support a:focus,
+.tp-recovery-learn-more a:hover,
+.tp-recovery-learn-more a:focus {
   color: var(--tp-color-indigo-hover);
 }
 
@@ -1582,13 +1378,6 @@ body[data-page-id="login-login-idp-link-email"] .pf-v5-c-login__main-body {
   gap: 16px;
 }
 
-/* Figma uses Primary/blue.60 for this page's subtitle, not the muted gray the */
-/* shared .tp-login-subtitle defaults to. */
-body[data-page-id="login-login-idp-link-email"] .tp-login-subtitle {
-  color: var(--tp-color-blue-60);
-  font-weight: 500;
-}
-
 body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
   margin-top: 32px;
 }
@@ -1601,13 +1390,24 @@ body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
   gap: 4px;
 }
 
-.tp-idp-link-help p {
+/* Shared card body copy — 16px blue-60 medium paragraphs. Used by the */
+/* delete-credential message, the IDP-link help/confirm prose, and the */
+/* trusted-device explanation. Wrapper gaps differ and stay on each wrapper. */
+.tp-delete-credential-message,
+.tp-idp-link-help p,
+.tp-idp-link-confirm-body p,
+.tp-trusted-device-explanation p {
   margin: 0;
   font-family: var(--tp-font-family);
   font-size: 16px;
   font-weight: 500;
   line-height: 20px;
   color: var(--tp-color-blue-60);
+}
+
+/* delete-credential: 48px below to match the design's body→buttons gap. */
+.tp-delete-credential-message {
+  margin-bottom: 48px;
 }
 
 /* Broker link confirmation (login-idp-link-confirm.ftl) — Figma node */
@@ -1626,15 +1426,6 @@ body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.tp-idp-link-confirm-body p {
-  margin: 0;
-  font-family: var(--tp-font-family);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--tp-color-blue-60);
 }
 
 .tp-idp-link-confirm form {
@@ -1676,15 +1467,6 @@ body[data-page-id="login-trusted-device-register"] #kc-form-trusted-device {
   gap: 16px;
 }
 
-.tp-trusted-device-explanation p {
-  margin: 0;
-  font-family: var(--tp-font-family);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--tp-color-blue-60);
-}
-
 /* Recovery codes config (login-recovery-authn-code-config.ftl). Figma node */
 /* 11627:14617. Sections separated by 48px (matching other 2FA screens). */
 body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main-body {
@@ -1707,7 +1489,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   font-size: 16px;
   font-weight: 700;
   line-height: 20px;
-  color: #375178;
+  color: var(--tp-color-blue-80);
   margin: 0;
 }
 
@@ -1720,33 +1502,14 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   margin: 0;
 }
 
-/* "Learn how to store recovery codes safely" link with leading arrow glyph. */
+/* "Learn how to store recovery codes safely" — the link `a` styling is shared */
+/* with .tp-totp-support a (the ↗ arrow-link rule earlier in this file). */
 .tp-recovery-learn-more {
   margin: 12px 0 0;
   font-family: var(--tp-font-family);
   font-size: 12px;
   font-weight: 500;
   line-height: 10px;
-}
-
-.tp-recovery-learn-more a {
-  color: var(--tp-color-indigo);
-  text-decoration: underline;
-  text-decoration-skip-ink: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.tp-recovery-learn-more a::before {
-  content: "↗";
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.tp-recovery-learn-more a:hover,
-.tp-recovery-learn-more a:focus {
-  color: var(--tp-color-indigo-hover);
 }
 
 /* Wrapping block: warning banner + code list + actions sit together in a */
@@ -1767,7 +1530,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  background: #FFE8CF; /* Feedback/gold.050 */
+  background: var(--tp-color-warning-bg);
   border-radius: 4px;
   padding: 16px;
   width: 100%;
@@ -1779,7 +1542,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   display: inline-flex;
   width: 18px;
   height: 16px;
-  color: #CC6D00; /* Feedback/gold.30 */
+  color: var(--tp-color-warning-icon);
 }
 
 .tp-warning-banner-icon svg {
@@ -1850,7 +1613,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   font-size: 16px;
   font-weight: 500;
   line-height: 20px;
-  color: #A0A0A0;
+  color: var(--tp-color-counter);
   text-align: right;
 }
 
@@ -1885,7 +1648,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
 
 .tp-recovery-action:hover,
 .tp-recovery-action:focus {
-  color: #375178;
+  color: var(--tp-color-blue-80);
 }
 
 /* Confirmation row + buttons share one flex container for vertical rhythm. */
@@ -1939,11 +1702,6 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   border: solid #fff;
   border-width: 0 1.5px 1.5px 0;
   transform: rotate(45deg);
-}
-
-/* Faded primary look while disabled (Finish button before confirmation). */
-body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-button.pf-m-primary:disabled {
-  background-color: #A9B1DB;
 }
 
 /* Shared button sizing and typography — applies to all PF buttons (primary, */
