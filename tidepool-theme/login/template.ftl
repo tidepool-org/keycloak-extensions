@@ -248,12 +248,20 @@
           <div class="${properties.kcLoginMainFooter!}">
               <#nested "socialProviders">
 
+              <#-- Only render the info band when the page actually supplies info -->
+              <#-- content. Some pages (e.g. hidpd-select-idp.ftl) enable displayInfo -->
+              <#-- for registration but define no "info" section; rendering it anyway -->
+              <#-- leaves an empty #kc-info band that still reserves its 48px top -->
+              <#-- margin. Capture the section output and skip the band when blank. -->
               <#if displayInfo>
-                  <div id="kc-info" class="${properties.kcLoginMainFooterBand!} ${properties.kcFormClass}">
-                      <div id="kc-info-wrapper" class="${properties.kcLoginMainFooterBandItem!}">
-                          <#nested "info">
+                  <#local infoContent><#nested "info"></#local>
+                  <#if infoContent?markup_string?trim?has_content>
+                      <div id="kc-info" class="${properties.kcLoginMainFooterBand!} ${properties.kcFormClass}">
+                          <div id="kc-info-wrapper" class="${properties.kcLoginMainFooterBandItem!}">
+                              ${infoContent}
+                          </div>
                       </div>
-                  </div>
+                  </#if>
               </#if>
           </div>
       </div>
