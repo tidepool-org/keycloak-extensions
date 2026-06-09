@@ -982,6 +982,15 @@ body[data-page-id="login-login-idp-link-email"] .tp-login-subtitle {
   gap: 4px;
 }
 
+/* The OTP form uses a uniform 48px flex gap between children, but the warning */
+/* banner, device hint, and code input should sit in a tight 16px stack (per */
+/* Figma). Pull each down 32px so those gaps are 16px while the gap before the */
+/* submit button stays 48px. */
+body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-warning-banner,
+body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-otp-device {
+  margin-bottom: -32px;
+}
+
 .tp-otp-device-hint {
   font-family: var(--tp-font-family);
   font-size: 14px;
@@ -1448,7 +1457,14 @@ a.tp-back-to-app.pf-v5-c-button {
 
 /* Space the back-to-app button away from the message text above it. */
 .tp-back-to-app {
-  margin-top: 24px;
+  margin-top: 48px;
+}
+
+/* Body message text (error.ftl, info.ftl, etc.) — medium weight, 16px/20px. */
+.instruction {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
 }
 
 /* Trusted device prompt (trusted-device-register.ftl) — overrides the basic */
@@ -1709,6 +1725,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
 /* Variant-specific colors stay on the .pf-m-* rules below. */
 .pf-v5-c-button {
   border-radius: var(--tp-button-radius);
+  cursor: pointer;
   font-family: var(--tp-font-family);
   font-size: 14px;
   font-weight: 500;
