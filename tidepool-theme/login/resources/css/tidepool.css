@@ -1762,6 +1762,16 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   margin-top: 12px;
 }
 
+/* template.ftl renders two .pf-v5-c-login__main-footer wrappers: one for */
+/* social providers / #kc-info, and one for the loginFooter macro (a no-op in */
+/* the inherited keycloak.v2 footer.ftl). On screens with neither they render */
+/* empty; collapse them so they never reserve layout space. :empty can't match */
+/* them because Freemarker leaves whitespace text nodes inside, so key off the */
+/* absence of element children instead. */
+.pf-v5-c-login__main-footer:not(:has(*)) {
+  display: none;
+}
+
 /* "Don't have an account? Sign Up" info section. Strip PatternFly's */
 /* separator border + extra padding so the link sits as plain text. */
 .pf-v5-c-login__main-footer-band {
