@@ -23,6 +23,21 @@
         <form id="kc-otp-login-form" class="${properties.kcFormClass!}" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
             <input id="selectedCredentialId" type="hidden" name="selectedCredentialId" value="${otpLogin.selectedCredentialId!''}">
 
+            <#-- When there's no other authenticator to fall back on (Keycloak only -->
+            <#-- offers "Try another way" when additional credentials exist), warn -->
+            <#-- that the authenticator app is the user's only remaining option. -->
+            <#if !(auth?has_content && auth.showTryAnotherWayLink())>
+                <div class="tp-warning-banner" role="alert">
+                    <span class="tp-warning-banner-icon" aria-hidden="true">
+                        <svg viewBox="0 0 18 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8.13 1.5a1 1 0 0 1 1.74 0l7.36 12.75A1 1 0 0 1 16.36 16H1.64a1 1 0 0 1-.87-1.75L8.13 1.5zM9 6a.75.75 0 0 0-.75.75v3.5a.75.75 0 0 0 1.5 0v-3.5A.75.75 0 0 0 9 6zm0 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                    </span>
+                    <div class="tp-warning-banner-text">
+                        <p class="tp-warning-banner-title">${msg("loginOtpNoAuthWarningTitle")}</p>
+                        <p class="tp-warning-banner-body">${msg("loginOtpNoAuthWarningBody")}</p>
+                    </div>
+                </div>
+            </#if>
+
             <#if otpLogin?? && otpLogin.userOtpCredentials?? && otpLogin.userOtpCredentials?size gt 1>
                 <div class="tp-otp-device">
                     <span class="tp-otp-device-hint">${msg("loginOtpDeviceHint")}</span>
