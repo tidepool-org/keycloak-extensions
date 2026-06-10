@@ -1,2 +1,3 @@
 org.tidepool.keycloak.extensions.events.RecoveryCodesCleanupEventListenerProviderFactory
 org.tidepool.keycloak.extensions.events.TrustedDeviceCleanupEventListenerProviderFactory
+org.tidepool.keycloak.extensions.activity.UserActivityEventListenerProviderFactory

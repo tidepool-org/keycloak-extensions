@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="tidepool" id="tidepool-user-activity-1">
+        <createTable tableName="TIDEPOOL_USER_ACTIVITY_EVENT">
+            <column name="ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REALM_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EVENT_TYPE" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IDENTITY_PROVIDERS" type="VARCHAR(4000)"/>
+            <column name="EVENT_TIME" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="TIDEPOOL_USER_ACTIVITY_EVENT" columnNames="ID"
+                       constraintName="PK_TIDEPOOL_USER_ACTIVITY_EVENT"/>
+        <!-- Supports the per-user "last MFA state" lookup. -->
+        <createIndex tableName="TIDEPOOL_USER_ACTIVITY_EVENT" indexName="IDX_TP_ACTIVITY_USER_TIME">
+            <column name="REALM_ID"/>
+            <column name="USER_ID"/>
+            <column name="EVENT_TIME"/>
+        </createIndex>
+        <!-- Supports time- and size-based pruning. -->
+        <createIndex tableName="TIDEPOOL_USER_ACTIVITY_EVENT" indexName="IDX_TP_ACTIVITY_TIME">
+            <column name="EVENT_TIME"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
