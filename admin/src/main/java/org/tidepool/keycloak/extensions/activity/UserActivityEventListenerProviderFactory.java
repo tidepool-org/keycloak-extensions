@@ -8,6 +8,7 @@ import org.keycloak.events.EventListenerProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.utils.KeycloakModelUtils;
+import org.keycloak.models.utils.PostMigrationEvent;
 import org.keycloak.services.scheduled.ClusterAwareScheduledTaskRunner;
 import org.keycloak.timer.TimerProvider;
 
@@ -62,14 +63,31 @@ public class UserActivityEventListenerProviderFactory implements EventListenerPr
 
     @Override
     public void postInit(KeycloakSessionFactory factory) {
-        UserActivityCleanupTask task = new UserActivityCleanupTask(retentionMillis, maxRows);
-        KeycloakModelUtils.runJobInTransaction(factory, session -> {
-            TimerProvider timer = session.getProvider(TimerProvider.class);
-            timer.schedule(new ClusterAwareScheduledTaskRunner(factory, task, cleanupIntervalMillis),
-                    cleanupIntervalMillis, CLEANUP_TASK_NAME);
+        // Defer scheduling until Keycloak is fully initialized. Scheduling a cluster-aware task (which
+        // touches the transaction/cluster infrastructure) directly in postInit runs too early and, in
+        // clustered production mode, aborts server startup. PostMigrationEvent fires once the system is
+        // ready. Any failure here is logged and swallowed so outbox cleanup can never break boot.
+        factory.register(event -> {
+            if (event instanceof PostMigrationEvent) {
+                scheduleCleanup(factory);
+            }
         });
-        LOG.infof("Scheduled user-activity outbox cleanup every %d ms (retention %d ms, max rows %d)",
-                cleanupIntervalMillis, retentionMillis, maxRows);
+    }
+
+    private void scheduleCleanup(KeycloakSessionFactory factory) {
+        try {
+            UserActivityCleanupTask task = new UserActivityCleanupTask(retentionMillis, maxRows);
+            KeycloakModelUtils.runJobInTransaction(factory, session -> {
+                TimerProvider timer = session.getProvider(TimerProvider.class);
+                timer.schedule(new ClusterAwareScheduledTaskRunner(factory, task, cleanupIntervalMillis),
+                        cleanupIntervalMillis, CLEANUP_TASK_NAME);
+            });
+            LOG.infof("Scheduled user-activity outbox cleanup every %d ms (retention %d ms, max rows %d)",
+                    cleanupIntervalMillis, retentionMillis, maxRows);
+        } catch (RuntimeException e) {
+            // Cleanup is best-effort; never let a scheduling failure prevent the server from starting.
+            LOG.error("Failed to schedule user-activity outbox cleanup; the table will not be pruned", e);
+        }
     }
 
     @Override

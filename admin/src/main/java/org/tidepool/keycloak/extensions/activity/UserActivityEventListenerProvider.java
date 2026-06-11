@@ -1,34 +1,22 @@
 package org.tidepool.keycloak.extensions.activity;
 
-import jakarta.persistence.EntityManager;
 import org.jboss.logging.Logger;
-import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.events.Details;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventType;
 import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.events.admin.OperationType;
-import org.keycloak.models.FederatedIdentityModel;
-import org.keycloak.models.IdentityProviderModel;
-import org.keycloak.models.IdentityProviderStorageProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.SubjectCredentialManager;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.UserSessionModel;
 import org.keycloak.models.credential.OTPCredentialModel;
 import org.keycloak.models.credential.WebAuthnCredentialModel;
-import org.keycloak.models.utils.KeycloakModelUtils;
-import org.keycloak.util.JsonSerialization;
 
-import java.io.IOException;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Writes a compact stream of user-activity facts into the {@link UserActivityEventEntity} outbox so an
@@ -70,6 +58,15 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
             EventType.FEDERATED_IDENTITY_LINK, EventType.REMOVE_FEDERATED_IDENTITY,
             EventType.FEDERATED_IDENTITY_OVERRIDE_LINK);
 
+    /**
+     * Note set on a {@code UserSession} once a LOGIN row has been recorded for it. Keycloak fires a
+     * LOGIN event for every client the user reaches, including silent cookie/SSO re-authentications
+     * that reuse the session; the note makes the dedup deterministic — exactly one LOGIN row per
+     * session — without any time-window heuristic (which would mis-handle slow required actions,
+     * SSO bursts, and clock skew).
+     */
+    static final String LOGIN_RECORDED_NOTE = "tidepool-user-activity-login-recorded";
+
     /** Credential types that count as a second factor for the MFA-enabled determination. */
     private static final Set<String> MFA_CREDENTIAL_TYPES = Set.of(
             OTPCredentialModel.TYPE,
@@ -82,16 +79,18 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
     private static final String DISABLE_CREDENTIAL_TYPES_PATH_SEGMENT = "disable-credential-types";
 
     private final KeycloakSession session;
+    private final UserActivityRecorder recorder;
 
     public UserActivityEventListenerProvider(KeycloakSession session) {
         this.session = session;
+        this.recorder = new UserActivityRecorder(session);
     }
 
     @Override
     public void onEvent(Event event) {
         EventType type = event.getType();
         if (type == EventType.LOGIN) {
-            recordLogin(event.getRealmId(), event.getUserId(), event.getTime());
+            recordLogin(event.getRealmId(), event.getUserId(), event.getSessionId(), event.getTime());
         } else if (CREDENTIAL_ADDED_EVENTS.contains(type)) {
             recordMfaCredentialChange(event.getRealmId(), event.getUserId(), event.getTime(),
                     credentialType(event), false);
@@ -139,12 +138,32 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
         // Admins cannot enrol a second factor for a user, so there is no admin "credential added" path.
     }
 
-    private void recordLogin(String realmId, String userId, long time) {
+    private void recordLogin(String realmId, String userId, String sessionId, long time) {
         if (realmId == null || userId == null) {
             return;
         }
-        persist(new UserActivityEventEntity(KeycloakModelUtils.generateId(), realmId, userId,
-                UserActivityEventEntity.TYPE_LOGIN, null, time));
+        // Record exactly one LOGIN per user session: the first LOGIN event marks the session, and the
+        // cookie/SSO re-logins that follow (one per additional client) see the mark and are skipped.
+        // Whenever the session cannot be resolved, fail toward recording rather than losing a login.
+        UserSessionModel userSession = lookupUserSession(realmId, sessionId);
+        if (userSession != null && userSession.getNote(LOGIN_RECORDED_NOTE) != null) {
+            return; // Already recorded for this session — a cookie/SSO re-login for another client.
+        }
+        recorder.recordLogin(realmId, userId, time);
+        if (userSession != null) {
+            userSession.setNote(LOGIN_RECORDED_NOTE, "true");
+        }
+    }
+
+    private UserSessionModel lookupUserSession(String realmId, String sessionId) {
+        if (sessionId == null) {
+            return null;
+        }
+        RealmModel realm = resolveRealm(realmId);
+        if (realm == null) {
+            return null;
+        }
+        return session.sessions().getUserSession(realm, sessionId);
     }
 
     /**
@@ -173,25 +192,13 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
         }
 
         boolean hasMfa = hasMfaCredential(user);
-        if (removed) {
-            // Disabled only once the removal leaves no second factor (e.g. removing one of two stays enabled).
-            if (hasMfa) {
-                return;
-            }
-            record(realmId, userId, time, UserActivityEventEntity.TYPE_MFA_DISABLED);
-        } else {
-            // Enabled while a second factor is present (a non-MFA add was filtered out above).
-            if (!hasMfa) {
-                return;
-            }
-            record(realmId, userId, time, UserActivityEventEntity.TYPE_MFA_ENABLED);
+        // Removal counts as disabled only once no second factor remains (removing one of two stays
+        // enabled); an add/update counts as enabled while a second factor is present.
+        if (removed == hasMfa) {
+            return;
         }
-    }
-
-    private void record(String realmId, String userId, long time, String eventType) {
-        persist(new UserActivityEventEntity(KeycloakModelUtils.generateId(), realmId, userId,
-                eventType, null, time));
-        LOG.debugf("Recorded %s for user %s in realm %s", eventType, userId, realmId);
+        recorder.recordMfa(realmId, userId, hasMfa, time);
+        LOG.debugf("Recorded MFA %s for user %s in realm %s", hasMfa ? "enabled" : "disabled", userId, realmId);
     }
 
     private void recordIdpLinks(String realmId, String userId, long time) {
@@ -203,62 +210,8 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
         if (user == null) {
             return;
         }
-
-        IdentityProviderStorageProvider idps = session.identityProviders();
-        List<Map<String, String>> links = session.users().getFederatedIdentitiesStream(realm, user)
-                .map(FederatedIdentityModel::getIdentityProvider)
-                .sorted()
-                .map(alias -> {
-                    Map<String, String> link = new LinkedHashMap<>();
-                    link.put("alias", alias);
-                    link.put("name", displayNameFor(alias, idps.getByAlias(alias)));
-                    return link;
-                })
-                .collect(Collectors.toList());
-
-        String json = toJson(links);
-        persist(new UserActivityEventEntity(KeycloakModelUtils.generateId(), realmId, userId,
-                UserActivityEventEntity.TYPE_IDP_LINKS_CHANGED, json, time));
-        LOG.debugf("Recorded IdP links %s for user %s in realm %s", json, userId, realmId);
-    }
-
-    private static String toJson(Object value) {
-        try {
-            return JsonSerialization.writeValueAsString(value);
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to serialize identity-provider links", e);
-        }
-    }
-
-    /**
-     * The IdP's configured display name, or &mdash; when it has none &mdash; a human-readable name
-     * derived from the alias: non-alphanumeric separators become spaces and each word is capitalized
-     * (e.g. {@code "google-tidepool"} &rarr; {@code "Google Tidepool"}).
-     */
-    private static String displayNameFor(String alias, IdentityProviderModel model) {
-        if (model != null) {
-            String displayName = model.getDisplayName();
-            if (displayName != null && !displayName.isBlank()) {
-                return displayName;
-            }
-        }
-        return humanize(alias);
-    }
-
-    private static String humanize(String alias) {
-        StringBuilder humanized = new StringBuilder();
-        for (String word : alias.split("[^a-zA-Z0-9]+")) {
-            if (word.isEmpty()) {
-                continue;
-            }
-            if (humanized.length() > 0) {
-                humanized.append(' ');
-            }
-            humanized.append(Character.toUpperCase(word.charAt(0)))
-                    .append(word.substring(1).toLowerCase(Locale.ROOT));
-        }
-        // Fall back to the raw alias if it had nothing alphanumeric to humanize.
-        return humanized.length() == 0 ? alias : humanized.toString();
+        recorder.recordIdpLinks(realm, user, time);
+        LOG.debugf("Recorded IdP links for user %s in realm %s", userId, realmId);
     }
 
     private RealmModel resolveRealm(String realmId) {
@@ -269,16 +222,6 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
         SubjectCredentialManager credentials = user.credentialManager();
         return MFA_CREDENTIAL_TYPES.stream()
                 .anyMatch(type -> credentials.getStoredCredentialsByTypeStream(type).findAny().isPresent());
-    }
-
-    private void persist(UserActivityEventEntity entity) {
-        entityManager().persist(entity);
-    }
-
-    // The EntityManager is owned and closed by the Keycloak session/transaction; we must not close it.
-    @SuppressWarnings("resource")
-    private EntityManager entityManager() {
-        return session.getProvider(JpaConnectionProvider.class).getEntityManager();
     }
 
     @Override
