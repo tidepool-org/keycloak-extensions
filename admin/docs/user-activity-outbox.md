@@ -77,7 +77,13 @@ payload column and is populated for `IDP_LINKS_CHANGED` rows only.
 
 ### `LOGIN`
 
-One row per successful browser login.
+One row per **user session** — i.e. per fresh interactive login. Keycloak fires a `LOGIN` event for
+cookie/SSO re-authentications too (every additional client the user reaches while already logged in),
+which would otherwise flood the table. The dedup is deterministic: the first `LOGIN` of a session
+records a row and sets a marker note on the `UserSession`; every later `LOGIN` reusing that session
+sees the note and is skipped. No time-window heuristics — slow required actions, SSO bursts, and clock
+skew cannot cause drops or duplicates. When the session cannot be resolved at all, the listener fails
+toward recording rather than losing a login.
 
 | Column               | Value                          |
 |----------------------|--------------------------------|
@@ -151,7 +157,7 @@ Both self-service (end-user) and admin-initiated changes are captured.
 
 | Outbox row          | Self-service (user events)                              | Admin (admin events, by resource path)                              |
 |---------------------|--------------------------------------------------------|---------------------------------------------------------------------|
-| `LOGIN`             | `LOGIN`                                                | — (login has no admin equivalent)                                   |
+| `LOGIN`             | `LOGIN` — only when it creates a new session (SSO/cookie re-logins are skipped) | — (login has no admin equivalent)        |
 | `MFA_ENABLED`       | `UPDATE_CREDENTIAL`, `UPDATE_TOTP` (second-factor added) | — (admins cannot enrol a second factor for a user)                |
 | `MFA_DISABLED`      | `REMOVE_CREDENTIAL`, `REMOVE_TOTP` (last second factor removed) | `DELETE users/{id}/credentials/...`, `users/{id}/disable-credential-types` |
 | `IDP_LINKS_CHANGED` | `FEDERATED_IDENTITY_LINK`, `REMOVE_FEDERATED_IDENTITY`, `FEDERATED_IDENTITY_OVERRIDE_LINK` | `users/{id}/federated-identity/...`        |
@@ -160,6 +166,30 @@ Failed operations (admin events carrying an error) are ignored. For MFA and IdP 
 recomputes state from the user model regardless of trigger, so admin and self-service paths produce
 identical, consistent rows. A non-`DELETE` operation on a credential (e.g. setting a label) is not
 treated as a removal.
+
+## Backfilling existing IdP links
+
+The listener only emits `IDP_LINKS_CHANGED` when a link changes *after* it's deployed, so users linked
+beforehand aren't represented. A one-off, admin-authenticated endpoint seeds them:
+
+```
+POST /realms/{realm}/tidepool-admin/backfill-idp-links
+Authorization: Bearer <admin token with manage-realm on {realm}>
+→ 200 {"realm":"<realm>","backfilled":<n>,"skipped":<n>,"failed":<n>}
+```
+
+It finds the users in the realm that currently have a federated link (Keycloak's `FEDERATED_IDENTITY`
+table), and writes one `IDP_LINKS_CHANGED` row per user with their current link set — using the **same
+code path** as live events, so the rows are identical. Permission (`manage-realm`) is checked against
+the **target** realm in the path.
+
+The work runs in **batches of 100, each in its own transaction**, so memory stays bounded on large
+realms and a failure only loses its own batch (`failed`, with the error logged) instead of rolling back
+the whole run. Users whose user record or links disappeared between enumeration and processing are
+counted in `skipped` (no empty `[]` rows are written). Run it once per realm after deploying. It is
+**idempotent**: re-running just re-records current state (consumers upsert). There is no login/MFA
+backfill (Keycloak does not retain that history); only IdP links can be reconstructed from current
+state.
 
 ## Retention & cleanup
 
@@ -230,6 +260,8 @@ Defined in the changelog and sized to the access patterns:
 |------|------|
 | `UserActivityEventEntity.java` | JPA entity + named queries for the outbox table. |
 | `UserActivityEventListenerProvider.java` (+ `Factory`) | Observes events, writes outbox rows, schedules cleanup. |
+| `UserActivityRecorder.java` | Shared row writer (IdP-links JSON + persist); used by the listener and the backfill. |
 | `UserActivityJpaEntityProvider.java` (+ `Factory`) | Registers the entity and its changelog with Keycloak's datasource. |
 | `UserActivityCleanupTask.java` | Age- and size-based pruning. |
 | `admin/src/main/resources/META-INF/tidepool-user-activity-changelog.xml` | Liquibase schema. |
+| `resource/TidepoolAdminResource.java` → `backfillIdpLinks()` | Admin endpoint that backfills `IDP_LINKS_CHANGED` for existing links. |

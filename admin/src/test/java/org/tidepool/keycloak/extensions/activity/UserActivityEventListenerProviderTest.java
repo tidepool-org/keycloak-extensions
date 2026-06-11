@@ -17,6 +17,8 @@ import org.keycloak.models.RealmProvider;
 import org.keycloak.models.SubjectCredentialManager;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserProvider;
+import org.keycloak.models.UserSessionModel;
+import org.keycloak.models.UserSessionProvider;
 import org.keycloak.models.credential.OTPCredentialModel;
 import org.mockito.ArgumentCaptor;
 
@@ -35,6 +37,7 @@ class UserActivityEventListenerProviderTest {
 
     private static final String REALM_ID = "realm-1";
     private static final String USER_ID = "user-1";
+    private static final String SESSION_ID = "session-1";
     private static final long EVENT_TIME = 1_700_000_000_000L;
 
     private KeycloakSession session;
@@ -44,6 +47,8 @@ class UserActivityEventListenerProviderTest {
     private RealmModel realm;
     private UserModel user;
     private IdentityProviderStorageProvider idps;
+    private UserSessionProvider sessions;
+    private UserSessionModel userSession;
     private UserActivityEventListenerProvider provider;
 
     @BeforeEach
@@ -55,6 +60,7 @@ class UserActivityEventListenerProviderTest {
         realm = mock(RealmModel.class);
         user = mock(UserModel.class);
         idps = mock(IdentityProviderStorageProvider.class);
+        sessions = mock(UserSessionProvider.class);
 
         RealmProvider realms = mock(RealmProvider.class);
         JpaConnectionProvider jpa = mock(JpaConnectionProvider.class);
@@ -64,9 +70,15 @@ class UserActivityEventListenerProviderTest {
         lenient().when(session.realms()).thenReturn(realms);
         lenient().when(session.users()).thenReturn(users);
         lenient().when(session.identityProviders()).thenReturn(idps);
+        lenient().when(session.sessions()).thenReturn(sessions);
         lenient().when(realms.getRealm(REALM_ID)).thenReturn(realm);
         lenient().when(users.getUserById(realm, USER_ID)).thenReturn(user);
         lenient().when(user.credentialManager()).thenReturn(credentials);
+
+        // Default: the login's session exists and carries no recorded-login note (fresh login).
+        userSession = mock(UserSessionModel.class);
+        lenient().when(userSession.getNote(UserActivityEventListenerProvider.LOGIN_RECORDED_NOTE)).thenReturn(null);
+        lenient().when(sessions.getUserSession(realm, SESSION_ID)).thenReturn(userSession);
 
         // No MFA credentials unless a test stubs them; fresh stream per invocation.
         lenient().when(credentials.getStoredCredentialsByTypeStream(anyString()))
@@ -84,11 +96,13 @@ class UserActivityEventListenerProviderTest {
         when(event.getType()).thenReturn(type);
         lenient().when(event.getRealmId()).thenReturn(REALM_ID);
         lenient().when(event.getUserId()).thenReturn(USER_ID);
+        lenient().when(event.getSessionId()).thenReturn(SESSION_ID);
         lenient().when(event.getTime()).thenReturn(EVENT_TIME);
         lenient().when(event.getDetails())
                 .thenReturn(credentialType == null ? null : Map.of("credential_type", credentialType));
         return event;
     }
+
 
     private void stubHasOtp() {
         when(credentials.getStoredCredentialsByTypeStream(OTPCredentialModel.TYPE))
@@ -111,6 +125,30 @@ class UserActivityEventListenerProviderTest {
         assertThat(row.getUserId()).isEqualTo(USER_ID);
         assertThat(row.getEventTime()).isEqualTo(EVENT_TIME);
         assertThat(row.getId()).isNotBlank();
+        // The session is marked so subsequent SSO re-logins for it are not recorded again.
+        verify(userSession).setNote(UserActivityEventListenerProvider.LOGIN_RECORDED_NOTE, "true");
+    }
+
+    @Test
+    void skipsLoginWhenSessionAlreadyRecorded() {
+        // Cookie/SSO re-login for another client: the session already carries the recorded-login note.
+        when(userSession.getNote(UserActivityEventListenerProvider.LOGIN_RECORDED_NOTE)).thenReturn("true");
+
+        provider.onEvent(event(EventType.LOGIN));
+
+        verify(em, never()).persist(org.mockito.ArgumentMatchers.any());
+        verify(userSession, never()).setNote(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    void recordsLoginWhenSessionMissing() {
+        // Session not found (e.g. expired between event and lookup): record rather than lose a login.
+        when(sessions.getUserSession(realm, SESSION_ID)).thenReturn(null);
+
+        provider.onEvent(event(EventType.LOGIN));
+
+        UserActivityEventEntity row = capturePersisted();
+        assertThat(row.getEventType()).isEqualTo(UserActivityEventEntity.TYPE_LOGIN);
     }
 
     @Test
