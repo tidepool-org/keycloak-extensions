@@ -45,13 +45,18 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
 
     private static final Logger LOG = Logger.getLogger(UserActivityEventListenerProvider.class);
 
-    /** Credential additions/updates: while the user has a second factor, record MFA as enabled. */
-    private static final Set<EventType> CREDENTIAL_ADDED_EVENTS = EnumSet.of(
-            EventType.UPDATE_CREDENTIAL, EventType.UPDATE_TOTP);
+    /**
+     * Credential additions/updates: while the user has a second factor, record MFA as enabled.
+     *
+     * <p>Deliberately excludes the deprecated {@link EventType#UPDATE_TOTP}/{@link EventType#REMOVE_TOTP}:
+     * Keycloak fires those as <em>extra duplicates alongside</em> the consolidated
+     * {@code UPDATE_CREDENTIAL}/{@code REMOVE_CREDENTIAL} events on every OTP change (it clones the
+     * event builder and emits both), so listening to both records every OTP change twice.
+     */
+    private static final Set<EventType> CREDENTIAL_ADDED_EVENTS = EnumSet.of(EventType.UPDATE_CREDENTIAL);
 
-    /** Credential removals: once no second factor remains, record MFA as disabled. */
-    private static final Set<EventType> CREDENTIAL_REMOVED_EVENTS = EnumSet.of(
-            EventType.REMOVE_CREDENTIAL, EventType.REMOVE_TOTP);
+    /** Credential removals: once no second factor remains, record MFA as disabled. See note above. */
+    private static final Set<EventType> CREDENTIAL_REMOVED_EVENTS = EnumSet.of(EventType.REMOVE_CREDENTIAL);
 
     /** Federated-identity changes after which we re-publish the user's full IdP link set. */
     private static final Set<EventType> IDP_LINK_EVENTS = EnumSet.of(
@@ -66,6 +71,14 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
      * SSO bursts, and clock skew).
      */
     static final String LOGIN_RECORDED_NOTE = "tidepool-user-activity-login-recorded";
+
+    /**
+     * User profile attribute updated alongside each recorded LOGIN row. The outbox is pruned, so the
+     * attribute is the durable "last login" record; external systems read it through the user model
+     * (e.g. shoreline's get-user endpoint) to backfill state for users with no recent outbox rows.
+     * Epoch milliseconds, same clock and format as the outbox {@code EVENT_TIME}.
+     */
+    static final String LAST_LOGIN_TIME_ATTRIBUTE = "last_login_time";
 
     /** Credential types that count as a second factor for the MFA-enabled determination. */
     private static final Set<String> MFA_CREDENTIAL_TYPES = Set.of(
@@ -150,9 +163,27 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
             return; // Already recorded for this session — a cookie/SSO re-login for another client.
         }
         recorder.recordLogin(realmId, userId, time);
+        updateLastLoginAttribute(realmId, userId, time);
         if (userSession != null) {
             userSession.setNote(LOGIN_RECORDED_NOTE, "true");
         }
+    }
+
+    /**
+     * Mirrors the recorded login time onto the user's {@link #LAST_LOGIN_TIME_ATTRIBUTE} profile
+     * attribute, committing in the same transaction as the outbox row. Skipped silently when the
+     * realm or user cannot be resolved — the outbox row is still recorded.
+     */
+    private void updateLastLoginAttribute(String realmId, String userId, long time) {
+        RealmModel realm = resolveRealm(realmId);
+        if (realm == null) {
+            return;
+        }
+        UserModel user = session.users().getUserById(realm, userId);
+        if (user == null) {
+            return;
+        }
+        user.setSingleAttribute(LAST_LOGIN_TIME_ATTRIBUTE, Long.toString(time));
     }
 
     private UserSessionModel lookupUserSession(String realmId, String sessionId) {
