@@ -93,6 +93,12 @@ toward recording rather than losing a login.
 
 "Last login" for a user is the most recent `LOGIN` row for that `USER_ID`.
 
+Alongside each recorded `LOGIN` row, the listener also sets the user profile attribute
+**`last_login_time`** (epoch milliseconds, same value as the row's `EVENT_TIME`) in the same
+transaction. The outbox is pruned, so the attribute is the durable "last login" record — external
+systems can read it through the user model (e.g. shoreline's get-user endpoint) to backfill state
+for users with no recent outbox rows.
+
 ### `MFA_ENABLED` / `MFA_DISABLED`
 
 Emitted when a credential change **toggles** whether the user holds any second-factor credential
@@ -158,14 +164,16 @@ Both self-service (end-user) and admin-initiated changes are captured.
 | Outbox row          | Self-service (user events)                              | Admin (admin events, by resource path)                              |
 |---------------------|--------------------------------------------------------|---------------------------------------------------------------------|
 | `LOGIN`             | `LOGIN` — only when it creates a new session (SSO/cookie re-logins are skipped) | — (login has no admin equivalent)        |
-| `MFA_ENABLED`       | `UPDATE_CREDENTIAL`, `UPDATE_TOTP` (second-factor added) | — (admins cannot enrol a second factor for a user)                |
-| `MFA_DISABLED`      | `REMOVE_CREDENTIAL`, `REMOVE_TOTP` (last second factor removed) | `DELETE users/{id}/credentials/...`, `users/{id}/disable-credential-types` |
+| `MFA_ENABLED`       | `UPDATE_CREDENTIAL` (second-factor added) | — (admins cannot enrol a second factor for a user)                |
+| `MFA_DISABLED`      | `REMOVE_CREDENTIAL` (last second factor removed) | `DELETE users/{id}/credentials/...`, `users/{id}/disable-credential-types` |
 | `IDP_LINKS_CHANGED` | `FEDERATED_IDENTITY_LINK`, `REMOVE_FEDERATED_IDENTITY`, `FEDERATED_IDENTITY_OVERRIDE_LINK` | `users/{id}/federated-identity/...`        |
 
 Failed operations (admin events carrying an error) are ignored. For MFA and IdP changes the listener
 recomputes state from the user model regardless of trigger, so admin and self-service paths produce
 identical, consistent rows. A non-`DELETE` operation on a credential (e.g. setting a label) is not
-treated as a removal.
+treated as a removal. The deprecated `UPDATE_TOTP`/`REMOVE_TOTP` events are deliberately ignored:
+Keycloak fires them as **extra duplicates alongside** the consolidated `UPDATE_CREDENTIAL`/
+`REMOVE_CREDENTIAL` events on every OTP change, so reacting to both would record each change twice.
 
 ## Backfilling existing IdP links
 

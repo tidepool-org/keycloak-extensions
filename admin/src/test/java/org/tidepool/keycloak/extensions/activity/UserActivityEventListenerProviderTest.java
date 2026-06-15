@@ -127,6 +127,9 @@ class UserActivityEventListenerProviderTest {
         assertThat(row.getId()).isNotBlank();
         // The session is marked so subsequent SSO re-logins for it are not recorded again.
         verify(userSession).setNote(UserActivityEventListenerProvider.LOGIN_RECORDED_NOTE, "true");
+        // The durable last-login attribute is updated alongside the outbox row.
+        verify(user).setSingleAttribute(UserActivityEventListenerProvider.LAST_LOGIN_TIME_ATTRIBUTE,
+                Long.toString(EVENT_TIME));
     }
 
     @Test
@@ -138,6 +141,7 @@ class UserActivityEventListenerProviderTest {
 
         verify(em, never()).persist(org.mockito.ArgumentMatchers.any());
         verify(userSession, never()).setNote(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
+        verify(user, never()).setSingleAttribute(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString());
     }
 
     @Test
@@ -195,6 +199,18 @@ class UserActivityEventListenerProviderTest {
         provider.onEvent(event(EventType.UPDATE_CREDENTIAL, "password"));
 
         verify(session, never()).users();
+        verify(em, never()).persist(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void ignoresLegacyTotpEvents() {
+        // Keycloak fires the deprecated *_TOTP events as duplicates alongside UPDATE/REMOVE_CREDENTIAL
+        // on every OTP change; reacting to both would record each change twice.
+        stubHasOtp();
+
+        provider.onEvent(event(EventType.UPDATE_TOTP, OTPCredentialModel.TYPE));
+        provider.onEvent(event(EventType.REMOVE_TOTP, OTPCredentialModel.TYPE));
+
         verify(em, never()).persist(org.mockito.ArgumentMatchers.any());
     }
 
