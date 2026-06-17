@@ -38,9 +38,9 @@
                     <input type="submit" class="${properties.kcButtonPrimaryClass!}"
                            id="kc-submit" value="${msg("updateEmailSubmit")}"/>
                 <#elseif updateEmailCancelAllowed??>
-                    <#-- Enforced AIA: the standard cancel-aia button is suppressed, so CancelableUpdateEmail -->
-                    <#-- exposes this one. It clears the action and keeps the current email; formnovalidate so -->
-                    <#-- the empty email field doesn't block the submit. -->
+                    <#-- CancelableUpdateEmail sets this when the change can be abandoned (enforced AIA, or an -->
+                    <#-- unverified pending email change exists). The button clears the pending change and -->
+                    <#-- keeps the current email; formnovalidate so the empty email field doesn't block submit. -->
                     <button type="submit" name="cancel-update-email" value="true" formnovalidate
                             class="${properties.kcButtonDefaultClass!}" id="kc-cancel">${msg("doCancel")}</button>
                     <input type="submit" class="${properties.kcButtonPrimaryClass!}"
