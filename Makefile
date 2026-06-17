@@ -2,7 +2,13 @@ keycloak_version = 26.6.1
 date := $(shell date -u +"%Y-%m-%dT%H-%M-%S")
 image_tag := $(keycloak_version)-$(date)
 
-build-artifacts:
+.PHONY: submodules
+submodules:
+	@git submodule status | awk '/^-/ {print $$2}' | while read path; do \
+		[ -n "$$path" ] && git submodule update --init "$$path"; \
+	done
+
+build-artifacts: submodules
 	./mvnw clean compile package
 
 
