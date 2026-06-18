@@ -1,3 +1,9 @@
+// Show or hide an element by id. `mode` is the display value used when visible
+// (e.g. "flex" for the .pf-v5-c-check rows, "block" for the sorry message).
+function show(id, visible, mode) {
+  document.getElementById(id).style.display = visible ? mode : "none";
+}
+
 function updatePatientTermsForm() {
   let isEnabled = false;
   let termsVisible = false;
@@ -19,23 +25,11 @@ function updatePatientTermsForm() {
     sorryVisible = true;
   }
 
-  if (termsVisible) {
-    document.getElementById("terms-wrapper").style.display = "block"
-  } else {
-    document.getElementById("terms-wrapper").style.display = "none"
-  }
-
-  if (termsChildVisible) {
-    document.getElementById("terms-child-wrapper").style.display = "block"
-  } else {
-    document.getElementById("terms-child-wrapper").style.display = "none"
-  }
-
-  if (sorryVisible) {
-    document.getElementById("terms-sorry").style.display = "block"
-  } else {
-    document.getElementById("terms-sorry").style.display = "none"
-  }
+  // terms-wrapper / terms-child-wrapper are .pf-v5-c-check flex rows, so show
+  // them as "flex" (not "block") to preserve the checkbox/label layout.
+  show("terms-wrapper", termsVisible, "flex");
+  show("terms-child-wrapper", termsChildVisible, "flex");
+  show("terms-sorry", sorryVisible, "block");
 
   document.getElementById("kc-accept").disabled = !isEnabled;
 }

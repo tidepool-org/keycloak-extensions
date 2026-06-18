@@ -1,8 +1,14 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=true; section>
     <#if section = "header">
+        <#-- Tidepool change: branded headline ("Keeping your data private and secure...") instead of upstream -->
+        <#-- "Email verification". -->
         ${msg("keepingYourDataSecure")}
     <#elseif section = "form">
+      <#-- Tidepool change: rework the instruction layout — a mail icon next to a single text block, instead of -->
+      <#-- the upstream <p class="instruction"> plus a separate "info" section. The resend-link instruction -->
+      <#-- (previously rendered from the "info" section) is now folded inline next to the main instruction so the -->
+      <#-- whole message reads as one unit. -->
       <div class="instruction">
         <img src="${url.resourcesPath}/img/mail_icon.svg" alt="You've got mail" class="mail-icon">
         <div>

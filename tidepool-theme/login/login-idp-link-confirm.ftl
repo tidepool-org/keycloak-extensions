@@ -1,32 +1,24 @@
 <#import "template.ftl" as layout>
+<#-- Tidepool override of keycloak.v2's login-idp-link-confirm.ftl — the -->
+<#-- first-broker-login confirmation shown when an account already exists and the -->
+<#-- user is about to link an identity provider to it. Figma file -->
+<#-- g8xYrHViRt9nd1oXx0OuIF, node 13831:31031: an IDP-named title, two body -->
+<#-- paragraphs explaining the link (and a "stop if you didn't request this" -->
+<#-- warning), and a single full-width "Next" button. The form posts -->
+<#-- submitAction=linkAccount to url.loginAction to perform the link. -->
 <@layout.registrationLayout displayMessage=false; section>
     <#if section = "header">
-        ${msg("confirmLinkIdpTitle")}
+        ${msg("confirmLinkIdpTitle", idpDisplayName)}
     <#elseif section = "form">
-        <div class="alert-warning ${properties.kcAlertClass!} pf-m-warning">
-            <div class="pf-c-alert__icon">
-                <span class="${properties.kcFeedbackWarningIcon!}"></span>
+        <div class="tp-idp-link-confirm">
+            <div class="tp-idp-link-confirm-body">
+                <p>${msg("confirmLinkIdpBody1", idpDisplayName)}</p>
+                <p>${msg("confirmLinkIdpBody2")}</p>
             </div>
-            <span class="${properties.kcAlertTitleClass!}">${msg("emailLinkIdpConfirmEmailMessage", idpDisplayName, realm.displayName)}</span>
+            <form id="kc-register-form" action="${url.loginAction}" method="post">
+                <button type="submit" class="${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!}"
+                        name="submitAction" id="linkAccount" value="linkAccount">${msg("next")}</button>
+            </form>
         </div>
-        <form id="kc-register-form" action="${url.loginAction}" method="post">
-            <div class="${properties.kcFormGroupClass!}">
-                <label for="username"
-                       class="${properties.kcLabelClass!}"><#if !realm.loginWithEmailAllowed>${msg("username")}<#elseif !realm.registrationEmailAsUsername>${msg("usernameOrEmail")}<#else>${msg("email")}</#if></label>
-
-                <div class="attempted-username">
-                    <input disabled
-                           id="username"
-                           class="${properties.kcInputClass!}"
-                           type="text" autocomplete="off"
-                           value="${brokerContext.email}"
-                    />
-                </div>
-            </div>
-
-            <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
-                <button type="submit" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" name="submitAction" id="linkAccount" value="linkAccount">${msg("emailLinkIdpConfirm")}</button>
-            </div>
-        </form>
     </#if>
 </@layout.registrationLayout>
