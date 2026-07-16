@@ -1171,9 +1171,9 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 }
 
 .tp-totp-apps-list {
-  list-style: none;
+  list-style: disc;
   margin: 0;
-  padding: 0 0 0 12px;
+  padding: 0 0 0 24px;
   display: flex;
   flex-direction: column;
   gap: 4px;
