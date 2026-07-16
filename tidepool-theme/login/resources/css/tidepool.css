@@ -189,7 +189,7 @@ body.tp-role-clinician #kc-header-wrapper {
 .pf-v5-c-login__main-header {
   border-top: none;
   padding: 0;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
   display: block;
 }
 
@@ -260,7 +260,7 @@ body.tp-role-clinician #kc-header-wrapper {
   color: var(--tp-color-blue-50);
 }
 
-/* Form group spacing: 16px between rows, then a larger 48px gap before the */
+/* Form group spacing: 16px between rows, then a larger 32px gap before the */
 /* action button (the last form group, which wraps the primary submit). */
 /* Applied to both the login form and the registration form. */
 #kc-form-login,
@@ -274,15 +274,15 @@ body.tp-role-clinician #kc-header-wrapper {
 
 #kc-form-login > .pf-v5-c-form__group:last-child,
 #kc-register-form > .pf-v5-c-form__group:last-child {
-  margin-top: 32px;
+  margin-top: 16px;
 }
 
-/* update-email.ftl / login-update-password.ftl: 48px between the last form */
+/* update-email.ftl / login-update-password.ftl: 32px between the last form */
 /* item (the "Log out of other devices" checkbox) and the action buttons. */
-/* Parent gap already gives 16px, so add another 32px on the actions row. */
+/* Parent gap already gives 16px, so add another 16px on the actions row. */
 #kc-update-email-form > .tp-totp-actions,
 #kc-passwd-update-form > .tp-totp-actions {
-  margin-top: 32px;
+  margin-top: 16px;
 }
 
 /* Form group / label. */
@@ -821,16 +821,16 @@ body.tp-role-clinician #kc-header-wrapper {
 }
 
 #tp-role-prompt > .pf-v5-c-form__group:last-child {
-  margin-top: 32px;
+  margin-top: 16px;
 }
 
 /* Personal-account terms screen (patient_terms.ftl) — Figma node 11691:48930. */
-/* Two stacked groups (age radios, terms acceptance) separated by the same 48px */
+/* Two stacked groups (age radios, terms acceptance) separated by the same 32px */
 /* the card uses everywhere; the title→age gap comes from the main-header margin. */
 .tp-terms {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 /* Age radio group: gray copy beside a custom 14px indigo radio. */
@@ -936,7 +936,7 @@ body.tp-role-clinician #kc-header-wrapper {
   color: var(--tp-color-blue-60);
 }
 
-/* Card sections spaced on the Figma's 48px rhythm (cards → Next → disclaimer) */
+/* Card sections spaced on the design's 32px rhythm (cards → Next → disclaimer) */
 /* rather than the default 16px row gap. The IDP-selection and authenticator */
 /* picker forms set their own flex; the OTP / recovery-input forms are already */
 /* flex via .pf-v5-c-form, so they only need the wider gap. */
@@ -944,26 +944,26 @@ body.tp-role-clinician #kc-header-wrapper {
 body[data-page-id="login-select-authenticator"] #kc-select-credential-form {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 body[data-page-id="login-login-otp"] #kc-otp-login-form,
 body[data-page-id="login-login-recovery-authn-code-input"] #kc-recovery-code-login-form {
-  gap: 48px;
+  gap: 32px;
 }
 
 /* On these forms the submit button is the final group; suppress the shared */
-/* 32px last-child margin-top since the 48px parent gap already spaces it. */
+/* 16px last-child margin-top since the 32px parent gap already spaces it. */
 body[data-page-id="login-select-authenticator"] #kc-select-credential-form > .pf-v5-c-form__group:last-child,
 body[data-page-id="login-login-otp"] #kc-otp-login-form > .pf-v5-c-form__group:last-child,
 body[data-page-id="login-login-recovery-authn-code-input"] #kc-recovery-code-login-form > .pf-v5-c-form__group:last-child {
   margin-top: 0;
 }
 
-/* 48px between the picker form and the disclaimer block below it. */
+/* 32px between the picker form and the disclaimer block below it. */
 #kc-idp-select-form + .tp-otp-disclaimer,
 body[data-page-id="login-select-authenticator"] .tp-otp-disclaimer {
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 /* Subtitle override shared by the IDP-selection and IDP-link-email pages — */
@@ -982,13 +982,13 @@ body[data-page-id="login-login-idp-link-email"] .tp-login-subtitle {
   gap: 4px;
 }
 
-/* The OTP form uses a uniform 48px flex gap between children, but the warning */
+/* The OTP form uses a uniform 32px flex gap between children, but the warning */
 /* banner, device hint, and code input should sit in a tight 16px stack (per */
-/* Figma). Pull each down 32px so those gaps are 16px while the gap before the */
-/* submit button stays 48px. */
+/* Figma). Pull each down 16px so those gaps are 16px while the gap before the */
+/* submit button stays 32px. */
 body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-warning-banner,
 body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-otp-device {
-  margin-bottom: -32px;
+  margin-bottom: -16px;
 }
 
 .tp-otp-device-hint {
@@ -1054,17 +1054,17 @@ body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-otp-device {
 /* The template-level fallback form is hidden globally via */
 /* #kc-select-try-another-way-form; this one (#tp-otp-try-another-way) is the */
 /* visible Tidepool-styled replacement. */
-/* 48px top margin matches the in-card section rhythm from the Figma design — */
+/* 32px top margin matches the in-card section rhythm from the design — */
 /* the main form's flex gap doesn't reach here because this form is a sibling, */
 /* not a child of #kc-otp-login-form. */
 #tp-otp-try-another-way,
 #tp-recovery-try-another-way {
-  margin: 48px 0 0;
+  margin: 32px 0 0;
 }
 
 body[data-page-id="login-login-otp"] .tp-otp-disclaimer,
 body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 .tp-otp-try-another-way {
@@ -1131,7 +1131,7 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 .tp-totp-form {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 .tp-totp-form[data-step="qr"] .tp-totp-step--verify,
@@ -1142,7 +1142,7 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 .tp-totp-step {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 .tp-totp-section-title {
@@ -1280,9 +1280,9 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 }
 
 /* Stack the two form fields with the figma's 16px rhythm — tighter than the */
-/* 48px section gap because they belong to one logical group. */
+/* 32px section gap because they belong to one logical group. */
 .tp-totp-step--verify > .pf-v5-c-form__group + .pf-v5-c-form__group {
-  margin-top: -32px;
+  margin-top: -16px;
 }
 
 .tp-totp-logout {
@@ -1379,8 +1379,8 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 
 /* login-idp-link-email.ftl: the form body stacks a warning banner, a helper */
 /* block, the read-only email field, then the action buttons. main-body has no */
-/* gap of its own, so space the children explicitly (16px between rows, +32px */
-/* before the buttons for a 48px break per the Figma frame). */
+/* gap of its own, so space the children explicitly (16px between rows, +16px */
+/* before the buttons for a 32px break per the design). */
 body[data-page-id="login-login-idp-link-email"] .pf-v5-c-login__main-body {
   display: flex;
   flex-direction: column;
@@ -1388,7 +1388,7 @@ body[data-page-id="login-login-idp-link-email"] .pf-v5-c-login__main-body {
 }
 
 body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
-  margin-top: 32px;
+  margin-top: 16px;
 }
 
 /* Two-line helper text under the warning banner: 16px blue-60 body copy with a */
@@ -1414,19 +1414,19 @@ body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
   color: var(--tp-color-blue-60);
 }
 
-/* delete-credential: 48px below to match the design's body→buttons gap. */
+/* delete-credential: 32px below to match the design's body→buttons gap. */
 .tp-delete-credential-message {
-  margin-bottom: 48px;
+  margin-bottom: 32px;
 }
 
 /* Broker link confirmation (login-idp-link-confirm.ftl) — Figma node */
 /* 13831:31031. Body prose then a full-width Next button, separated by the */
-/* same 48px the card uses elsewhere; the title→body gap comes from the */
+/* same 32px the card uses elsewhere; the title→body gap comes from the */
 /* main-header margin. */
 .tp-idp-link-confirm {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 /* Two paragraphs of blue-60 body copy; the blank line between them in the */
@@ -1457,7 +1457,7 @@ a.tp-back-to-app.pf-v5-c-button {
 
 /* Space the back-to-app button away from the message text above it. */
 .tp-back-to-app {
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 /* Body message text (error.ftl, info.ftl, etc.) — medium weight, 16px/20px. */
@@ -1467,14 +1467,21 @@ a.tp-back-to-app.pf-v5-c-button {
   line-height: 20px;
 }
 
+/* logout-confirm: the Logout button renders in a bare .form-actions form with */
+/* no spacing of its own, landing flush against the prose — give it the same */
+/* 32px section gap the other cards use. */
+#kc-logout-confirm .form-actions {
+  margin-top: 32px;
+}
+
 /* Trusted device prompt (trusted-device-register.ftl) — overrides the basic */
 /* SPI-bundled template to match Figma node 11629:21144. Two body paragraphs */
-/* sit above a side-by-side No/Yes action pair using the shared 48px section */
+/* sit above a side-by-side No/Yes action pair using the shared 32px section */
 /* rhythm. */
 body[data-page-id="login-trusted-device-register"] #kc-form-trusted-device {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 .tp-trusted-device-explanation {
@@ -1484,11 +1491,11 @@ body[data-page-id="login-trusted-device-register"] #kc-form-trusted-device {
 }
 
 /* Recovery codes config (login-recovery-authn-code-config.ftl). Figma node */
-/* 11627:14617. Sections separated by 48px (matching other 2FA screens). */
+/* 11627:14617. Sections separated by 32px (matching other 2FA screens). */
 body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main-body {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 32px;
 }
 
 /* Intro: "Download recovery codes" + description + learn-more link. */
@@ -1530,7 +1537,7 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
 
 /* Wrapping block: warning banner + code list + actions sit together in a */
 /* tight 16px stack, separated from the surrounding sections by the parent's */
-/* 48px gap. */
+/* 32px gap. */
 .tp-recovery-codes-block {
   display: flex;
   flex-direction: column;
@@ -1756,10 +1763,12 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   padding-top: 0;
 }
 
-/* On the password-reset page, the design calls for 48px between the email */
-/* row and the Next button (Figma). Add the extra margin scoped to that form. */
+/* On the password-reset page, the design calls for 32px between the email */
+/* row and the Next button. The form's 24px grid gap plus PF's intrinsic */
+/* actions offset (4px padding-top + 8px button margin-top) already total */
+/* 36px — pull up 4px to land on 32px. */
 #kc-reset-password-form .pf-v5-c-form__actions {
-  margin-top: 12px;
+  margin-top: -4px;
 }
 
 /* template.ftl renders two .pf-v5-c-login__main-footer wrappers: one for */
@@ -1785,10 +1794,10 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
 
 #kc-info {
   text-align: center;
-  /* Figma uses a uniform 48px gap between card sections. #kc-info is the */
+  /* The design uses a uniform 32px gap between card sections. #kc-info is the */
   /* last section (Sign Up) and sits in the card's main-footer wrapper, */
   /* outside #kc-form-login's flex gap — apply the spacing explicitly. */
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 #kc-info,
