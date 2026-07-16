@@ -1,6 +1,7 @@
 <#import "template.ftl" as layout>
 <#import "field.ftl" as field>
 <#import "user-profile-commons.ftl" as userProfileCommons>
+<#import "register-commons.ftl" as registerCommons>
 <@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=false displayInfo=true; section>
     <#if section = "header">
         ${msg("registerTitlePersonal")}
@@ -37,6 +38,7 @@
                 </div>
             </div>
         </form>
+        <@registerCommons.completionGate/>
     <#elseif section = "info">
         <div id="kc-registration">
             <span>${msg("alreadyHaveAnAccount")} <a href="${url.loginRestartFlowUrl}">${msg("doLogIn")}</a></span>
