@@ -1416,6 +1416,7 @@ body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
 .tp-delete-credential-message,
 .tp-idp-link-help p,
 .tp-idp-link-confirm-body p,
+.tp-link-expired-message,
 .tp-trusted-device-explanation p {
   margin: 0;
   font-family: var(--tp-font-family);
