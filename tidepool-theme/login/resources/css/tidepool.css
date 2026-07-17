@@ -1500,6 +1500,18 @@ body[data-page-id="login-trusted-device-register"] #kc-form-trusted-device {
   gap: 32px;
 }
 
+/* On mobile the No/Yes labels are too long to share a row — stack the pair */
+/* full-width with the primary (Yes, trust this device) on top. Desktop keeps */
+/* the side-by-side No | Yes order from the Figma frame. */
+@media (max-width: 767px) {
+  body[data-page-id="login-trusted-device-register"] .tp-totp-actions {
+    grid-template-columns: 1fr;
+  }
+  body[data-page-id="login-trusted-device-register"] .tp-totp-actions > .pf-m-primary {
+    order: -1;
+  }
+}
+
 .tp-trusted-device-explanation {
   display: flex;
   flex-direction: column;
