@@ -209,6 +209,10 @@ body.tp-role-clinician #kc-header-wrapper {
   text-align: center;
   margin: 0;
   line-height: 24px;
+  /* Some titles interpolate user-entered device labels (delete-credential's */
+  /* "Delete {0}") which can be a single unbroken 200-char string — allow */
+  /* mid-word breaks rather than relying on PF's .pf-v5-c-title word-break. */
+  overflow-wrap: anywhere;
 }
 
 /* Form body spacing. */
@@ -1005,6 +1009,9 @@ body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-otp-device {
   font-weight: 500;
   line-height: 20px;
   color: #000;
+  /* User-entered device label — same unbroken-string hazard as the */
+  /* delete-credential message. */
+  overflow-wrap: anywhere;
 }
 
 /* Multi-credential selector (when the user has more than one OTP registered). */
@@ -1047,6 +1054,10 @@ body[data-page-id="login-login-otp"] #kc-otp-login-form > .tp-otp-device {
   font-weight: 500;
   line-height: 20px;
   color: var(--tp-color-brand-purple);
+  /* User-entered device label inside a flex row — allow mid-word breaks and */
+  /* let the item shrink instead of widening the credential card. */
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 /* "Can't access your device right now? Try a Different Log In Method" — */
@@ -1412,6 +1423,10 @@ body[data-page-id="login-login-idp-link-email"] .tp-totp-actions {
   font-weight: 500;
   line-height: 20px;
   color: var(--tp-color-blue-60);
+  /* The delete-credential / idp-link messages interpolate user- or admin- */
+  /* entered names that can exceed a full line unbroken — break rather than */
+  /* creep out of the card. */
+  overflow-wrap: anywhere;
 }
 
 /* delete-credential: 32px below to match the design's body→buttons gap. */
