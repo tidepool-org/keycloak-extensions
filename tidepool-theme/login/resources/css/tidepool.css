@@ -1326,6 +1326,26 @@ body[data-page-id="login-login-recovery-authn-code-input"] .tp-otp-disclaimer {
 /* The bare checkbox here is skinned by the shared .pf-v5-c-check__input rule */
 /* group near the top of this file. */
 
+/* Invisible default submit. Implicit submission (Enter in a text field) */
+/* clicks the form's FIRST submit button, and our action rows put Cancel */
+/* before the primary to match the Figma left-to-right order — so Enter */
+/* would cancel instead of submit. Forms with both a text field and a */
+/* leading Cancel submit render this stub as their first submit so Enter */
+/* performs the primary action. Off-screen rather than display:none so */
+/* every browser still treats it as the default button; tabindex="-1" and */
+/* aria-hidden keep it out of the tab order and accessibility tree. */
+.tp-default-submit {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* Side-by-side action buttons (Cancel/Back + primary). 1fr each, equal width, */
 /* matching the figma's 50/50 split with a 12px gap between them. */
 .tp-totp-actions {

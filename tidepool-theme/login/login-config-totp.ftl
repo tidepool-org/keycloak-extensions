@@ -20,6 +20,11 @@
               novalidate="novalidate"
               data-step="${initialStep}">
 
+            <#-- Default submit for Enter — in AIA mode step 1's Cancel is the form's -->
+            <#-- first submit button, so Enter in the step-2 code/label fields would -->
+            <#-- cancel the whole setup. The unnamed stub submits like saveTOTPBtn, -->
+            <#-- and the submit listener below validates it like any normal save. -->
+            <input type="submit" class="tp-default-submit" tabindex="-1" aria-hidden="true"/>
             <input type="hidden" id="totpSecret" name="totpSecret" value="${totp.totpSecret}"/>
             <#if mode??><input type="hidden" id="mode" name="mode" value="${mode}"/></#if>
 
