@@ -129,6 +129,19 @@ body.login-pf,
   max-width: 600px;
 }
 
+/* Mobile spacing (iPhone SE Figma frame 14642:38389): 32px/24px page padding */
+/* and a 24px logo-to-card gap instead of the desktop 48px values. The card's */
+/* own 32px padding and the 32px section rhythm inside it are the same on */
+/* both frames, so only the page scaffold changes here. */
+@media (max-width: 767px) {
+  .pf-v5-c-login {
+    padding: 32px 24px;
+  }
+  .pf-v5-c-login__container {
+    gap: 24px;
+  }
+}
+
 /* Header: swap keycloak text logo for the Tidepool wordmark image. */
 /* Override the upstream margin-top: 64px (which also collapses to 0 at some */
 /* breakpoints, causing the gap to disappear on smaller screens). Anchor the */
