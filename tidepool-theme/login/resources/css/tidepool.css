@@ -1701,6 +1701,29 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   text-align: right;
 }
 
+/* On mobile the side-by-side columns (~390px of max-content tracks) overflow */
+/* the card. The mobile frame (Figma 14647:38700) stacks the codes in a single */
+/* centered column instead: 1..6 and 7..12 as two groups with a 44px gap */
+/* between them (40px margin + the 4px row gap). */
+@media (max-width: 767px) {
+  /* The tinted box spans the card on mobile instead of shrink-wrapping to */
+  /* the code column (which .tp-recovery-codes-block's align-items would do). */
+  .tp-recovery-codes {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .tp-recovery-codes-list {
+    grid-template-columns: max-content;
+    grid-template-rows: none;
+    grid-auto-flow: row;
+    width: max-content;
+    margin: 0 auto;
+  }
+  .tp-recovery-codes-list li:nth-child(7) {
+    margin-top: 40px;
+  }
+}
+
 /* Download / Copy action row — text + icon, no button chrome. */
 .tp-recovery-actions {
   display: flex;
