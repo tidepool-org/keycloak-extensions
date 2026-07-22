@@ -2,10 +2,21 @@
 <#import "field.ftl" as field>
 <#import "social-providers.ftl" as identityProviders>
 <#import "passkeys.ftl" as passkeys>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username') displayInfo=(realm.password && realm.registrationAllowed && !registrationDisabled??); section>
+<#import "tp-commons.ftl" as tp>
+<#-- Expired action-token links (password reset, email verification, update-email -->
+<#-- confirmation) restart the browser flow and land here with the generic -->
+<#-- "Action expired" error alert. Render the dedicated link-expired card (Figma -->
+<#-- node 14515:80071) instead of the login form in that case. The no-session -->
+<#-- variant of the same expiry renders via error.ftl, which carries the same -->
+<#-- detection. -->
+<#assign actionLinkExpired = tp.isActionLinkExpired()>
+<@layout.registrationLayout displayMessage=(!actionLinkExpired && !messagesPerField.existsError('username')) displayInfo=(!actionLinkExpired && realm.password && realm.registrationAllowed && !registrationDisabled??); section>
     <#if section = "header">
-        ${msg("loginAccountTitle")}
+        <#if actionLinkExpired>${msg("linkExpiredTitle")}<#else>${msg("loginAccountTitle")}</#if>
     <#elseif section = "form">
+        <#if actionLinkExpired>
+            <@tp.linkExpiredBody/>
+        <#else>
         <div id="kc-form">
             <div id="kc-form-wrapper">
                 <#if realm.password>
@@ -52,6 +63,7 @@
             </div>
         </div>
         <@passkeys.conditionalUIData />
+        </#if>
 
     <#elseif section = "info">
         <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
@@ -60,7 +72,7 @@
             </div>
         </#if>
     <#elseif section = "socialProviders">
-        <#if realm.password && social.providers?? && social.providers?has_content>
+        <#if !actionLinkExpired && realm.password && social.providers?? && social.providers?has_content>
             <@identityProviders.show social=social />
         </#if>
     </#if>

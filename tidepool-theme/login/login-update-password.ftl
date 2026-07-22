@@ -7,6 +7,12 @@
         ${msg("updatePasswordTitle")}
     <#elseif section = "form">
         <form id="kc-passwd-update-form" class="${properties.kcFormClass!}" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post" novalidate="novalidate">
+            <#-- Default submit for Enter — in the AIA branch the visible Cancel submit -->
+            <#-- renders before the primary, so without this stub implicit submission -->
+            <#-- would cancel. Unnamed on purpose: nothing reads the primary's "login" -->
+            <#-- param, and a second element named "login" would break the onsubmit -->
+            <#-- double-submit guard above. -->
+            <input type="submit" class="tp-default-submit" tabindex="-1" aria-hidden="true"/>
             <@field.password name="password-new" label=msg("passwordNew") fieldName="password" autocomplete="new-password" autofocus=true />
             <@field.password name="password-confirm" label=msg("passwordConfirm") autocomplete="new-password" />
 

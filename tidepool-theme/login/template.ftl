@@ -251,7 +251,7 @@
               <#-- Only render the info band when the page actually supplies info -->
               <#-- content. Some pages (e.g. hidpd-select-idp.ftl) enable displayInfo -->
               <#-- for registration but define no "info" section; rendering it anyway -->
-              <#-- leaves an empty #kc-info band that still reserves its 48px top -->
+              <#-- leaves an empty #kc-info band that still reserves its 32px top -->
               <#-- margin. Capture the section output and skip the band when blank. -->
               <#if displayInfo>
                   <#local infoContent><#nested "info"></#local>

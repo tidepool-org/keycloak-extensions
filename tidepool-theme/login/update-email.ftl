@@ -25,6 +25,9 @@
         </#if>
         <#assign emailError = messagesPerField.get('email')>
         <form id="kc-update-email-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
+            <#-- Default submit for Enter — the visible Cancel submit renders before -->
+            <#-- the primary, so without this stub implicit submission would cancel. -->
+            <input type="submit" class="tp-default-submit" tabindex="-1" aria-hidden="true"/>
             <@field.input name="email" label=msg("updateEmailFieldLabel") value=emailValue error=emailError fieldName="email" autofocus=true autocomplete="email" />
 
             <div class="tp-totp-logout">
