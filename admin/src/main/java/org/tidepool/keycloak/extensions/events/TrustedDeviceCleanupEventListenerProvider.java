@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
  *
  * <p>A trusted device lets a user skip two-factor authentication on a previously verified device.
  * When the password changes &mdash; whether the user updates it themselves or completes a
- * forgot-password reset &mdash; any existing trust should be revoked, so a new password cannot ride
- * on a device that was trusted under the old one.
+ * forgot-password reset &mdash; any existing trust should be revoked, so trust established under
+ * the old password does not carry over to the new one.
  *
  * <p>Keycloak fires {@link EventType#UPDATE_PASSWORD} after the password has been set, for both the
  * self-service "update password" action and the reset-credentials (forgot-password) flow. We react
