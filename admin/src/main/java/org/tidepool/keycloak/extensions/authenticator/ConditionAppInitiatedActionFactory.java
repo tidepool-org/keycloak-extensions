@@ -69,7 +69,7 @@ public final class ConditionAppInitiatedActionFactory implements AuthenticatorFa
         negate.setName(CONF_NEGATE);
         negate.setLabel("Negate output");
         negate.setDefaultValue(Boolean.toString(true));
-        negate.setHelpText("Apply a NOT to the check result. When this is true, the condition evaluates to true when the flow was NOT triggered by an Application-Initiated Action.");
+        negate.setHelpText("Negate the conditional check. When true, the condition passes when the flow was NOT triggered by an Application-Initiated Action.");
         return List.of(negate);
     }
 
