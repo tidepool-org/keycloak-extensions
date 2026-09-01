@@ -29,7 +29,7 @@
             <#-- email, so a back-to-login button would be misleading. No sign-up -->
             <#-- link either — the user already has an account by definition. -->
             <@buttons.actionGroup>
-              <@buttons.button id="kc-form-buttons" label="next" class=["kcButtonPrimaryClass", "kcButtonBlockClass"]/>
+              <@buttons.button id="kc-form-buttons" label="next"/>
             </@buttons.actionGroup>
 
         </form>
