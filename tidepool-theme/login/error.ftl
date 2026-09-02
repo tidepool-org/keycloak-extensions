@@ -1,9 +1,10 @@
 <#import "template.ftl" as layout>
 <#import "tp-commons.ftl" as tp>
-<#-- Expired action-token links opened without an auth session (e.g. in a -->
-<#-- different browser) render here instead of restarting the login flow. -->
-<#-- Show the same dedicated link-expired card as login-username.ftl (Figma -->
-<#-- node 14515:80071). -->
+<#-- Action-token links that can no longer be used render here: expired links -->
+<#-- opened without an auth session (e.g. in a different browser), and the -->
+<#-- update-email confirmation link after the change was cancelled or already -->
+<#-- confirmed (see tp.isActionLinkExpired). Show the same dedicated -->
+<#-- link-expired card as login-username.ftl (Figma node 14515:80071). -->
 <#assign actionLinkExpired = tp.isActionLinkExpired()>
 <@layout.registrationLayout displayMessage=false; section>
     <#if section = "header">
