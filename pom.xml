@@ -23,6 +23,7 @@
     <modules>
         <module>admin</module>
         <module>keycloak-spi-trusted-device</module>
+        <module>keycloak-home-idp-discovery</module>
     </modules>
 
     <build>

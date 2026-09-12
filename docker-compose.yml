@@ -3,6 +3,8 @@ volumes:
     driver: local
   postgres_data:
     driver: local
+  maven_cache:
+    driver: local
 
 services:
   postgres:
@@ -18,13 +20,15 @@ services:
       - 6543:5432
 
   providers:
-    image: alpine:3.20.3
+    image: maven:3.8.5-openjdk-17
+    working_dir: /build
     command: [
       "/bin/sh",
       "-c",
-      "apk add ca-certificates && update-ca-certificates && rm -f /providers/* && cp /local/admin.jar /providers && wget -O /providers/keycloak-home-idp-discovery.jar https://github.com/tidepool-org/keycloak-home-idp-discovery/releases/download/v26.6.1/keycloak-home-idp-discovery.jar"]
+      "git submodule status | awk '/^-/ {print $$2}' | xargs -r -I{} git submodule update --init -- {} && ./mvnw -B clean package -pl admin,keycloak-home-idp-discovery,keycloak-spi-trusted-device/spi -am -DskipTests && rm -f /providers/* && cp admin/target/admin-LATEST.jar /providers/ && cp keycloak-home-idp-discovery/target/keycloak-home-idp-discovery.jar /providers/ && cp keycloak-spi-trusted-device/spi/target/keycloak-spi-trusted-device-*.jar /providers/ && curl -fsSL -o /providers/keycloak-rest-provider.jar https://github.com/daniel-frak/keycloak-user-migration/releases/download/6.2.1/keycloak-rest-provider-6.2.1.jar"]
     volumes:
-      - ./admin/target/admin-LATEST.jar:/local/admin.jar
+      - .:/build
+      - maven_cache:/root/.m2
       - providers:/providers
 
   keycloak:

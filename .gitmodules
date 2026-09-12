@@ -1,3 +1,6 @@
 [submodule "keycloak-spi-trusted-device"]
 	path = keycloak-spi-trusted-device
 	url = git@github.com:tidepool-org/keycloak-spi-trusted-device.git
+[submodule "keycloak-home-idp-discovery"]
+	path = keycloak-home-idp-discovery
+	url = git@github.com:tidepool-org/keycloak-home-idp-discovery.git
