@@ -42,6 +42,8 @@
 			<div class="${properties.kcFormGroupClass!}">
 				<div class="${properties.kcLabelWrapperClass!}">
 					<label for="${attribute.name}" class="${properties.kcLabelClass!}">${advancedMsg(attribute.displayName!'')}</label>
+					<#-- Tidepool change: inverted required-field marker. Upstream renders `<span class="required">*</span>` -->
+					<#-- next to required fields; Tidepool's design system marks the *optional* ones with "(optional)" instead. -->
 					<#if !attribute.required>(optional)</#if>
 				</div>
 				<div class="${properties.kcInputWrapperClass!}">
@@ -49,6 +51,8 @@
 						<div class="${properties.kcInputHelperTextBeforeClass!}" id="form-help-text-before-${attribute.name}" aria-live="polite">${kcSanitize(advancedMsg(attribute.annotations.inputHelperTextBefore))?no_esc}</div>
 					</#if>
 					<@inputFieldByType attribute=attribute/>
+					<#-- Tidepool change: error wrapper is <div> instead of upstream <span> so the tp-form-error -->
+					<#-- styles (block layout) apply correctly. -->
 					<#if messagesPerField.existsError('${attribute.name}')>
 						<div id="input-error-${attribute.name}" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
 							${kcSanitize(messagesPerField.get('${attribute.name}'))?no_esc}

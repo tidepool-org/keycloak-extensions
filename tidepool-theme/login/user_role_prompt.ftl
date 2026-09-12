@@ -1,38 +1,46 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayInfo=true; section>
-    <#if section = "form">
-        <form id="tp-role-prompt" action="${url.loginAction}" method="post">
-            <div class="role-prompt-container">
-                <h2 class="role-prompt-title">Which kind of account do you need?</h2>
-                <label onclick="document.getElementById('continue').disabled = false">
-                    <input type="radio" name="role" class="card-input-element" value="patient"/>
-                    <div class="card-input">
-                        <div class="card-input-header">
-                            <div class="card-input-title">Personal Account</div>
-                            <div class="card-input-check"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNSIgaGVpZ2h0PSIyNyIgdmlld0JveD0iMCAwIDM1IDI3Ij4KICAgIDxwYXRoIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNjA3OEZGIiBzdHJva2Utd2lkdGg9IjYiIGQ9Ik0zIDEyLjY3NGw5LjY2MyA5LjY2M0wzMiAzIi8+Cjwvc3ZnPgo="></div>
-                        </div>
-                        <div class="card-input-description">
-                            You want to manage your diabetes data. You are caring for or supporting someone with diabetes.
-                        </div>
-                    </div>
-                </label>
-                <label onclick="document.getElementById('continue').disabled = false">
-                    <input type="radio" name="role" class="card-input-element" value="clinician"/>
-                    <div class="card-input">
-                        <div class="card-input-header">
-                            <div class="card-input-title">Clinician Account</div>
-                            <div class="card-input-check"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNSIgaGVpZ2h0PSIyNyIgdmlld0JveD0iMCAwIDM1IDI3Ij4KICAgIDxwYXRoIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjNjA3OEZGIiBzdHJva2Utd2lkdGg9IjYiIGQ9Ik0zIDEyLjY3NGw5LjY2MyA5LjY2M0wzMiAzIi8+Cjwvc3ZnPgo="></div>
-                        </div>
-                        <div class="card-input-description">
-                            You are a doctor, nurse, or other clinical or administrative staff who wants to use Tidepool at your clinic.
-                        </div>
-                    </div>
+<#import "tp-commons.ftl" as tp>
+<@layout.registrationLayout displayInfo=false; section>
+    <#if section = "header">
+        ${msg("rolePromptTitle")}
+    <#elseif section = "form">
+        <form id="tp-role-prompt" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
+            <div class="tp-card-options tp-card-options--role">
+                <label class="tp-card-option">
+                    <input type="radio" name="role" value="patient" class="tp-card-option-input" />
+                    <span class="tp-card-option-card">
+                        <span class="tp-card-option-text">
+                            <span class="tp-card-option-title">${msg("createAccountPersonal")}</span>
+                            <span class="tp-card-option-description">${msg("rolePromptPersonalDescription")}</span>
+                        </span>
+                        <span class="tp-card-option-check" aria-hidden="true"><@tp.checkIcon/></span>
+                    </span>
                 </label>
 
-                <div class="role-prompt-continue">
-                    <input id="continue" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("continue")}" disabled/>
+                <label class="tp-card-option">
+                    <input type="radio" name="role" value="clinician" class="tp-card-option-input" />
+                    <span class="tp-card-option-card">
+                        <span class="tp-card-option-text">
+                            <span class="tp-card-option-title">${msg("createAccountClinician")}</span>
+                            <span class="tp-card-option-description">${msg("rolePromptClinicianDescription")}</span>
+                        </span>
+                        <span class="tp-card-option-check" aria-hidden="true"><@tp.checkIcon/></span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="${properties.kcFormGroupClass!}">
+                <div class="${properties.kcFormActionGroupClass!}">
+                    <button id="continue" class="${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!}" type="submit" disabled>${msg("next")}</button>
                 </div>
             </div>
         </form>
+        <script>
+            document.querySelectorAll('input[name="role"]').forEach(function (r) {
+                r.addEventListener('change', function () {
+                    document.getElementById('continue').disabled = false;
+                });
+            });
+        </script>
     </#if>
 </@layout.registrationLayout>
