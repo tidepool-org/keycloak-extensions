@@ -1,0 +1,3 @@
+[submodule "keycloak-spi-trusted-device"]
+	path = keycloak-spi-trusted-device
+	url = git@github.com:tidepool-org/keycloak-spi-trusted-device.git
