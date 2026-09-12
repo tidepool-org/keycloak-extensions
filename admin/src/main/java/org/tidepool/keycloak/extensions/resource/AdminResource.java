@@ -22,9 +22,20 @@ public abstract class AdminResource {
     final private KeycloakSession session;
 
     protected AdminPermissionEvaluator auth;
+    private AdminAuth adminAuth;
 
     public AdminResource(KeycloakSession session) {
         this.session = session;
+    }
+
+    /**
+     * Permission evaluator scoped to the given realm. {@link #auth} is scoped to the admin (master)
+     * realm; endpoints that mutate the realm in the request path should check permissions against that
+     * target realm instead &mdash; the same way Keycloak's own admin endpoints evaluate a master-realm
+     * token against the administered realm.
+     */
+    protected AdminPermissionEvaluator authFor(RealmModel realm) {
+        return AdminPermissions.evaluator(session, realm, adminAuth);
     }
 
     protected void setup() {
@@ -62,6 +73,7 @@ public abstract class AdminResource {
         }
 
         AdminAuth adminAuth = new AdminAuth(realm, authResult.getToken(), authResult.getUser(), client);
+        this.adminAuth = adminAuth;
         this.auth = AdminPermissions.evaluator(session, realm, adminAuth);
 
         // Restore the original realm in the context
