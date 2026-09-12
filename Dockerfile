@@ -16,7 +16,7 @@ RUN unset MAVEN_CONFIG && \
     # puts our resources on the classpath twice; Keycloak/Liquibase aborts startup on a duplicate
     # changelog (META-INF/tidepool-user-activity-changelog.xml). Keep only the shaded jar.
     rm -f admin/target/original-*.jar && \
-    wget -O keycloak-rest-provider.jar https://github.com/daniel-frak/keycloak-user-migration/releases/download/6.2.1/keycloak-rest-provider-6.2.1.jar && \
+    wget -O keycloak-rest-provider.jar https://github.com/daniel-frak/keycloak-user-migration/releases/download/6.2.2/keycloak-rest-provider-6.2.2.jar && \
     wget -O keycloak-metrics-spi.jar https://github.com/aerogear/keycloak-metrics-spi/releases/download/7.0.0/keycloak-metrics-spi-7.0.0.jar
 
 FROM alpine:latest AS release
