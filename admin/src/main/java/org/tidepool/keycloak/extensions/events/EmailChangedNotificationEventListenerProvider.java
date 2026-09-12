@@ -121,11 +121,11 @@ public class EmailChangedNotificationEventListenerProvider implements EventListe
                     .setRealm(realm)
                     .setUser(previousEmailRecipient)
                     .send(SUBJECT_MESSAGE_KEY, TEMPLATE_NAME, attributes);
-            LOG.infof("Sent email-change notification to the previous address of user %s in realm %s",
-                    userId, realm.getName());
+            LOG.infof("Sent email-change notification to the previous address %s of user %s in realm %s",
+                    previousEmail, userId, realm.getName());
         } catch (EmailException e) {
-            LOG.warnf(e, "Failed to send email-change notification to the previous address of user %s in realm %s",
-                    userId, realm.getName());
+            LOG.warnf(e, "Failed to send email-change notification to the previous address %s of user %s in realm %s",
+                    previousEmail, userId, realm.getName());
         }
     }
 

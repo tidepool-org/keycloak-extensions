@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *
  * <p>Tidepool issues recovery codes only as a backup for OTP-based two-factor authentication.
  * Leaving them behind after every OTP credential is gone would let a user keep a second factor
- * they can no longer use to enrol an authenticator, so we clean them up.
+ * they can no longer use to enroll an authenticator, so we clean them up.
  *
  * <p>When a user removes an OTP device via self-service (the account console or an app-initiated
  * action), Keycloak fires {@link EventType#REMOVE_TOTP} <em>after</em> the credential has already

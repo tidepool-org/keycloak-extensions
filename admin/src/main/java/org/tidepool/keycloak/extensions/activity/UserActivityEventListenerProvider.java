@@ -148,7 +148,7 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
             // A specific credential was deleted by an admin (relabel/reorder are not deletions).
             recordMfaCredentialChange(realmId, userId, event.getTime(), null, true);
         }
-        // Admins cannot enrol a second factor for a user, so there is no admin "credential added" path.
+        // Admins cannot enroll a second factor for a user, so there is no admin "credential added" path.
     }
 
     private void recordLogin(String realmId, String userId, String sessionId, long time) {
@@ -199,14 +199,14 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
 
     /**
      * Records an MFA enable/disable row based on the kind of credential change, without consulting any
-     * stored history. {@code removed} marks a credential removal (→ possibly {@code MFA_DISABLED});
-     * otherwise it is an add/update (→ possibly {@code MFA_ENABLED}). The recorded row always reflects
-     * the user's true current MFA state.
+     * stored history. {@code credentialRemoved} marks a credential removal (→ possibly
+     * {@code MFA_DISABLED}); otherwise it is an add/update (→ possibly {@code MFA_ENABLED}). The
+     * recorded row always reflects the user's true current MFA state.
      *
      * @param credentialType the changed credential's type if known, else {@code null}.
      */
     private void recordMfaCredentialChange(String realmId, String userId, long time,
-                                           String credentialType, boolean removed) {
+                                           String credentialType, boolean credentialRemoved) {
         // If we know which credential changed and it is not a second factor, MFA state cannot have
         // changed — skip the user lookup and credential scan entirely (e.g. password changes).
         if (credentialType != null && !MFA_CREDENTIAL_TYPES.contains(credentialType)) {
@@ -225,7 +225,7 @@ public class UserActivityEventListenerProvider implements EventListenerProvider 
         boolean hasMfa = hasMfaCredential(user);
         // Removal counts as disabled only once no second factor remains (removing one of two stays
         // enabled); an add/update counts as enabled while a second factor is present.
-        if (removed == hasMfa) {
+        if (credentialRemoved == hasMfa) {
             return;
         }
         recorder.recordMfa(realmId, userId, hasMfa, time);
