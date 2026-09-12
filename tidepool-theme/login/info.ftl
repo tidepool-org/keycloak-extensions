@@ -8,7 +8,9 @@
         </#if>
     <#elseif section = "form">
         <div id="kc-info-message">
-            <p class="instruction">${message.summary}<#if requiredActions??><#list requiredActions>: <b><#items as reqActionItem>${kcSanitize(msg("requiredAction.${reqActionItem}"))?no_esc}<#sep>, </#items></b></#list><#else></#if></p>
+            <#-- Sanitized so messages can carry markup (e.g. the bolded address in
+                 emailUpdateConfirmationSent); kcSanitize strips anything unsafe. -->
+            <p class="instruction">${kcSanitize(message.summary)?no_esc}<#if requiredActions??><#list requiredActions>: <b><#items as reqActionItem>${kcSanitize(msg("requiredAction.${reqActionItem}"))?no_esc}<#sep>, </#items></b></#list><#else></#if></p>
             <#if !skipLink??>
                 <#if pageRedirectUri?has_content>
                     <a href="${pageRedirectUri}" class="${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} tp-back-to-app">${msg("backToApplication")}</a>

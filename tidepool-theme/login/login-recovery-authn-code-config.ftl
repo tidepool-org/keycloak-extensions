@@ -47,6 +47,13 @@
         </div>
 
         <form action="${url.loginAction}" class="${properties.kcFormClass!} tp-recovery-form" id="kc-recovery-codes-settings-form" method="post">
+            <#-- Default submit for Enter — the confirmation checkbox lives inside this -->
+            <#-- form and in the AIA branch the visible Cancel is the first submit, so -->
+            <#-- browsers that implicitly submit from a focused checkbox (Firefox) -->
+            <#-- would cancel the setup. Unnamed like the Finish input, and mirrors its -->
+            <#-- disabled state so Enter can't bypass the unchecked confirmation gate: -->
+            <#-- a disabled default button makes implicit submission a no-op. -->
+            <input type="submit" id="tpRecoveryDefaultSubmit" class="tp-default-submit" tabindex="-1" aria-hidden="true" disabled/>
             <input type="hidden" name="generatedRecoveryAuthnCodes" value="${recoveryAuthnCodesConfigBean.generatedRecoveryAuthnCodesAsString}"/>
             <input type="hidden" name="generatedAt" value="${recoveryAuthnCodesConfigBean.generatedAt?c}"/>
             <input type="hidden" id="userLabel" name="userLabel" value="${msg("recovery-codes-label-default")}"/>
@@ -54,7 +61,7 @@
             <div class="tp-recovery-confirm">
                 <label class="tp-recovery-confirm-label">
                     <input type="checkbox" id="kcRecoveryCodesConfirmationCheck" name="kcRecoveryCodesConfirmationCheck"
-                           onchange="document.getElementById('saveRecoveryAuthnCodesBtn').disabled = !this.checked;"/>
+                           onchange="document.getElementById('saveRecoveryAuthnCodesBtn').disabled = document.getElementById('tpRecoveryDefaultSubmit').disabled = !this.checked;"/>
                     <span>${msg("recovery-codes-confirmation-message")}</span>
                 </label>
             </div>

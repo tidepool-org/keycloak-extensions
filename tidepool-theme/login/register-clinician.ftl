@@ -40,6 +40,7 @@
                 </div>
             </div>
         </form>
+        <@registerCommons.completionGate/>
     <#elseif section = "info">
         <div id="kc-registration">
             <span>${msg("alreadyHaveAnAccount")} <a href="${url.loginRestartFlowUrl}">${msg("doLogIn")}</a></span>

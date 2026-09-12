@@ -34,3 +34,44 @@
         </div>
     </#if>
 </#macro>
+
+<#-- Disables the Sign Up button until every required field is filled in (and -->
+<#-- the terms checkbox, when present, is checked). Required fields are the -->
+<#-- ones whose form-group label carries the required-asterisk span — field.ftl -->
+<#-- never emits the HTML required attribute, so the marker is the only signal. -->
+<#-- The button is enabled in markup and disabled from JS so the form still -->
+<#-- submits without JS; server-side validation remains the authority. -->
+<#macro completionGate>
+    <script>
+        (function () {
+            var form = document.getElementById('kc-register-form');
+            if (!form) return;
+            var submit = form.querySelector('button[type="submit"]');
+            if (!submit) return;
+
+            function isComplete() {
+                var fields = form.querySelectorAll('input, select, textarea');
+                for (var i = 0; i < fields.length; i++) {
+                    var f = fields[i];
+                    if (f.type === 'hidden' || f.type === 'submit' || f.type === 'button' || f.disabled) continue;
+                    if (!f.getClientRects().length) continue;
+                    if (f.type === 'checkbox') {
+                        if (f.id === 'terms' && !f.checked) return false;
+                        continue;
+                    }
+                    var group = f.closest('.pf-v5-c-form__group');
+                    if (group && group.querySelector('.pf-v5-c-form__label-required') && !f.value.trim()) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            function update() { submit.disabled = !isComplete(); }
+
+            form.addEventListener('input', update);
+            form.addEventListener('change', update);
+            update();
+        })();
+    </script>
+</#macro>

@@ -3,7 +3,7 @@
 <#import "password-commons.ftl" as passwordCommons>
 <#-- Split TOTP setup into two visual steps with client-side step transitions: -->
 <#--   1. QR-code step: shows the authenticator app list + QR code (or manual secret). -->
-<#--   2. Verify step:  device label + 6-digit code + "log out other sessions". -->
+<#--   2. Verify step:  6-digit code + device label + "log out other sessions". -->
 <#-- Both steps share one POST form. JS-only navigation. If the server returns a -->
 <#-- validation error on totp or userLabel, the form starts on step 2 so the error -->
 <#-- is visible and re-submission picks up where the user left off. -->
@@ -20,6 +20,11 @@
               novalidate="novalidate"
               data-step="${initialStep}">
 
+            <#-- Default submit for Enter — in AIA mode step 1's Cancel is the form's -->
+            <#-- first submit button, so Enter in the step-2 code/label fields would -->
+            <#-- cancel the whole setup. The unnamed stub submits like saveTOTPBtn, -->
+            <#-- and the submit listener below validates it like any normal save. -->
+            <input type="submit" class="tp-default-submit" tabindex="-1" aria-hidden="true"/>
             <input type="hidden" id="totpSecret" name="totpSecret" value="${totp.totpSecret}"/>
             <#if mode??><input type="hidden" id="mode" name="mode" value="${mode}"/></#if>
 
@@ -78,19 +83,19 @@
                     <p class="tp-totp-section-help">${msg("loginTotpVerifyHelp")}</p>
                 </div>
 
-                <@field.group name="userLabel" label=msg("loginTotpDeviceLabel") error=messagesPerField.get('userLabel') required=true>
-                    <span class="${properties.kcInputClass!} <#if messagesPerField.existsError('userLabel')>${properties.kcError!}</#if>">
-                        <input type="text" id="userLabel" name="userLabel" autocomplete="off" maxlength="200"
-                               aria-invalid="<#if messagesPerField.existsError('userLabel')>true</#if>"/>
-                        <@field.errorIcon error=messagesPerField.get('userLabel')/>
-                    </span>
-                </@field.group>
-
                 <@field.group name="totp" label=msg("loginTotpCodeLabel") error=messagesPerField.get('totp') required=true>
                     <span class="${properties.kcInputClass!} <#if messagesPerField.existsError('totp')>${properties.kcError!}</#if>">
                         <input type="text" id="totp" name="totp" autocomplete="one-time-code" inputmode="numeric"
                                aria-invalid="<#if messagesPerField.existsError('totp')>true</#if>"/>
                         <@field.errorIcon error=messagesPerField.get('totp')/>
+                    </span>
+                </@field.group>
+
+                <@field.group name="userLabel" label=msg("loginTotpDeviceLabel") error=messagesPerField.get('userLabel') required=true>
+                    <span class="${properties.kcInputClass!} <#if messagesPerField.existsError('userLabel')>${properties.kcError!}</#if>">
+                        <input type="text" id="userLabel" name="userLabel" autocomplete="off" maxlength="200"
+                               aria-invalid="<#if messagesPerField.existsError('userLabel')>true</#if>"/>
+                        <@field.errorIcon error=messagesPerField.get('userLabel')/>
                     </span>
                 </@field.group>
 
@@ -127,7 +132,7 @@
                 function setStep(step) {
                     form.dataset.step = step;
                     if (step === 'verify') {
-                        setTimeout(function () { userLabel && userLabel.focus(); }, 0);
+                        setTimeout(function () { totp && totp.focus(); }, 0);
                     }
                 }
 
