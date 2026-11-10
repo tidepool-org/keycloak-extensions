@@ -1927,9 +1927,8 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   display: none;
 }
 
-/* Page footer (below the card, full-width at page bottom). Three-column grid */
-/* keeps the social icons on the left, the links visually centered, and a */
-/* balancing empty track on the right. */
+/* Page footer (below the card, full-width at page bottom). A single grid */
+/* column holds one centered row of links. */
 /* No internal padding — the page-level .pf-v5-c-login padding (32px 16px) */
 /* handles the space below the footer, matching the space above the logo. */
 /* Font weight is 400 (regular) to match app.tidepool.org/logged-out. */
@@ -1939,9 +1938,8 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
   padding: 0;
   margin-top: 32px;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr;
   align-items: center;
-  gap: 24px;
   font-family: var(--tp-font-family);
   font-size: 14px;
   font-weight: 400;
@@ -1959,31 +1957,6 @@ body[data-page-id="login-login-recovery-authn-code-config"] .pf-v5-c-login__main
 #tp-footer a:hover,
 #tp-footer a:focus {
   color: var(--tp-color-blue-50);
-}
-
-#tp-footer .tp-footer-social {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  justify-self: start;
-}
-
-/* Hide social icons on mobile (matches app.tidepool.org's large-format-only) */
-/* and collapse the footer to a single centered column so the links don't get */
-/* squeezed by the 1fr | auto | 1fr layout on narrow viewports. */
-@media (max-width: 767px) {
-  #tp-footer {
-    grid-template-columns: 1fr;
-  }
-  #tp-footer .tp-footer-social {
-    display: none;
-  }
-}
-
-#tp-footer .tp-footer-social a svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
 }
 
 #tp-footer .tp-footer-links {
