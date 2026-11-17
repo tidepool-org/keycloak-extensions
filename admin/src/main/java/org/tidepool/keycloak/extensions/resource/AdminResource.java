@@ -1,10 +1,13 @@
 package org.tidepool.keycloak.extensions.resource;
 
+import org.keycloak.Config;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.jose.jws.JWSInputException;
 import org.keycloak.models.ClientModel;
+import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
+import org.keycloak.protocol.oidc.mappers.AdminApiAudienceMapper;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.services.managers.AppAuthManager;
 import org.keycloak.services.managers.AuthenticationManager;
@@ -12,6 +15,7 @@ import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.resources.admin.AdminAuth;
 import org.keycloak.services.resources.admin.fgap.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.fgap.AdminPermissions;
+import org.keycloak.util.TokenUtil;
 
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
@@ -59,24 +63,46 @@ public abstract class AdminResource {
 
         // Temporarily set the realm in the context to the admin realm to make sure we have a valid admin token
         session.getContext().setRealm(realm);
+        try {
+            boolean audienceCheckEnabled = isAudienceCheckEnabled();
 
-        var authenticator = new AppAuthManager.BearerTokenAuthenticator(session);
-        authenticator.setRealm(realm);
-        AuthenticationManager.AuthResult authResult = authenticator.authenticate();
-        if (authResult == null) {
-            throw new NotAuthorizedException("Bearer");
+            var authenticator = new AppAuthManager.BearerTokenAuthenticator(session);
+            authenticator.setRealm(realm);
+            if (audienceCheckEnabled) {
+                // Same check Keycloak's own Admin REST API applies since 26.8.2 (CVE-2026-19688,
+                // AdminRoot#authenticateRealmAdminRequest): the token must have been issued for the
+                // Admin API, not merely by the admin realm.
+                authenticator.setAudience(AdminApiAudienceMapper.getAdminApiAudience(session, realm));
+            }
+            AuthenticationManager.AuthResult authResult = authenticator.authenticate();
+            if (authResult == null) {
+                throw new NotAuthorizedException("Bearer");
+            }
+            if (audienceCheckEnabled
+                    && !TokenUtil.hasScope(authResult.token().getScope(), Constants.KEYCLOAK_ADMIN_API_SCOPE)) {
+                throw new NotAuthorizedException("Bearer");
+            }
+
+            ClientModel client = realm.getClientByClientId(token.getIssuedFor());
+            if (client == null) {
+                throw new NotFoundException("Could not find client for authorization");
+            }
+
+            AdminAuth adminAuth = new AdminAuth(realm, authResult.token(), authResult.user(), client);
+            this.adminAuth = adminAuth;
+            this.auth = AdminPermissions.evaluator(session, realm, adminAuth);
+        } finally {
+            // Restore the original realm in the context
+            session.getContext().setRealm(realmInContext);
         }
+    }
 
-        ClientModel client = realm.getClientByClientId(token.getIssuedFor());
-        if (client == null) {
-            throw new NotFoundException("Could not find client for authorization");
-        }
-
-        AdminAuth adminAuth = new AdminAuth(realm, authResult.getToken(), authResult.getUser(), client);
-        this.adminAuth = adminAuth;
-        this.auth = AdminPermissions.evaluator(session, realm, adminAuth);
-
-        // Restore the original realm in the context
-        session.getContext().setRealm(realmInContext);
+    /**
+     * Mirrors the switch Keycloak uses for its own Admin REST API
+     * ({@code --spi-admin--audience-check-enabled}, default {@code true}), so both admin surfaces are
+     * either checked or not.
+     */
+    protected boolean isAudienceCheckEnabled() {
+        return Config.scope("admin").getBoolean("audienceCheckEnabled", true);
     }
 }
