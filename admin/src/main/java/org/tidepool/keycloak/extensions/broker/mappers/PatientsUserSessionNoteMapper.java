@@ -151,7 +151,7 @@ public class PatientsUserSessionNoteMapper extends AbstractIdentityProviderMappe
         if (authResult == null) {
             return null;
         }
-        return authResult.getSession();
+        return authResult.session();
     }
 }
 

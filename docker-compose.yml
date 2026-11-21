@@ -32,7 +32,7 @@ services:
       - providers:/providers
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.7.3
+    image: quay.io/keycloak/keycloak:26.8.2
     container_name: tp-keycloak
     environment:
       KC_DB: postgres
